@@ -1,21 +1,38 @@
 package project.com.vehiclessharing.fragment;
 
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.FileNotFoundException;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.activity.HomeActivity;
@@ -26,13 +43,17 @@ import static com.facebook.GraphRequest.TAG;
  * Created by Tuan on 14/03/2017.
  */
 
-public class Profile_Fragment extends Fragment {
+public class Profile_Fragment extends Fragment implements View.OnClickListener{
 
     private static View view;
+
+    private static final int RESULT_OK = -1;
 
     private FirebaseUser mUser;
     private TextView txtEmail, txtFullname,txtPhone, txtSex;
     private ImageView imgUser;
+    private Button btnChangeImgSD;
+    private ProgressBar prgImgUser;
 //    private Bitmap bmImgUser;
 
 
@@ -47,7 +68,7 @@ public class Profile_Fragment extends Fragment {
         view = inflater.inflate(R.layout.profile_layout, container, false);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         Log.d("ProfileAAAAAAAA", String.valueOf(mUser.getPhotoUrl()));
-        Log.d("ProfileAAAAAAAA",mUser.getDisplayName());
+//        Log.d("ProfileAAAAAAAA",mUser.getDisplayName());
 //        txtEmail = (TextView) view.findViewById(R.id.txtEmail);
 //        txtFullname = (TextView) view.findViewById(R.id.txtFullName);
 //        txtPhone = (TextView) view.findViewById(R.id.txtPhone);
@@ -82,6 +103,8 @@ public class Profile_Fragment extends Fragment {
 
     private void addEvents() {
         imgUser.setImageBitmap(HomeActivity.bmImgUser);
+        btnChangeImgSD.setOnClickListener(this);
+        prgImgUser.setVisibility(View.INVISIBLE);
 //       downloadImageUser();
     }
 
@@ -110,6 +133,77 @@ public class Profile_Fragment extends Fragment {
     private void addControls() {
         imgUser = (ImageView) view.findViewById(R.id.imgUser);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+        btnChangeImgSD = (Button) view.findViewById(R.id.btnChangeImgSD);
+        prgImgUser = (ProgressBar) view.findViewById(R.id.prgImgUser);
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btnChangeImgSD:
+
+                // Call checkValidation method
+                callIntentPickImg();
+                break;
+
+        }
+    }
+
+    // Pick image in SDcard
+    private void callIntentPickImg() {
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, 0);
+    }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+
+            //GETTING IMAGE FROM GALLERY
+            if (resultCode == RESULT_OK){
+                prgImgUser.setVisibility(View.VISIBLE);
+                Uri targetUri = data.getData();
+//                Log.d("PICK IMGGGGGG",targetUri.toString());
+                storageImg(targetUri);
+                try {
+                    HomeActivity.bmImgUser = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(targetUri));
+                } catch (FileNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+    private void storageImg(Uri targetUri) {
+//        Storage iamge in Firebase
+        StorageReference fileRef =  FirebaseStorage.getInstance().getReference().child("avatar").child(mUser.getUid()+".jpg");
+        fileRef.putFile(targetUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d("UPLOADDDDAAAAA",taskSnapshot.getDownloadUrl().toString());
+                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                        .setPhotoUri(taskSnapshot.getDownloadUrl())
+                        .build();
+                mUser.updateProfile(profileUpdates)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    imgUser.setImageBitmap(HomeActivity.bmImgUser);
+                                    HomeActivity.imgUser.setImageBitmap(HomeActivity.bmImgUser);
+                                    prgImgUser.setVisibility(View.INVISIBLE);
+                                    Log.d("UPLOADDDDAAAAA", "User URL updated.");
+                                }
+                            }
+                        });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_SHORT);
+            }
+        });
+    }
 }

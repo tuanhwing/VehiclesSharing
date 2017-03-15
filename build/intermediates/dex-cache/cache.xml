@@ -70,7 +70,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="c2c6c4318b75951716446ed0a8e887074202e740">
+        sha1="53fbedcf8b2554fc88c7c37eddf2ca1af17997c0">
         <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_976e3f5cadb0191df51a8a0a3c7ce478ba8c8d7c\classes.dex" />
     </item>
     <item

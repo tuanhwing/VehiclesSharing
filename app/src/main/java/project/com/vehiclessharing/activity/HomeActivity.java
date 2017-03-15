@@ -39,7 +39,7 @@ public class HomeActivity extends AppCompatActivity
     private View viewHeader = null; // View header
     private TextView txtFullName,txtEmail;
     private FirebaseUser mUser;
-    private ImageView imgUser;
+    public static ImageView imgUser;
     public static Bitmap bmImgUser;
 
 
