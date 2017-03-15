@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1093380309543",
+    "firebase_url": "https://vehiclessharing-74957.firebaseio.com",
+    "project_id": "vehiclessharing-74957",
+    "storage_bucket": "vehiclessharing-74957.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093380309543:android:56f0bc5cd958205a",
+        "android_client_info": {
+          "package_name": "project.com.vehiclessharing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1093380309543-2h943sfv71ra6e1olcs6174kkipumddp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "project.com.vehiclessharing",
+            "certificate_hash": "ab3f652a2ba5c0dc5d0fe0af6cbb8f28d0f7c49c"
+          }
+        },
+        {
+          "client_id": "1093380309543-o85979qbsnp54ppfi91m1pdaceb4p86o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3W_xCT5t7pR3F8RJ0IRPUSQxi_PTH5Uo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1093380309543-o85979qbsnp54ppfi91m1pdaceb4p86o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

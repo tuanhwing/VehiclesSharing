@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-auth-base\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4e01b82d664e1a8253b2b9658e74b5da35c8771d">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.android.gms-play-services-auth-base-10.2.0_487964ddc728f09df2db10953fd4a9ff352080d9\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-tasks\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="bd75f9f0296fe220da6d0ad961831b04541c4452">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.android.gms-play-services-tasks-10.2.0_3d597085e70d551906e83da785b2501b38e96bbd\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-base\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="3d13e510077b35fe8e49930a627dd849ad5da0dc">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.android.gms-play-services-base-10.2.0_0a6d16c819a9754c3fc47f320b2d0de43ffd369e\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-database-connection\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="0e301f24b283f14b564f660c9abe863af6be5896">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-database-connection-10.2.0_6b430062dddfdd2d306d895efb0c0ced7a748714\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-auth\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="b831d3902674d096189451d46fce219e2c2904b7">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.android.gms-play-services-auth-10.2.0_cac108ebb6a6c6216684fbbcb0e95a54bb1d97fe\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="152de8da301561dcb0946471697a420d8f7a68c5">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-recyclerview-v7-25.2.0_b11e5b27057fbc70ac972164779180b8cef7f269\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Tuan\AppData\Local\Android\sdk1\extras\android\m2repository\com\android\support\support-annotations\25.2.0\support-annotations-25.2.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4a5a82a027706397fff621b22fd6fa796e91d7c5">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\support-annotations-25.2.0_00a9efc3e36c926ef4c203905f49af6ab4926018\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="c2c6c4318b75951716446ed0a8e887074202e740">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_976e3f5cadb0191df51a8a0a3c7ce478ba8c8d7c\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-analytics\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="a61e7010aa7be5da53cd1bc5279630510c9a4912">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-analytics-10.2.0_67904174adff5771d1534ccfddca888c750aab0a\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="702d339bc0a81d21354cd7e2cf2b67225fa4a16c">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-appcompat-v7-25.2.0_4e386490f9bd8e273b30fa2de213ce0593763b86\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-iid\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="3d6951cb416ebf8c66a32b9480808ca247b68344">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-iid-10.2.0_7bbfab6931de6c098629020c4e2a18c99ca255a1\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="fa0446a14ed5dd3725047d6399ffea771a564b30">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-core-ui-25.2.0_c3c1d5caaa301f1ad1617a95e0c18ebd91364506\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-messaging\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="75575883f0348fc5d2be85f23bd10b050095cf17">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-messaging-10.2.0_f63cb70cc73330ae76ad233f446e4312b4f12719\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.facebook.android\facebook-android-sdk\4.6.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="1c1afa0ab2a8197a5da1b36c4167a9e479cb74d9">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.facebook.android-facebook-android-sdk-4.6.0_a65f52c3ea0f585eae3d23eea28249c4f3df46b7\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\design\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="ea6a989b83d19b1b461281e0475a6cd6514897f8">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-design-25.2.0_2341c407a14ee90014028a13b454046f178707e8\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\support-fragment\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="8fe8a8f77d651982ce5e18f6187dc4daf914ac57">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-fragment-25.2.0_168f774c0e54b0837514de43c70a15b68330a682\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-auth\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="48532a016bb0dfbe7970c147ce784598a515406b">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-auth-10.2.0_e0e3809b88f65f9f4e197a81bfaed776f01090f3\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="810f41e5b7fd99f196ebeabe865ba2c54e7e76dc">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-vector-drawable-25.2.0_079921479c8096bee372e8a63f90a210451ec358\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="ee394a892dd21c03a528139c1e8d4e0e1264ac84">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-media-compat-25.2.0_e64241d8f0a168e84414b521c339286517038cbc\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-database\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="94fca868854457ede6df15c902938468c71d579e">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-database-10.2.0_37adb8d42bd7defe8d8a1f349d8c19acd804fef2\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-common\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="0d5cbbbfe040201c7569478b70a13b58fd11aab4">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-common-10.2.0_1c9eb095c984ff208490ffd962a871065b78432f\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\de.hdodenhof\circleimageview\2.1.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="a2af9c72ccaa4c5c049b500ca6ea664a4ce1f7d4">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\de.hdodenhof-circleimageview-2.1.0_3bb41baa33b86f9ded82f08bf340bcf920e9e5b8\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="cb454b52545859ed2f24a6c01366805b0fa04b22">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-animated-vector-drawable-25.2.0_b03d86f01489e3fffb84bac652c6910188a4b577\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\support-v4\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-v4-25.2.0_ed290d909a6fa33c857724ef0a8dd14dcaf11df1\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="1ac56e5801e986583cbe27f2cce57f626cc7ff93">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.android.gms-play-services-basement-10.2.0_1dc94f59929674d1a3042ad14313eda5b932c876\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-storage-common\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="1df6d719c4e264d66bb98baa5cb637495b8cca66">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-storage-common-10.2.0_8d37e13a1be36440feef394516be6744abb68680\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Tuan\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.2.0\6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd\bolts-android-1.2.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\bolts-android-1.2.0_be89970d33033fa1e78423234eba3da691db74de\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-analytics-impl\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="ce9112e08a027c8620ae693983e38cdbb9f6371b">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-analytics-impl-10.2.0_e7c7a36f23a20aa20f404457778bcf89522f7059\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="f149cc931186ded1bc28fa8f52a7a1701e9299b0">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_6f9ead19336d0f88a6ac7d10bc6b969a015d21ae\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="e820b7be8c035dd522da4bc822e8a76c8e27921a">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-core-utils-25.2.0_54496bade166be1a02d97b8382edb78288124672\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.google.firebase\firebase-storage\10.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="8e1d31656bc9f1889283836e025e6cb703acd38a">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.firebase-firebase-storage-10.2.0_af52e87ce1d5a23c209528f0ac6c410e97587477\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\transition\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="e51c2f662bb72419632af5192553c37e33890a99">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-transition-25.2.0_d56facf33d673d1599c17f7c33ed4fa49e60e489\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\support-compat\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="67eb33110dbacb46a48175b08ae0c96761d2c17d">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-compat-25.2.0_72a59b5a6a05ab88f6adef1dc5bb357502383e75\classes.dex" />
+    </item>
+
+</items>
