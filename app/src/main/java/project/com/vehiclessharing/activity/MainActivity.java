@@ -80,7 +80,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            Log.d("ssssss", "onAuthStateChanged:signed_out");
 //        }
         // On close icon click finish activity
+        Log.d("DemoAAAA1",imgClose.toString());
         imgClose.setOnClickListener(this);
+        Log.d("DemoAAAA2",imgClose.toString());
 
     }
 
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
 
             case R.id.close_activity:
-
+                Log.d("DemoAAAA3",imgClose.toString());
                 finish();
                 break;
         }
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //set animation Close
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulum);
         imgClose.startAnimation(animation);
+        Log.d("DemoAAAA",imgClose.toString());
     }
 
     // Replace Login Fragment with animation

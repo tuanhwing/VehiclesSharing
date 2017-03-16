@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +41,8 @@ public class HomeActivity extends AppCompatActivity
     private TextView txtFullName,txtEmail;
     private FirebaseUser mUser;
     public static ImageView imgUser;
-    public static Bitmap bmImgUser;
+    public static ProgressBar prgImgUser;
+    public static Bitmap bmImgUser = null;
 
 
     private static FragmentManager fragmentManager;
@@ -85,6 +87,9 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void addEvents() {
+        if(bmImgUser == null){
+            prgImgUser.setVisibility(View.VISIBLE);
+        }
         txtFullName.setText(mUser.getDisplayName());
         txtEmail.setText(mUser.getEmail());
         downloadImageUser();
@@ -97,6 +102,7 @@ public class HomeActivity extends AppCompatActivity
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
+        prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
 
         Log.d("UPLOADAAAA", String.valueOf(mUser.getPhotoUrl()));
 
@@ -123,7 +129,7 @@ public class HomeActivity extends AppCompatActivity
 //        });
     }
 
-    private void downloadImageUser() {
+    public void downloadImageUser() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -138,8 +144,11 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             protected void onPostExecute(Void result) {
-                if (bmImgUser != null)
+                if (bmImgUser != null){
                     imgUser.setImageBitmap(bmImgUser);
+                    prgImgUser.setVisibility(View.INVISIBLE);
+                }
+
             }
 
         }.execute();

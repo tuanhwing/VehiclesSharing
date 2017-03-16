@@ -41,7 +41,6 @@ import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.activity.HomeActivity;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.custom.CustomToast;
-import project.com.vehiclessharing.custom.OnSwipeTouchListener;
 
 import static com.google.android.gms.internal.zzt.TAG;
 import static project.com.vehiclessharing.constant.Utils.SignUp_Fragment;
@@ -132,53 +131,55 @@ public class Login_Fragment extends Fragment implements OnClickListener {
             signUp.setTextColor(csl);
         } catch (Exception e) {
         }
-        view.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
 
-            @Override
-            public void onClick() {
-                super.onClick();
-                // your on click here
-            }
-
-            @Override
-            public void onDoubleClick() {
-                super.onDoubleClick();
-                // your on onDoubleClick here
-            }
-
-            @Override
-            public void onLongClick() {
-                super.onLongClick();
-                // your on onLongClick here
-            }
-
-            @Override
-            public void onSwipeUp() {
-                super.onSwipeUp();
-                // your swipe up here
-            }
-
-            @Override
-            public void onSwipeDown() {
-                super.onSwipeDown();
-                // your swipe down here.
-            }
-
-            @Override
-            public void onSwipeLeft() {
-                super.onSwipeLeft();
-                // your swipe left here.
-                signUp.callOnClick();
-
-            }
-
-            @Override
-            public void onSwipeRight() {
-                super.onSwipeRight();
-                // your swipe right here.
-            }
-        });
-
+//        //Swipe Left -> Right
+//        view.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
+//
+//            @Override
+//            public void onClick() {
+//                super.onClick();
+//                // your on click here
+//            }
+//
+//            @Override
+//            public void onDoubleClick() {
+//                super.onDoubleClick();
+//                // your on onDoubleClick here
+//            }
+//
+//            @Override
+//            public void onLongClick() {
+//                super.onLongClick();
+//                // your on onLongClick here
+//            }
+//
+//            @Override
+//            public void onSwipeUp() {
+//                super.onSwipeUp();
+//                // your swipe up here
+//            }
+//
+//            @Override
+//            public void onSwipeDown() {
+//                super.onSwipeDown();
+//                // your swipe down here.
+//            }
+//
+//            @Override
+//            public void onSwipeLeft() {
+//                super.onSwipeLeft();
+//                // your swipe left here.
+//                signUp.callOnClick();
+//
+//            }
+//
+//            @Override
+//            public void onSwipeRight() {
+//                super.onSwipeRight();
+//                // your swipe right here.
+//            }
+//        });
+//
     }
 
     //Set text for button google login
