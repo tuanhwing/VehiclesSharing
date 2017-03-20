@@ -2,6 +2,7 @@ package project.com.vehiclessharing.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +24,7 @@ import project.com.vehiclessharing.fragment.Login_Fragment;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     //Add new
-    private FirebaseAuth mAuth;
+    public static FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser mUser;
     //End new
@@ -43,12 +44,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FacebookSdk.sdkInitialize(this);// Add new
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
-        Log.d("MAINAAAAAAAAAAAA","AAAAAAAAAAA");
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-//            Log.d("MAINAAAAAAAAAAAA",String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid()));
-            startActivity(new Intent(MainActivity.this, HomeActivity.class));
-            finish();
-        }
 
         // If savedinstnacestate is null then replace login fragment
         if (savedInstanceState == null) {
@@ -59,30 +54,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
-
-//        Log.d("MAINssssss", "onAuthStateChanged:signed_out1");
         addControls();
         addEvents();
-//        Log.d("MAINssssss", "onAuthStateChanged:signed_out2");
 
     }
 
     private void addEvents() {
-//         mUser = mAuth.getCurrentUser();
-//        if (mUser != null) {
-//            // User is signed in
-//            Log.d("ssssss", "onAuthStateChanged:signed_in1");
-//            startActivity(new Intent(MainActivity.this, HomeActivity.class));
-//            finish();
-//            Log.d("ssssss", "onAuthStateChanged:signed_in2");
-//        } else {
-//            // User is signed out
-//            Log.d("ssssss", "onAuthStateChanged:signed_out");
-//        }
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    startActivity(new Intent(MainActivity.this,HomeActivity.class));
+                    finish();
+                } else {
+                    // User is signed out
+                    Log.d("AAAAAAA", "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+
         // On close icon click finish activity
-        Log.d("DemoAAAA1",imgClose.toString());
         imgClose.setOnClickListener(this);
-        Log.d("DemoAAAA2",imgClose.toString());
 
     }
 
@@ -137,6 +132,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             replaceLoginFragment();
         else
             super.onBackPressed();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
 }

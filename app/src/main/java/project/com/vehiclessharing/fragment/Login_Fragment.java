@@ -15,7 +15,6 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,30 +25,52 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.activity.HomeActivity;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.custom.CustomToast;
+import project.com.vehiclessharing.model.UserSessionManager;
 
 import static com.google.android.gms.internal.zzt.TAG;
 import static project.com.vehiclessharing.constant.Utils.SignUp_Fragment;
 
 
-public class Login_Fragment extends Fragment implements OnClickListener {
+public class Login_Fragment extends Fragment implements View.OnClickListener {
     private static View view;
 
     //Add new
+    /* Client used to interact with Google APIs. */
+    UserSessionManager session;
+
+    //Facebook
+
+    private CallbackManager mCallbackManager;
+
+    /* Request code used to invoke sign in user interactions. */
+    public static final int RC_SIGN_IN = 0;
+
     private FirebaseAuth mAuth;
     private ProgressDialog mProgress;
     //End new
@@ -87,7 +108,21 @@ public class Login_Fragment extends Fragment implements OnClickListener {
     private void addControls() {
         fragmentManager = getActivity().getSupportFragmentManager();
 
+        session = new UserSessionManager(getActivity());
+
         //Add new
+
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestEmail()
+//                .build();
+//
+//        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+//                .enableAutoManage(getActivity(), this /* OnConnectionFailedListener */)
+//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+//                .build();
+
         mProgress =new ProgressDialog(getActivity());
         String titleId="Signing in...";
         mProgress.setTitle(titleId);
@@ -98,12 +133,18 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 
         mAuth = FirebaseAuth.getInstance();
 
+        // Initialize Facebook Login button
+        mCallbackManager = CallbackManager.Factory.create();
         loginfbButton = (LoginButton) view.findViewById(R.id.btnFbLogin);
-        loginfbButton.setReadPermissions("email");
+        loginfbButton.setReadPermissions("email", "public_profile");
         loginfbButton.setFragment(this);
+        //End Initialize Facebook Login button
 
+
+        //setText Google Login button
         loginggButton = (SignInButton) view.findViewById(R.id.btnGgLogin);
         setGooglePlusButtonText(loginggButton,"Log in with Google +");
+        //End setText Google Login button
 
         //End new
 
@@ -182,7 +223,7 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 //
     }
 
-    //Set text for button google login
+    //[Start]Set text for button google login
     private void setGooglePlusButtonText(SignInButton loginggButton, String s) {
         // Find the TextView that is inside of the SignInButton and set its text
         for (int i = 0; i < loginggButton.getChildCount(); i++) {
@@ -197,6 +238,7 @@ public class Login_Fragment extends Fragment implements OnClickListener {
             }
         }
     }
+    //[End]Set text for button google login
 
     //End add new
 
@@ -205,6 +247,31 @@ public class Login_Fragment extends Fragment implements OnClickListener {
         btnLogin.setOnClickListener(this);
         forgotPassword.setOnClickListener(this);
         signUp.setOnClickListener(this);
+        loginggButton.setOnClickListener(this);
+
+        // Initialize Facebook Login button
+        loginfbButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+                mProgress.dismiss();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "facebook:onError", error);
+                mProgress.dismiss();
+            }
+        });
+
+//        loginfbButton.setOnClickListener(this);
+
 
         // Set check listener over checkbox for showing and hiding password
         show_hide_password
@@ -241,6 +308,32 @@ public class Login_Fragment extends Fragment implements OnClickListener {
                 });
     }
 
+    //
+    private void handleFacebookAccessToken(AccessToken accessToken) {
+        Log.d(TAG, "handleFacebookAccessToken:" + accessToken);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        mProgress.dismiss();
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            Toast.makeText(getActivity(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -267,11 +360,76 @@ public class Login_Fragment extends Fragment implements OnClickListener {
                         .replace(R.id.frameContainer, new SignUp_Fragment(),
                                 SignUp_Fragment).commit();
                 break;
+            case R.id.btnGgLogin:
+                signInGoogle();
+                break;
         }
 
     }
 
-    // Check Validation before login
+    //Sign in google plus
+    private void signInGoogle() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(session.mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            mProgress.show();
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = result.getSignInAccount();
+                firebaseAuthWithGoogle(account);
+            } else {
+                // Google Sign In failed, update UI appropriately
+                // ...
+                mProgress.dismiss();
+                Toast.makeText(getActivity(),"Sign in google failed!",Toast.LENGTH_SHORT).show();
+                Log.d("RESULTAAAAA", String.valueOf(result.getStatus()));
+            }
+        }
+        else {
+            mProgress.show();
+            // Pass the activity result back to the Facebook SDK
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    //[Start]Authentication with Gooogle
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        mProgress.dismiss();
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            Toast.makeText(getActivity(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+
+                        }
+                        // ...
+                    }
+                });
+    }
+    //[End]Authentication with Gooogle
+
+    //[Start]Check Validation before login
     private void checkValidation() {
         // Get email id and password
         String getEmailId = txtEmail.getText().toString();
@@ -316,8 +474,7 @@ public class Login_Fragment extends Fragment implements OnClickListener {
                             }
                             else{
                                 //Switch screen
-                                startActivity(new Intent(getActivity(),HomeActivity.class));
-                                getActivity().finish();
+//                                switchActivity(Utils.Email_Signin);
                                 Log.d("LOGINssssssssss", "ssssssssssss");
                             }
 
@@ -328,6 +485,6 @@ public class Login_Fragment extends Fragment implements OnClickListener {
                     });
 
         }
-
     }
+    //[End]Check Validation before login
 }

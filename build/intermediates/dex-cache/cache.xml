@@ -48,15 +48,6 @@
     </item>
     <item
         is-multidex="true"
-        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\25.2.0\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="152de8da301561dcb0946471697a420d8f7a68c5">
-        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-recyclerview-v7-25.2.0_b11e5b27057fbc70ac972164779180b8cef7f269\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
         jar="C:\Users\Tuan\AppData\Local\Android\sdk1\extras\android\m2repository\com\android\support\support-annotations\25.2.0\support-annotations-25.2.0.jar"
         jumboMode="true"
         optimize="true"
@@ -66,11 +57,20 @@
     </item>
     <item
         is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\25.2.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="152de8da301561dcb0946471697a420d8f7a68c5">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-recyclerview-v7-25.2.0_b11e5b27057fbc70ac972164779180b8cef7f269\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="53fbedcf8b2554fc88c7c37eddf2ca1af17997c0">
+        sha1="2175f603d1c7a81df1cfa2630d5a8c5f6120c95c">
         <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_976e3f5cadb0191df51a8a0a3c7ce478ba8c8d7c\classes.dex" />
     </item>
     <item
@@ -259,7 +259,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="f149cc931186ded1bc28fa8f52a7a1701e9299b0">
+        sha1="7f4ea816242167c60de61f04d1222f9fdf4ee75b">
         <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_6f9ead19336d0f88a6ac7d10bc6b969a015d21ae\classes.dex" />
     </item>
     <item

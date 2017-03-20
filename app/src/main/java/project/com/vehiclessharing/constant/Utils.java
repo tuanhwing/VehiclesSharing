@@ -29,4 +29,10 @@ public class Utils {
     public static final String Profile_Fragment = "Profile_Fragment";
     public static final String SignUp_Fragment = "SignUp_Fragment";
     public static final String ForgotPassword_Fragment = "ForgotPassword_Fragment";
+
+
+    //Value Login each Facebook/Google+/Email
+    public static final String Email_Signin = "password";
+    public static final String Facebook_Signin = "facebook.com";
+    public static final String Google_Signin = "google.com";
 }

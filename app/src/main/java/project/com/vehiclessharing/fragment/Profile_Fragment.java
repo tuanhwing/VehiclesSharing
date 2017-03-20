@@ -1,6 +1,8 @@
 package project.com.vehiclessharing.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 
 import project.com.vehiclessharing.R;
@@ -134,6 +137,9 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
         imgUser = (ImageView) view.findViewById(R.id.imgUser);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         btnChangeImgSD = (Button) view.findViewById(R.id.btnChangeImgSD);
+        if(HomeActivity.loginWith != 0){
+            btnChangeImgSD.setVisibility(View.GONE);
+        }
         prgImgUser = (ProgressBar) view.findViewById(R.id.prgImgUser);
     }
 
@@ -166,13 +172,38 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
                 HomeActivity.prgImgUser.setVisibility(View.VISIBLE);
                 Uri targetUri = data.getData();
 //                Log.d("PICK IMGGGGGG",targetUri.toString());
-                storageImg(targetUri);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
-                    HomeActivity.bmImgUser = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(targetUri));
+                    HomeActivity.bmImgUser = decodeUri(getActivity(),targetUri,100);
+//                    HomeActivity.bmImgUser = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(targetUri));
                 } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                HomeActivity.bmImgUser.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data1 = baos.toByteArray();
+                StorageReference fileRef =  FirebaseStorage.getInstance().getReference().child("avatar").child(mUser.getUid()+".jpg");
+                UploadTask uploadTask = fileRef.putBytes(data1);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Log.d("upload","failed");
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        Log.d("upload","Succeeded:" + downloadUrl);
+                    }
+                });
+//                storageImg(decodeUri(getActivity(),targetUri,100));
+//                try {
+//                    HomeActivity.bmImgUser = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(targetUri));
+//                } catch (FileNotFoundException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
 
             }
         }
@@ -208,4 +239,29 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
             }
         });
     }
+
+    //[Start]Resize Image after upload Storage Firebase
+    public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize)
+            throws FileNotFoundException {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o);
+
+        int width_tmp = o.outWidth
+                , height_tmp = o.outHeight;
+        int scale = 1;
+
+        while(true) {
+            if(width_tmp / 2 < requiredSize || height_tmp / 2 < requiredSize)
+                break;
+            width_tmp /= 2;
+            height_tmp /= 2;
+            scale *= 2;
+        }
+
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
+    }
+    //[End]Resize Image after upload Storage Firebase
 }

@@ -21,8 +21,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -31,9 +36,12 @@ import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.Home_Fragment;
 import project.com.vehiclessharing.fragment.Profile_Fragment;
+import project.com.vehiclessharing.model.UserSessionManager;
+
+import static project.com.vehiclessharing.model.UserSessionManager.mGoogleApiClient;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
 
     private NavigationView navigationView = null;
     private Toolbar toolbar = null;
@@ -43,6 +51,9 @@ public class HomeActivity extends AppCompatActivity
     public static ImageView imgUser;
     public static ProgressBar prgImgUser;
     public static Bitmap bmImgUser = null;
+    public UserSessionManager session;
+    FloatingActionButton fab;
+    public static int loginWith;
 
 
     private static FragmentManager fragmentManager;
@@ -58,15 +69,6 @@ public class HomeActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(HomeActivity.this,MainActivity.class));
-                finish();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -77,9 +79,19 @@ public class HomeActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // User signed in by account Email/Facebook/Google
+        for (UserInfo user: FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+            if(user.getProviderId().equals(Utils.Email_Signin)){
+                loginWith = 0;
+            } else if(user.getProviderId().equals(Utils.Facebook_Signin)){
+                loginWith = 1;
+            } else if(user.getProviderId().equals(Utils.Google_Signin)){
+                loginWith = 2;
+            }
+        }
+
         addControls();
         addEvents();
-
 
 
 
@@ -87,12 +99,17 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void addEvents() {
-        if(bmImgUser == null){
+        Log.d("download", String.valueOf(mUser.getPhotoUrl()));
+        if(mUser.getPhotoUrl() != null){
             prgImgUser.setVisibility(View.VISIBLE);
         }
         txtFullName.setText(mUser.getDisplayName());
         txtEmail.setText(mUser.getEmail());
+        Log.d("download", String.valueOf(mUser.getPhotoUrl()));
+        Log.d("download","downloadImageUser call");
         downloadImageUser();
+        fab.setOnClickListener(this);
+
     }
 
     private void addControls() {
@@ -103,9 +120,11 @@ public class HomeActivity extends AppCompatActivity
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
         prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
+        session = new UserSessionManager(getApplicationContext());
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        Log.d("UPLOADAAAA", String.valueOf(mUser.getPhotoUrl()));
-
+//        Log.d("UPLOADAAAA", String.valueOf(mUser.getPhotoUrl()));
+//
 //        //Storage iamge in Firebase
 //        StorageReference fileRef =  FirebaseStorage.getInstance().getReference().child("avatar").child(mUser.getUid()+".jpg");
 //        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.temp);
@@ -134,6 +153,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             protected Void doInBackground(Void... params) {
                 try {
+                    Log.d("download","start");
                     InputStream in = new URL(mUser.getPhotoUrl().toString()).openStream();
                     bmImgUser = BitmapFactory.decodeStream(in);
                 } catch (Exception e) {
@@ -144,9 +164,11 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             protected void onPostExecute(Void result) {
+                Log.d("download","done");
                 if (bmImgUser != null){
                     imgUser.setImageBitmap(bmImgUser);
                     prgImgUser.setVisibility(View.INVISIBLE);
+                    Log.d("download","succeeded");
                 }
 
             }
@@ -200,7 +222,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-
+            fab.callOnClick();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -210,5 +232,30 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                logout();
+                break;
+        }
+    }
+
+    private void logout() {
+        FirebaseAuth.getInstance().signOut();
+        //Sign out Google plus
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+
+                    }
+                });
+        //Sign out Facebook
+        LoginManager.getInstance().logOut();
+        startActivity(new Intent(HomeActivity.this,MainActivity.class));
+        finish();
     }
 }

@@ -382,7 +382,5 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 });
-//        FirebaseAuth.getInstance().signOut();
-//        Log.d("AAAAAAAAAAA", String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid()));
     }
 }
