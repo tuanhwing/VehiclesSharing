@@ -29,13 +29,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
-
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.google.firebase:firebase-core:10.2.0'
-    compile 'com.google.firebase:firebase-auth:10.2.0'
-    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     //Authentication
+    compile 'com.google.firebase:firebase-auth:10.2.0'
+    //button facebook
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     compile 'com.google.android.gms:play-services-auth:10.2.0'
     // this line must be included to use FCM
     compile 'com.google.firebase:firebase-messaging:10.2.0'
@@ -44,8 +43,10 @@ dependencies {
     //storage Firebase
     compile 'com.google.firebase:firebase-storage:10.2.0'
     compile 'com.android.support:design:25.2.0'
-    testCompile 'junit:junit:4.12'
+    compile 'junit:junit:4.12'
     //circle image
     compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'com.google.android.gms:play-services:10.2.0'
+    compile 'com.google.android.gms:play-services-maps:10.2.0'
 }
 apply plugin: 'com.google.gms.google-services'

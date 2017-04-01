@@ -193,8 +193,30 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        Log.d("upload","Succeeded:" + downloadUrl);
+//                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+//                        Log.d("upload","Succeeded:" + downloadUrl);
+
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setPhotoUri(taskSnapshot.getDownloadUrl())
+                                .build();
+                        mUser.updateProfile(profileUpdates)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            imgUser.setImageBitmap(HomeActivity.bmImgUser);
+                                            HomeActivity.imgUser.setImageBitmap(HomeActivity.bmImgUser);
+                                            prgImgUser.setVisibility(View.INVISIBLE);
+                                            HomeActivity.prgImgUser.setVisibility(View.INVISIBLE);
+                                            Log.d("UPLOADDDDAAAAA", "User URL updated.");
+                                        }
+                                    }
+                                });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_SHORT);
                     }
                 });
 //                storageImg(decodeUri(getActivity(),targetUri,100));

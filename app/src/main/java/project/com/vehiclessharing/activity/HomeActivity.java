@@ -25,6 +25,12 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -34,14 +40,13 @@ import java.net.URL;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
-import project.com.vehiclessharing.fragment.Home_Fragment;
 import project.com.vehiclessharing.fragment.Profile_Fragment;
 import project.com.vehiclessharing.model.UserSessionManager;
 
 import static project.com.vehiclessharing.model.UserSessionManager.mGoogleApiClient;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener, OnMapReadyCallback {
 
     private NavigationView navigationView = null;
     private Toolbar toolbar = null;
@@ -54,6 +59,7 @@ public class HomeActivity extends AppCompatActivity
     public UserSessionManager session;
     FloatingActionButton fab;
     public static int loginWith;
+    private GoogleMap map;
 
 
     private static FragmentManager fragmentManager;
@@ -64,7 +70,7 @@ public class HomeActivity extends AppCompatActivity
 
         //set fragment initially
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
+//        fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -89,6 +95,12 @@ public class HomeActivity extends AppCompatActivity
                 loginWith = 2;
             }
         }
+
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
 
         addControls();
         addEvents();
@@ -216,7 +228,7 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
+//            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
         } else if (id == R.id.nav_gallery) {
             fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
         } else if (id == R.id.nav_slideshow) {
@@ -257,5 +269,14 @@ public class HomeActivity extends AppCompatActivity
         LoginManager.getInstance().logOut();
         startActivity(new Intent(HomeActivity.this,MainActivity.class));
         finish();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        LatLng marker = new LatLng(10.8819912,106.780436);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker,15));
+
+        map.addMarker(new MarkerOptions().title("KTX khu B").position(marker));
     }
 }
