@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -23,13 +22,11 @@ import project.com.vehiclessharing.fragment.Login_Fragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    //Add new
-    public static FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseUser mUser;
-    //End new
+    public static FirebaseAuth mAuth; // Instance Authentication used by all fragment inside MainActivity
+    private FirebaseAuth.AuthStateListener mAuthListener;// Instance listener state user
+    private FirebaseUser mUser;// Instance user to get information
 
-    private static FragmentManager fragmentManager;
+    private static FragmentManager fragmentManager;// Instance fragmentManager to switch fragment
     ImageView imgClose;
 
     @Override
@@ -38,10 +35,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //set up notitle
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        //set up full screen
+//        //set up full screen
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        FacebookSdk.sdkInitialize(this);// Add new
+
+        FacebookSdk.sdkInitialize(this);// This function initializes the Facebook SDK
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
 
@@ -59,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    /**
+     * Set Listeners
+     */
     private void addEvents() {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -70,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     finish();
                 } else {
                     // User is signed out
-                    Log.d("AAAAAAA", "onAuthStateChanged:signed_out");
                 }
                 // ...
             }
@@ -81,19 +81,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    /**
+     * Handling button/textview click
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
             case R.id.close_activity:
-                Log.d("DemoAAAA3",imgClose.toString());
                 finish();
                 break;
         }
 
     }
 
-
+    /**
+     * Initiate Views
+     */
     private void addControls() {
         mAuth = FirebaseAuth.getInstance();
 
@@ -101,10 +106,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //set animation Close
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulum);
         imgClose.startAnimation(animation);
-        Log.d("DemoAAAA",imgClose.toString());
     }
 
-    // Replace Login Fragment with animation
+    /**
+     * Replace Login Fragment with animation
+     */
     public void replaceLoginFragment() {
         fragmentManager
                 .beginTransaction()
@@ -113,6 +119,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Utils.Login_Fragment).commit();
     }
 
+    /**
+     * Handling press Back in device
+     */
     @Override
     public void onBackPressed() {
 
