@@ -40,7 +40,6 @@ import java.net.URL;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
-import project.com.vehiclessharing.fragment.Profile_Fragment;
 import project.com.vehiclessharing.model.UserSessionManager;
 
 import static project.com.vehiclessharing.model.UserSessionManager.mGoogleApiClient;
@@ -226,18 +225,14 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-//            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
-        } else if (id == R.id.nav_gallery) {
-            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
-        } else if (id == R.id.nav_slideshow) {
+        if (id == R.id.nav_profile) {
+            startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
 
-        } else if (id == R.id.nav_manage) {
-            fab.callOnClick();
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_history) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_about) {
+
+        } else if (id == R.id.nav_signout) {
 
         }
 
