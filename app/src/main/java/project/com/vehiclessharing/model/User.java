@@ -6,6 +6,7 @@ package project.com.vehiclessharing.model;
 
 public class User {
 
+
     private String email;
     private String image;
     private String fullName;
@@ -13,6 +14,8 @@ public class User {
     private String sex;
     private UserAddress address;
 
+    public User() {
+    }
 
     /**
      * Contructor
@@ -81,6 +84,8 @@ public class User {
     public void setAddress(UserAddress address) {
         this.address = address;
     }
+
+
 
 }
 

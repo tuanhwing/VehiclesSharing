@@ -2,12 +2,9 @@ package project.com.vehiclessharing.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,8 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -34,13 +31,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
-
-import java.io.InputStream;
-import java.net.URL;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
-import project.com.vehiclessharing.model.UserSessionManager;
+import project.com.vehiclessharing.model.User;
 
 import static project.com.vehiclessharing.model.UserSessionManager.mGoogleApiClient;
 
@@ -51,24 +50,26 @@ public class HomeActivity extends AppCompatActivity
     private Toolbar toolbar = null;
     private View viewHeader = null; // View header
     private TextView txtFullName,txtEmail;
-    private FirebaseUser mUser;
-    public static ImageView imgUser;
-    public static ProgressBar prgImgUser;
-    public static Bitmap bmImgUser = null;
-    public UserSessionManager session;
-    FloatingActionButton fab;
-    public static int loginWith;
-    private GoogleMap map;
+    private FirebaseUser mUser; //CurrentUser
+    public static ImageView imgUser; // Avatar of user
+    public static Bitmap bmImgUser = null; // Bitmap of avatar
+    public static User user;
+    private FloatingActionButton fab; // button fab action
+    public static int loginWith; //Determine user authen email/facebook/google
+    private GoogleMap map;//Instance google map
+    private DatabaseReference mUserReference;//Instance database firebase
+    private ValueEventListener mUserListener;//Instance to Listener value events information user change
 
 
-    private static FragmentManager fragmentManager;
+
+//    private static FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
         //set fragment initially
-        fragmentManager = getSupportFragmentManager();
+//        fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -105,35 +106,60 @@ public class HomeActivity extends AppCompatActivity
         addEvents();
 
 
-
-//        fragmentManager.beginTransaction().replace(R.id.frameHome, new Home_Fragment(), Utils.Home_Fragment).commit();
     }
 
     private void addEvents() {
-        Log.d("download", String.valueOf(mUser.getPhotoUrl()));
-        if(mUser.getPhotoUrl() != null){
-            prgImgUser.setVisibility(View.VISIBLE);
-        }
-        txtFullName.setText(mUser.getDisplayName());
-        txtEmail.setText(mUser.getEmail());
-        Log.d("download", String.valueOf(mUser.getPhotoUrl()));
-        Log.d("download","downloadImageUser call");
-        downloadImageUser();
+//        txtFullName.setText(mUser.getDisplayName());
+//        txtEmail.setText(mUser.getEmail());
+        //downloadInformationUser();
         fab.setOnClickListener(this);
+        //[Start]Listen for value events
+        mUserListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("Demo","0");
+//                UserAddress address = dataSnapshot.getValue(UserAddress.class);
+//                String name = dataSnapshot.getValue().toString();
+                user = dataSnapshot.getValue(User.class);
+                Log.d("Demo",user.getEmail());
+                Log.d("Demo",user.getFullName());
+                Log.d("Demo",user.getAddress().getCountry());
+                Log.d("Demo",user.getAddress().getDistrict());
+                Log.d("Demo",user.getImage());
+                Log.d("Demo",user.getPhoneNumber());
+                Log.d("Demo","1");
+                txtFullName.setText(user.getFullName());
+                txtEmail.setText(user.getEmail());
+                Log.d("Demo","3");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("Warning", "loadPost:onCancelled", databaseError.toException());
+                // [START_EXCLUDE]
+                Toast.makeText(getApplicationContext(), "Failed to load post.",
+                        Toast.LENGTH_SHORT).show();
+                // [END_EXCLUDE]
+            }
+        };
+        mUserReference.addValueEventListener(mUserListener);
+        //[End]Listen for value events
+
 
     }
 
     private void addControls() {
 
-        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
+        user = new User();
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
-        prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
-        session = new UserSessionManager(getApplicationContext());
         fab = (FloatingActionButton) findViewById(R.id.fab);
-
+        mUserReference = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());//Instance reference database firebase
+        Log.d("Demo",mUser.getUid());
 //        Log.d("UPLOADAAAA", String.valueOf(mUser.getPhotoUrl()));
 //
 //        //Storage iamge in Firebase
@@ -158,35 +184,6 @@ public class HomeActivity extends AppCompatActivity
 //            }
 //        });
     }
-
-    public void downloadImageUser() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    Log.d("download","start");
-                    InputStream in = new URL(mUser.getPhotoUrl().toString()).openStream();
-                    bmImgUser = BitmapFactory.decodeStream(in);
-                } catch (Exception e) {
-                    // log error
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                Log.d("download","done");
-                if (bmImgUser != null){
-                    imgUser.setImageBitmap(bmImgUser);
-                    prgImgUser.setVisibility(View.INVISIBLE);
-                    Log.d("download","succeeded");
-                }
-
-            }
-
-        }.execute();
-    }
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -273,5 +270,15 @@ public class HomeActivity extends AppCompatActivity
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker,15));
 
         map.addMarker(new MarkerOptions().title("KTX khu B").position(marker));
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+
+        // Remove post value event listener
+        if (mUserReference != null) {
+            mUserReference.removeEventListener(mUserListener);
+        }
     }
 }

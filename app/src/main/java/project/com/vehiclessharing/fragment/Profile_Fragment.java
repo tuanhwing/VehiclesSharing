@@ -168,8 +168,6 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
 
             //GETTING IMAGE FROM GALLERY
             if (resultCode == RESULT_OK){
-                prgImgUser.setVisibility(View.VISIBLE);
-                HomeActivity.prgImgUser.setVisibility(View.VISIBLE);
                 Uri targetUri = data.getData();
 //                Log.d("PICK IMGGGGGG",targetUri.toString());
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -206,8 +204,6 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
                                         if (task.isSuccessful()) {
                                             imgUser.setImageBitmap(HomeActivity.bmImgUser);
                                             HomeActivity.imgUser.setImageBitmap(HomeActivity.bmImgUser);
-                                            prgImgUser.setVisibility(View.INVISIBLE);
-                                            HomeActivity.prgImgUser.setVisibility(View.INVISIBLE);
                                             Log.d("UPLOADDDDAAAAA", "User URL updated.");
                                         }
                                     }
@@ -247,8 +243,6 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
                                 if (task.isSuccessful()) {
                                     imgUser.setImageBitmap(HomeActivity.bmImgUser);
                                     HomeActivity.imgUser.setImageBitmap(HomeActivity.bmImgUser);
-                                    prgImgUser.setVisibility(View.INVISIBLE);
-                                    HomeActivity.prgImgUser.setVisibility(View.INVISIBLE);
                                     Log.d("UPLOADDDDAAAAA", "User URL updated.");
                                 }
                             }
