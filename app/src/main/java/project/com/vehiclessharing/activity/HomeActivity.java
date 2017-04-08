@@ -1,12 +1,15 @@
 package project.com.vehiclessharing.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -46,12 +49,12 @@ import project.com.vehiclessharing.model.UserSessionManager;
 import static project.com.vehiclessharing.model.UserSessionManager.mGoogleApiClient;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, OnMapReadyCallback {
 
     private NavigationView navigationView = null;
     private Toolbar toolbar = null;
     private View viewHeader = null; // View header
-    private TextView txtFullName,txtEmail;
+    private TextView txtFullName, txtEmail;
     private FirebaseUser mUser;
     public static ImageView imgUser;
     public static ProgressBar prgImgUser;
@@ -63,6 +66,7 @@ public class HomeActivity extends AppCompatActivity
 
 
     private static FragmentManager fragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,12 +90,12 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // User signed in by account Email/Facebook/Google
-        for (UserInfo user: FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-            if(user.getProviderId().equals(Utils.Email_Signin)){
+        for (UserInfo user : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+            if (user.getProviderId().equals(Utils.Email_Signin)) {
                 loginWith = 0;
-            } else if(user.getProviderId().equals(Utils.Facebook_Signin)){
+            } else if (user.getProviderId().equals(Utils.Facebook_Signin)) {
                 loginWith = 1;
-            } else if(user.getProviderId().equals(Utils.Google_Signin)){
+            } else if (user.getProviderId().equals(Utils.Google_Signin)) {
                 loginWith = 2;
             }
         }
@@ -99,12 +103,11 @@ public class HomeActivity extends AppCompatActivity
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);//this ở đây là OnMapReadyCallback
 
 
         addControls();
         addEvents();
-
 
 
 //        fragmentManager.beginTransaction().replace(R.id.frameHome, new Home_Fragment(), Utils.Home_Fragment).commit();
@@ -112,13 +115,13 @@ public class HomeActivity extends AppCompatActivity
 
     private void addEvents() {
         Log.d("download", String.valueOf(mUser.getPhotoUrl()));
-        if(mUser.getPhotoUrl() != null){
+        if (mUser.getPhotoUrl() != null) {
             prgImgUser.setVisibility(View.VISIBLE);
         }
         txtFullName.setText(mUser.getDisplayName());
         txtEmail.setText(mUser.getEmail());
         Log.d("download", String.valueOf(mUser.getPhotoUrl()));
-        Log.d("download","downloadImageUser call");
+        Log.d("download", "downloadImageUser call");
         downloadImageUser();
         fab.setOnClickListener(this);
 
@@ -165,7 +168,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    Log.d("download","start");
+                    Log.d("download", "start");
                     InputStream in = new URL(mUser.getPhotoUrl().toString()).openStream();
                     bmImgUser = BitmapFactory.decodeStream(in);
                 } catch (Exception e) {
@@ -176,11 +179,11 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             protected void onPostExecute(Void result) {
-                Log.d("download","done");
-                if (bmImgUser != null){
+                Log.d("download", "done");
+                if (bmImgUser != null) {
                     imgUser.setImageBitmap(bmImgUser);
                     prgImgUser.setVisibility(View.INVISIBLE);
-                    Log.d("download","succeeded");
+                    Log.d("download", "succeeded");
                 }
 
             }
@@ -267,16 +270,28 @@ public class HomeActivity extends AppCompatActivity
                 });
         //Sign out Facebook
         LoginManager.getInstance().logOut();
-        startActivity(new Intent(HomeActivity.this,MainActivity.class));
+        startActivity(new Intent(HomeActivity.this, MainActivity.class));
         finish();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        LatLng marker = new LatLng(10.8819912,106.780436);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker,15));
-
-        map.addMarker(new MarkerOptions().title("KTX khu B").position(marker));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            //KIỂM TRA CÓ TRUY CẬP ĐƯỢC QUYỀN VỊ TRÍ
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);//BIỂU TƯỢNG LOCATION
+//        LatLng marker = new LatLng(10.8819912,106.780436);
+     //  map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker,15));
+//
+//        map.addMarker(new MarkerOptions().title("KTX khu B").position(marker));
     }
 }
