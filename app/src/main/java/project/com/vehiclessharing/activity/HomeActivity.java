@@ -57,10 +57,10 @@ public class HomeActivity extends AppCompatActivity
     private TextView txtFullName, txtEmail;
     private FirebaseUser mUser;
     public static ImageView imgUser;
-    public static ProgressBar prgImgUser;
+    //public static ProgressBar prgImgUser;
     public static Bitmap bmImgUser = null;
     public UserSessionManager session;
-    FloatingActionButton fab;
+    FloatingActionButton btnFindPeople,btnFindVehicles;
     public static int loginWith;
     private GoogleMap map;
 
@@ -116,14 +116,15 @@ public class HomeActivity extends AppCompatActivity
     private void addEvents() {
         Log.d("download", String.valueOf(mUser.getPhotoUrl()));
         if (mUser.getPhotoUrl() != null) {
-            prgImgUser.setVisibility(View.VISIBLE);
+            //prgImgUser.setVisibility(View.VISIBLE);
         }
         txtFullName.setText(mUser.getDisplayName());
         txtEmail.setText(mUser.getEmail());
         Log.d("download", String.valueOf(mUser.getPhotoUrl()));
         Log.d("download", "downloadImageUser call");
         downloadImageUser();
-        fab.setOnClickListener(this);
+        btnFindPeople.setOnClickListener(this);
+        btnFindVehicles.setOnClickListener(this);
 
     }
 
@@ -134,9 +135,10 @@ public class HomeActivity extends AppCompatActivity
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
-        prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
+       // prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
         session = new UserSessionManager(getApplicationContext());
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        btnFindPeople = (FloatingActionButton) findViewById(R.id.btn_find_people);
+        btnFindVehicles= (FloatingActionButton) findViewById(R.id.btn_find_vehicle);
 
 //        Log.d("UPLOADAAAA", String.valueOf(mUser.getPhotoUrl()));
 //
@@ -182,7 +184,7 @@ public class HomeActivity extends AppCompatActivity
                 Log.d("download", "done");
                 if (bmImgUser != null) {
                     imgUser.setImageBitmap(bmImgUser);
-                    prgImgUser.setVisibility(View.INVISIBLE);
+                   // prgImgUser.setVisibility(View.INVISIBLE);
                     Log.d("download", "succeeded");
                 }
 
@@ -229,21 +231,19 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_home) {
             // Handle the camera action
 //            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
-        } else if (id == R.id.nav_gallery) {
-            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_profile) {
+         //use activity
+          //  fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
+        } else if (id == R.id.nav_history) {
 
-        } else if (id == R.id.nav_manage) {
-            fab.callOnClick();
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_about) {
+           // fab.callOnClick();
+        } else if (id == R.id.nav_logout) {
 
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -252,8 +252,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.fab:
-                logout();
+            case R.id.btn_find_people:
+                //logout();
+                break;
+            case R.id.btn_find_vehicle:
+                //
                 break;
         }
     }
@@ -277,7 +280,9 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -291,7 +296,6 @@ public class HomeActivity extends AppCompatActivity
         googleMap.setMyLocationEnabled(true);//BIỂU TƯỢNG LOCATION
 //        LatLng marker = new LatLng(10.8819912,106.780436);
      //  map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker,15));
-//
 //        map.addMarker(new MarkerOptions().title("KTX khu B").position(marker));
     }
 }

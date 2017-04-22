@@ -23,11 +23,6 @@
             android:src="@mipmap/ic_launcher"
             app:civ_border_width="2dp"
             app:civ_border_color="@color/colorPrimaryDark"/>
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/prgImgUser"/>
 
     </FrameLayout>
     <!--<ImageView-->
