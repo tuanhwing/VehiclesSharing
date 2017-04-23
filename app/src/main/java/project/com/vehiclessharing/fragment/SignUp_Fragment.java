@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -28,8 +27,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
-
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.activity.MainActivity;
 import project.com.vehiclessharing.constant.Utils;
@@ -37,6 +34,7 @@ import project.com.vehiclessharing.custom.CustomToast;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserAddress;
 import project.com.vehiclessharing.model.Validation;
+import project.com.vehiclessharing.sqlite.DatabaseHelper;
 
 import static com.google.android.gms.internal.zzt.TAG;
 
@@ -63,6 +61,8 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
     private static Button btnSignup;
     private static CheckBox terms_conditions;
 
+    DatabaseHelper db;//Instance to using SQLITE
+
     private Validation validation = null;//Instance to check validation
 
     public SignUp_Fragment() {
@@ -86,6 +86,8 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
         mAuth2 = FirebaseAuth.getInstance(Utils.myApp); //Instance second FirebaseAuth
 
         mDatabase = FirebaseDatabase.getInstance(Utils.myApp).getReference(); //Instance Database
+
+        db = DatabaseHelper.getInstance(getActivity());//get Instance SQLITE
         //[Start] Setup for progress
         mProgress =new ProgressDialog(getActivity());
         mProgress.setTitle(Utils.SignUp);
@@ -348,9 +350,21 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
 
     }
 
+    /**
+     * Storage profile's user into both Firebase Database and SQLite
+     * @param userId - userid
+     * @param email - user's email
+     * @param image - user's url image
+     * @param fullname - user's fullname
+     * @param phone - user's phoneNumber
+     * @param sex - user's sex
+     * @param address - user's address
+     */
+
     private void writeNewUser(String userId, String email, String image, String fullname, String phone,
                               String sex, UserAddress address) {
         User user = new User(email, image, fullname, phone, sex, address);
+        //[START]Storage in Firebase Database
         mDatabase.child("users").child(userId).setValue(user);
         FirebaseUser mUser = mAuth2.getCurrentUser();
 
@@ -366,5 +380,15 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 });
+        //[END]Storage in Firebase Database
+
+        //[START]Storage in SQLITE
+//        Log.d("Insert User","START");
+//        if(db.insertUser(user,userId))
+//            Log.d("Insert User","SUCCEED");
+//        else Log.d("Insert User","FAIL");
+//        Log.d("Insert User","END");
+        //[END]Storage in SQLITE
     }
+
 }

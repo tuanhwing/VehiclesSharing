@@ -41,6 +41,7 @@ public class UserSessionManager implements GoogleApiClient.ConnectionCallbacks, 
     }
 
 
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i("google base class", "onConnected invoked");

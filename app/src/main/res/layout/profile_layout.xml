@@ -17,11 +17,6 @@
                 android:layout_height="match_parent"
                 app:civ_border_width="2dp"
                 app:civ_border_color="@color/colorAccent"/>
-            <ProgressBar
-                android:id="@+id/prgImgUser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
         </FrameLayout>
 
         <!--<ImageView-->

@@ -6,7 +6,6 @@ package project.com.vehiclessharing.model;
 
 public class User {
 
-
     private String email;
     private String image;
     private String fullName;

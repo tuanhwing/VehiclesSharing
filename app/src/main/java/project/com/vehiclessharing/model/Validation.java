@@ -40,7 +40,7 @@ public class Validation {
     /**
      * Check field is empty or not
      * @param value input to check
-     * @return
+     * @return true - valid
      */
     public static boolean isEmpty(String value){
         if(value.equals("") || value.length() == 0)
@@ -64,7 +64,7 @@ public class Validation {
     /**
      * Check if phone number is valid or not
      * @param number phonenumber's user
-     * @return
+     * @return true - valid
      */
     public static Validation checkValidPhone(String number){
         Pattern pattern = Pattern.compile(Utils.regPx);
@@ -94,7 +94,7 @@ public class Validation {
     /**
      * Check if password is valid or not
      * @param password password's user
-     * @return
+     * @return true - valid
      */
     public static Validation checkValidPassword(String password){
         if(password.length() < 6){
@@ -104,6 +104,12 @@ public class Validation {
     }
 
 
+    /**
+     * Check if password and confirmpassword is match.
+     * @param password password
+     * @param confirmPassword confirmpassowrd
+     * @return true - match
+     */
     public static Validation checkValidConfirmPassword(String password, String confirmPassword){
         if(!confirmPassword.equals(password)){
             return new Validation(false,"Both password doesn't match!");

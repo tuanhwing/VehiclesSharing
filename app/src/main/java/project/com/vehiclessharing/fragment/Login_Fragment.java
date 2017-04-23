@@ -44,14 +44,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.custom.CustomToast;
-import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserSessionManager;
 import project.com.vehiclessharing.model.Validation;
 
@@ -63,7 +64,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
     private static View view;
 
     /* Client used to interact with Google APIs. */
-    UserSessionManager session;
+    public static UserSessionManager session;
 
     //Facebook
     private CallbackManager mCallbackManager;
@@ -71,7 +72,8 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
     /* Request code used to invoke sign in user interactions. */
     public static final int RC_SIGN_IN = 0;
 
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth;//Instance authentication firebase
+    private DatabaseReference mUserReference;//Instance database firebase table users
 
     private ProgressDialog mProgress;
 
@@ -117,6 +119,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
         //[End] Setup for progress
 
         mAuth = FirebaseAuth.getInstance(); // instance Authentication firebase
+        mUserReference = FirebaseDatabase.getInstance().getReference(); //Instance database firebase
 
         //[Start] Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
@@ -479,7 +482,57 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
                             new CustomToast().Show_Toast(getActivity(), view,
                                     task.getException().getMessage());
                         }
+                        else getProfileUser();
                     }
                 });
     }
+
+    /**
+     * Get user's profile in Database Firebase
+     * @return
+     */
+    private void getProfileUser() {
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mUserReference.child("users").child(userId);
+        ValueEventListener getProfileUser = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+//                Log.d("DemoLogin","0");
+//                User user = dataSnapshot.getValue(User.class);
+//                Log.d("DownloacUser",userId);
+//                Log.d("DownloacUser",user.getEmail());
+//                Log.d("DownloacUser",user.getFullName());
+//                Log.d("DownloacUser",user.getImage());
+//                Log.d("DownloacUser",user.getPhoneNumber());
+//                Log.d("DownloacUser",user.getSex());
+//                Log.d("DownloacUser",user.getAddress().getCountry());
+//                Log.d("DownloacUser",user.getAddress().getDistrict());
+//                Log.d("DownloacUser",user.getAddress().getProvince());
+//
+////                storageProfileOnDevice(user, userId);
+////                db.insertUser(user,userId);
+//                Log.d("DemoLogin","1");
+                // ...
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
+        mUserReference.addListenerForSingleValueEvent(getProfileUser);
+    }
+
+    /**
+     * Storage user's profile in device
+     * @param user object user
+     */
+//    private void storageProfileOnDevice(User user,String userId) {
+//        Log.d("DemoLogin","3");
+//        if(db.insertUser(user,userId));
+//        Log.d("DemoLogin","4");
+//    }
 }
