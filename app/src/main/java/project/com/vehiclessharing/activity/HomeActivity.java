@@ -187,9 +187,10 @@ public class HomeActivity extends AppCompatActivity
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
+        prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
+        session = new UserSessionManager(getApplicationContext());
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        mUserReference = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());//Instance reference database firebase
-        Log.d("Demo",mUser.getUid());
+
 //        Log.d("UPLOADAAAA", String.valueOf(mUser.getPhotoUrl()));
 //
 //        //Storage iamge in Firebase
@@ -252,14 +253,17 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_profile) {
-            startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
-
+        if (id == R.id.nav_home) {
+            // Handle the camera action
+//            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
+        } else if (id == R.id.nav_profile) {
+         //use activity
+          //  fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
         } else if (id == R.id.nav_history) {
 
         } else if (id == R.id.nav_about) {
-
-        } else if (id == R.id.nav_signout) {
+           // fab.callOnClick();
+        } else if (id == R.id.nav_logout) {
 
         }
 
@@ -271,8 +275,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.fab:
-                logout();
+            case R.id.btn_find_people:
+                //logout();
+                break;
+            case R.id.btn_find_vehicle:
+                //
                 break;
         }
     }
