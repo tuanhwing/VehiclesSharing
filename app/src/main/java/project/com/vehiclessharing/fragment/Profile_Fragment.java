@@ -140,8 +140,9 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
         if(HomeActivity.loginWith != 0){
             btnChangeImgSD.setVisibility(View.GONE);
         }
-        prgImgUser = (ProgressBar) view.findViewById(R.id.prgImgUser);
+//
     }
+
 
     @Override
     public void onClick(View view) {

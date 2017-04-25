@@ -1,7 +1,6 @@
 package project.com.vehiclessharing.fragment;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
@@ -44,11 +43,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
@@ -57,6 +51,7 @@ import project.com.vehiclessharing.model.UserSessionManager;
 import project.com.vehiclessharing.model.Validation;
 
 import static com.google.android.gms.internal.zzt.TAG;
+import static project.com.vehiclessharing.activity.MainActivity.mProgress;
 import static project.com.vehiclessharing.constant.Utils.SignUp_Fragment;
 
 
@@ -73,9 +68,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
     public static final int RC_SIGN_IN = 0;
 
     private FirebaseAuth mAuth;//Instance authentication firebase
-    private DatabaseReference mUserReference;//Instance database firebase table users
 
-    private ProgressDialog mProgress;
 
     private static EditText txtEmail;
     private static EditText txtPassword;
@@ -110,16 +103,15 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
 
         session = new UserSessionManager(getActivity());//session login with google
 
-        //[Start] Setup for progress
-        mProgress =new ProgressDialog(getActivity());
-        mProgress.setTitle(Utils.SignIn);
-        mProgress.setMessage(Utils.PleaseWait);
-        mProgress.setCancelable(false);
-        mProgress.setCanceledOnTouchOutside(false);
-        //[End] Setup for progress
+//        //[Start] Setup for progress
+//        mProgress =new ProgressDialog(getActivity());
+//        mProgress.setTitle(Utils.SignIn);
+//        mProgress.setMessage(Utils.PleaseWait);
+//        mProgress.setCancelable(false);
+//        mProgress.setCanceledOnTouchOutside(false);
+//        //[End] Setup for progress
 
         mAuth = FirebaseAuth.getInstance(); // instance Authentication firebase
-        mUserReference = FirebaseDatabase.getInstance().getReference(); //Instance database firebase
 
         //[Start] Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
@@ -250,13 +242,13 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
-                mProgress.dismiss();
+//                mProgress.dismiss();
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
-                mProgress.dismiss();
+//                mProgress.dismiss();
             }
         });
 
@@ -302,7 +294,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        mProgress.dismiss();
+//                        mProgress.dismiss();
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
@@ -386,7 +378,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...
-                mProgress.dismiss();
+//                mProgress.dismiss();
                 Toast.makeText(getActivity(),"Sign in google failed!",Toast.LENGTH_SHORT).show();
                 Log.d("RESULTAAAAA", String.valueOf(result.getStatus()));
             }
@@ -410,7 +402,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        mProgress.dismiss();
+//                        mProgress.dismiss();
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
@@ -472,7 +464,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        mProgress.dismiss();
+//                        mProgress.dismiss();
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
@@ -482,57 +474,9 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
                             new CustomToast().Show_Toast(getActivity(), view,
                                     task.getException().getMessage());
                         }
-                        else getProfileUser();
+//                        else getProfileUser();
                     }
                 });
     }
 
-    /**
-     * Get user's profile in Database Firebase
-     * @return
-     */
-    private void getProfileUser() {
-        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        mUserReference.child("users").child(userId);
-        ValueEventListener getProfileUser = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
-//                Log.d("DemoLogin","0");
-//                User user = dataSnapshot.getValue(User.class);
-//                Log.d("DownloacUser",userId);
-//                Log.d("DownloacUser",user.getEmail());
-//                Log.d("DownloacUser",user.getFullName());
-//                Log.d("DownloacUser",user.getImage());
-//                Log.d("DownloacUser",user.getPhoneNumber());
-//                Log.d("DownloacUser",user.getSex());
-//                Log.d("DownloacUser",user.getAddress().getCountry());
-//                Log.d("DownloacUser",user.getAddress().getDistrict());
-//                Log.d("DownloacUser",user.getAddress().getProvince());
-//
-////                storageProfileOnDevice(user, userId);
-////                db.insertUser(user,userId);
-//                Log.d("DemoLogin","1");
-                // ...
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
-            }
-        };
-        mUserReference.addListenerForSingleValueEvent(getProfileUser);
-    }
-
-    /**
-     * Storage user's profile in device
-     * @param user object user
-     */
-//    private void storageProfileOnDevice(User user,String userId) {
-//        Log.d("DemoLogin","3");
-//        if(db.insertUser(user,userId));
-//        Log.d("DemoLogin","4");
-//    }
 }

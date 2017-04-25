@@ -3,12 +3,14 @@ package project.com.vehiclessharing.activity;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.model.User;
+import project.com.vehiclessharing.sqlite.DatabaseHelper;
 
 /**
  * Created by Tuan on 03/04/2017.
@@ -17,6 +19,7 @@ import project.com.vehiclessharing.model.User;
 public class ProfileActivity extends AppCompatActivity {
 
     private User userCurrent;
+    private DatabaseHelper db;
     private TextView txt_fullname;
     private TextView txt_email;
     private TextView txt_phone;
@@ -33,7 +36,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         addCOntrols();
         addEvents();
-//        setContentUI();
+        setContentUI();
     }
 
 
@@ -55,7 +58,7 @@ public class ProfileActivity extends AppCompatActivity {
         txt_phone = (TextView) findViewById(R.id.txt_phone);
         txt_sex = (TextView) findViewById(R.id.txt_sex);
         img_user = (ImageView) findViewById(R.id.imgUser);
-        userCurrent = HomeActivity.userCurrent;
+        db = new DatabaseHelper(ProfileActivity.this);
     }
 
     private void addEvents() {
@@ -63,6 +66,8 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private void setContentUI() {
+        Log.d("ProfileAAAAAA",HomeActivity.mUser.getUid());
+        userCurrent = db.getUser(HomeActivity.mUser.getUid());
         String sex = userCurrent.getSex();
         txt_email.setText(userCurrent.getEmail());
         txt_fullname.setText(userCurrent.getFullName());

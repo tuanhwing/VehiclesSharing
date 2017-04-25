@@ -1,11 +1,13 @@
 package project.com.vehiclessharing.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -15,16 +17,31 @@ import android.widget.ImageView;
 import com.facebook.FacebookSdk;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.Login_Fragment;
+import project.com.vehiclessharing.model.User;
+import project.com.vehiclessharing.sqlite.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     public static FirebaseAuth mAuth; // Instance Authentication used by all fragment inside MainActivity
     private FirebaseAuth.AuthStateListener mAuthListener;// Instance listener state user
     private FirebaseUser mUser;// Instance user to get information
+    private DatabaseReference mUserReference;//Instance database firebase table users
+
+    public static ProgressDialog mProgress;//Progress to wait login
+
+    //get Instance.
+    private DatabaseHelper db;
+
 
     private static FragmentManager fragmentManager;// Instance fragmentManager to switch fragment
     ImageView imgClose;
@@ -55,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addControls();
         addEvents();
 
+
     }
 
     /**
@@ -66,9 +84,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
+                    if(!mProgress.isShowing()) mProgress.show();
                     // User is signed in
-                    startActivity(new Intent(MainActivity.this,HomeActivity.class));
-                    finish();
+                    for (UserInfo usera: FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+                        if(usera.getProviderId().equals(Utils.Email_Signin)){
+                            String userId = user.getUid();
+                            if(db.isUserExists(userId)) {
+                                switchActivity();
+                                break;
+                            } else {
+                                getProfileUser(userId);
+                                break;
+                            }
+                        } else if(usera.getProviderId().equals(Utils.Facebook_Signin)
+                                || usera.getProviderId().equals(Utils.Google_Signin)){
+                            switchActivity();//go to the Home Activity
+                            break;
+                        }
+                    }
                 } else {
                     // User is signed out
                 }
@@ -101,6 +134,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void addControls() {
         mAuth = FirebaseAuth.getInstance();
+
+        db = DatabaseHelper.getInstance(MainActivity.this);//Instance DatabaseHelper
+
+        //[Start] Setup for progress
+        mProgress =new ProgressDialog(this);
+        mProgress.setTitle(Utils.SignIn);
+        mProgress.setMessage(Utils.PleaseWait);
+        mProgress.setCancelable(false);
+        mProgress.setCanceledOnTouchOutside(false);
+        //[End] Setup for progress
 
         imgClose = (ImageView) findViewById(R.id.close_activity);
         //set animation Close
@@ -155,6 +198,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    /**
+     * Get user's profile in Database Firebase
+     * @return
+     */
+    private void getProfileUser(final String userId) {
+//        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mUserReference = FirebaseDatabase.getInstance().getReference().child("users").child(userId); //Instance database firebase
+        ValueEventListener getProfileUser = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                Log.d("DemoLogin","0");
+                Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
+                User user = dataSnapshot.getValue(User.class);
+//
+                Log.d("",userId);
+                Log.d("DownloacUser",user.getEmail());
+                Log.d("DownloacUser",user.getFullName());
+                Log.d("DownloacUser",user.getImage());
+                Log.d("DownloacUser",user.getPhoneNumber());
+                Log.d("DownloacUser",user.getSex());
+                storageProfileOnDevice(user,userId);//Save profile user on Sqlite
+                // ...
+                switchActivity();//go to the Home Activity
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("Canceled", "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
+        mUserReference.addListenerForSingleValueEvent(getProfileUser);
+    }
+
+    /**
+     * Switch to Home Activity when login succeed
+     */
+    private void switchActivity(){
+        mProgress.dismiss();
+        startActivity(new Intent(MainActivity.this,HomeActivity.class));
+        finish();
+    }
+
+
+    /**
+     * Storage user's profile in device
+     * @param user object user
+     */
+    private void storageProfileOnDevice(User user,String userId) {
+        Log.d("DemoLogin","3");
+        if(db.insertUser(user,userId));
+        Log.d("DemoLogin","4");
     }
 
 }

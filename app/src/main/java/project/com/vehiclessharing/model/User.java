@@ -26,11 +26,11 @@ public class User {
      * @param address - user's address
      */
     public User(String email, String image, String fullName, String phoneNumber, String sex, UserAddress address) {
-        this.sex = sex;
-        this.phoneNumber = phoneNumber;
-        this.fullName = fullName;
         this.email = email;
         this.image = image;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.sex = sex;
         this.address = address;
     }
 

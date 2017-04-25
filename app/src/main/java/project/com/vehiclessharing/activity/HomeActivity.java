@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,21 +29,16 @@ import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -63,24 +59,20 @@ public class HomeActivity extends AppCompatActivity
     private Toolbar toolbar = null;
     private View viewHeader = null; // View header
     private TextView txtFullName,txtEmail;
-    private FirebaseUser mUser; //CurrentUser
+    public static FirebaseUser mUser; //CurrentUser
     public static ImageView imgUser; // Avatar of user
     public static Bitmap bmImgUser = null; // Bitmap of avatar
-    public static User userCurrent;
     private static int CONTROLL_ON = 1;//Controll to on Locationchanged
     private static int CONTROLL_OFF = -1;//Controll to off Locationchanged
     private FloatingActionButton fab; // button fab action
     public static int loginWith; //Determine user authen email/facebook/google
-    private DatabaseReference mUserReference;//Instance database firebase
-    private ValueEventListener mUserListener;//Instance to Listener value events information user change
 
     public static GoogleMap mGoogleMap = null;//Instance google map API
-    GoogleApiClient mGoogleApiClient;//Instance googleAPIclient
     private static TrackGPSService trackgps;
 
-    LatLng latLng;//Location current
-    Marker currLocationMarker;//Marker current location
+    private DatabaseHelper db;//Instace DatabaseHelper
 
+    public static User currentUser;//Instace current user logined
     final private static int REQ_PERMISSION = 20;//Value request permission
     private static String DIRECTION_KEY_API = "AIzaSyAGjxiNRAHypiFYNCN-qcmUgoejyZPtS9c";
 
@@ -128,18 +120,17 @@ public class HomeActivity extends AppCompatActivity
 
         addControls();
         addEvents();
-
-
-
-
+        updateUIHeader(loginWith);//Update information user into header layout
 
     }
 
     private void addEvents() {
+
+
 //        txtFullName.setText(mUser.getDisplayName());
 //        txtEmail.setText(mUser.getEmail());
         //downloadInformationUser();
-        fab.setOnClickListener(this);
+//        fab.setOnClickListener(this);
 //        updateUIHeader(loginWith);//Update information user into header layout
 //        //[Start]Listen for value events
 //        mUserListener = new ValueEventListener() {
@@ -181,15 +172,14 @@ public class HomeActivity extends AppCompatActivity
 
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
-        userCurrent = getUserCurrentSQLite(mUser.getUid());//Get information user from SQlite
-
+        db = new DatabaseHelper(HomeActivity.this);
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
-        prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
-        session = new UserSessionManager(getApplicationContext());
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+//        prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
+//        session = new UserSessionManager(getApplicationContext());
+//        fab = (FloatingActionButton) findViewById(R.id.fab);
 
 //        Log.d("UPLOADAAAA", String.valueOf(mUser.getPhotoUrl()));
 //
@@ -258,13 +248,14 @@ public class HomeActivity extends AppCompatActivity
 //            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
         } else if (id == R.id.nav_profile) {
          //use activity
+            startActivity(new Intent(HomeActivity.this,ProfileActivity.class));
           //  fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
         } else if (id == R.id.nav_history) {
 
         } else if (id == R.id.nav_about) {
            // fab.callOnClick();
         } else if (id == R.id.nav_logout) {
-
+            logout();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -484,32 +475,21 @@ public class HomeActivity extends AppCompatActivity
     }
 
     /**
-     * Get data current user from SQlite
-     * @param userId
-     * @return object User
-     */
-    private User getUserCurrentSQLite(String userId){
-        DatabaseHelper db = DatabaseHelper.getInstance(this);
-        return db.getUser(userId);
-    }
-
-    /**
      * Update information user into header layout
      * @param loginWith
      */
     private void updateUIHeader(int loginWith){
-        String mfullName = null;
-        String memail = null;
+        String mfullName = "";
+        String memail = "";
+        currentUser = db.getUser(mUser.getUid());
         if(loginWith == 0){
-            mfullName = "LOL";
-            memail ="LOL";
-//            mfullName = userCurrent.getFullName();
-//            memail = userCurrent.getEmail();
-//            if(userCurrent.getImage().equals("")){
-//                if(userCurrent.getSex().equals("Male"))
-//                    imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.image_male));
-//                else imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.image_female));
-//            }
+            mfullName = currentUser.getFullName();
+            memail = currentUser.getEmail();
+            if(currentUser.getImage().equals("")){
+                if(currentUser.getSex().equals("Male"))
+                    imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.image_male));
+                else imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.image_female));
+            }
         }
         else {
             mfullName = mUser.getDisplayName();
@@ -521,5 +501,6 @@ public class HomeActivity extends AppCompatActivity
 
 
     }
+
 
 }

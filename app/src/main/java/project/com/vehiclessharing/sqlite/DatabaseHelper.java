@@ -197,10 +197,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 new String[]{userId}, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
             user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getString(4),null);
-            UserAddress userAddress = getAddress(userId);
-            if(userAddress != null)
-                user.setAddress(userAddress);
-            cursor.close();
+//            UserAddress userAddress = getAddress(userId);
+//            if(userAddress != null)
+//                user.setAddress(userAddress);
+//            cursor.close();
         }
         db.close();
         return user;
