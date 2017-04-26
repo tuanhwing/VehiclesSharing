@@ -47,27 +47,44 @@
         android:id="@+id/btnChangeImgSD"
         android:text="Change Avatar"/>
 
-    <TextView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txt_fullname"
         android:text="FullName"/>
 
-    <TextView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txt_email"
         android:text="Email"/>
 
-    <TextView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txt_phone"
         android:text="Phone"/>
 
-    <TextView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txt_sex"
         android:text="Sex"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txt_address"
+        android:text="Address"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txt_birthday"
+        android:text="Birthday"/>
+
+    <Button
+        android:id="@+id/btn_save_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SAVE"/>
 </LinearLayout>

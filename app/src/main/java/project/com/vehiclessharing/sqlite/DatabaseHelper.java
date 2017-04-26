@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserAddress;
 
@@ -32,13 +33,18 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private static final String FULL_NAME_COLUMN = "full_name";
     private static final String PHONE_NUMBER_COLUMN = "phone_number";
     private static final String SEX_COLUMN = "sex";
-    private static final String ADDRESS_COLUMN = "address_id";
 
     //TABLE address
     private static final String TABLE_ADDRESS = "address";
     private static final String COUNTRY_COLUMN = "country";
     private static final String PROVINCE_COLUMN = "province";
     private static final String DISTRICT_COLUMN = "district";
+
+    //TABLE birthday
+    private static final String TABLE_BIRTHDAY = "birthday";
+    private static final String YEAR_COLUMN = "year";
+    private static final String MONTH_COLUMN = "month";
+    private static final String DAY_COLUMN = "day";
 
     private static final String CREATE_ADDRESS_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_ADDRESS + " (" +
             USER_ID + " TEXT NOT NULL," +
@@ -57,6 +63,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             SEX_COLUMN + " TEXT NOT NULL" +
             ")";
 
+    private static final String CREATE_BIRTHDAY_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_BIRTHDAY + " (" +
+            USER_ID + " TEXT NOT NULL PRIMARY KEY," +
+            DAY_COLUMN + " INTEGER," +
+            MONTH_COLUMN + " INTEGER," +
+            YEAR_COLUMN + " INTEGER" +
+            ")";
+
+
     private static DatabaseHelper sInstance;
 
     public DatabaseHelper(Context context) {
@@ -74,6 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         Log.e(TAG, "onCreate: ");
         sqLiteDatabase.execSQL(CREATE_USER_TABLE_SQL);
         sqLiteDatabase.execSQL(CREATE_ADDRESS_TABLE_SQL);
+        sqLiteDatabase.execSQL(CREATE_BIRTHDAY_TABLE_SQL);
 
     }
 
@@ -89,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         Log.e(TAG, "onUpgrade: ");
 //        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_ADDRESS);
 //        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BIRTHDAY);
 //        onCreate(sqLiteDatabase);
     }
 
@@ -120,9 +136,49 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return exists;
     }
 
+    /**
+     * Insert data into SQLite
+     * @param userId
+     * @return True if insert success
+     */
+    private boolean insertBirthday(String userId){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();//Sử dụng đối tượng ContentValues để put các giá trị ứng với tên colum và sử dụng phương thức insert của SQLiteDatabase để tiến hành ghi xuống database.
+        values.put(USER_ID, userId);
+        values.put(DAY_COLUMN, 0);
+        values.put(MONTH_COLUMN, 0);
+        values.put(YEAR_COLUMN, 0);
+        long rowId = db.insert(TABLE_BIRTHDAY, null, values);
+        db.close();
+        if (rowId != -1)//success
+            return true;
+        return false;
+    }
+
+    /**
+     * Select data into Sqlite
+     * @param userId
+     * @return object birthday
+     */
+    private BirthDay getBirthDay(String userId){
+        SQLiteDatabase db = getReadableDatabase();
+        BirthDay birthDay = null;
+        Cursor cursor = db.query(TABLE_BIRTHDAY, new String[]{DAY_COLUMN,
+                        MONTH_COLUMN,
+                        YEAR_COLUMN}, USER_ID + " = ?",
+                new String[]{userId}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            birthDay = new BirthDay(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2));
+            cursor.close();
+        }
+        db.close();
+        return birthDay;
+    }
+
 
     /**
      * Insert data into SQLite
+     * @param userId
      * @return True if insert success
      */
     private boolean insertAddress(String userId){
@@ -177,7 +233,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         long rowId = db.insert(TABLE_USER, null, values);
         db.close();
         if (rowId != -1)
-            if(insertAddress(userId)) return true;//success
+            if(insertAddress(userId) && insertBirthday(userId)) return true;//success
         return false;
     }
 
@@ -196,11 +252,17 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                         SEX_COLUMN}, USER_ID + " = ?",
                 new String[]{userId}, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getString(4),null);
-//            UserAddress userAddress = getAddress(userId);
-//            if(userAddress != null)
-//                user.setAddress(userAddress);
-//            cursor.close();
+            user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getString(4),null,null);
+            //Get Address
+            UserAddress userAddress = getAddress(userId);
+            if(userAddress != null)
+                user.setAddress(userAddress);
+            //Get Birthday
+            BirthDay birthDay = getBirthDay(userId);
+            if(birthDay != null)
+                user.setBirthDay(birthDay);
+
+            cursor.close();
         }
         db.close();
         return user;

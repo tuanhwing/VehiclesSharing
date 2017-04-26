@@ -211,16 +211,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
-                Log.d("DemoLogin","0");
                 Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
                 User user = dataSnapshot.getValue(User.class);
-//
-                Log.d("",userId);
-                Log.d("DownloacUser",user.getEmail());
-                Log.d("DownloacUser",user.getFullName());
-                Log.d("DownloacUser",user.getImage());
-                Log.d("DownloacUser",user.getPhoneNumber());
-                Log.d("DownloacUser",user.getSex());
                 storageProfileOnDevice(user,userId);//Save profile user on Sqlite
                 // ...
                 switchActivity();//go to the Home Activity

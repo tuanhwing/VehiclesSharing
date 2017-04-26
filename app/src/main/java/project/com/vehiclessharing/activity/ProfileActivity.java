@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.model.User;
@@ -20,10 +20,12 @@ public class ProfileActivity extends AppCompatActivity {
 
     private User userCurrent;
     private DatabaseHelper db;
-    private TextView txt_fullname;
-    private TextView txt_email;
-    private TextView txt_phone;
-    private TextView txt_sex;
+    private EditText txt_fullname;
+    private EditText txt_email;
+    private EditText txt_phone;
+    private EditText txt_sex;
+    private EditText txt_address;
+    private EditText txt_birthday;
     private ImageView img_user;
 
 
@@ -53,10 +55,12 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void addCOntrols() {
-        txt_fullname = (TextView) findViewById(R.id.txt_fullname);
-        txt_email = (TextView) findViewById(R.id.txt_email);
-        txt_phone = (TextView) findViewById(R.id.txt_phone);
-        txt_sex = (TextView) findViewById(R.id.txt_sex);
+        txt_fullname = (EditText) findViewById(R.id.txt_fullname);
+        txt_email = (EditText) findViewById(R.id.txt_email);
+        txt_phone = (EditText) findViewById(R.id.txt_phone);
+        txt_sex = (EditText) findViewById(R.id.txt_sex);
+        txt_address = (EditText) findViewById(R.id.txt_address);
+        txt_birthday = (EditText) findViewById(R.id.txt_birthday);
         img_user = (ImageView) findViewById(R.id.imgUser);
         db = new DatabaseHelper(ProfileActivity.this);
     }
@@ -76,6 +80,28 @@ public class ProfileActivity extends AppCompatActivity {
         if(userCurrent.getImage().equals("")){
             if(sex.equals("Male")) img_user.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.image_male));
             else img_user.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.image_female));
+        }
+
+        if(userCurrent.getAddress().getProvince().equals("")
+                && userCurrent.getAddress().getCountry().equals("")
+                && userCurrent.getAddress().getDistrict().equals(""))
+            txt_address.setText("SELECT ADDRESS...");
+        else {
+            String address = userCurrent.getAddress().getDistrict() + " "
+                    + userCurrent.getAddress().getProvince() + " "
+                    + userCurrent.getAddress().getCountry();
+            txt_address.setText(address);
+        }
+
+        if(userCurrent.getBirthDay().getDay() == 0
+                && userCurrent.getBirthDay().getMonth() == 0
+                && userCurrent.getBirthDay().getMonth() == 0)
+            txt_birthday.setText("SELECT BIRTHDAY...");
+        else {
+            String birthday = userCurrent.getBirthDay().getMonth() + "/"
+                    + userCurrent.getBirthDay().getDay() + "/"
+                    + userCurrent.getBirthDay().getYear();
+            txt_birthday.setText(birthday);
         }
     }
 }

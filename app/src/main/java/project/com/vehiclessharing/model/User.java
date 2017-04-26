@@ -12,6 +12,7 @@ public class User {
     private String phoneNumber;
     private String sex;
     private UserAddress address;
+    private BirthDay birthDay;
 
     public User() {
     }
@@ -24,14 +25,16 @@ public class User {
      * @param phoneNumber - user's phoneNumber
      * @param sex - user's sex
      * @param address - user's address
+     * @param  birthDay- user's birthday
      */
-    public User(String email, String image, String fullName, String phoneNumber, String sex, UserAddress address) {
+    public User(String email, String image, String fullName, String phoneNumber, String sex, UserAddress address, BirthDay birthDay) {
         this.email = email;
         this.image = image;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.sex = sex;
         this.address = address;
+        this.birthDay = birthDay;
     }
 
 
@@ -84,7 +87,12 @@ public class User {
         this.address = address;
     }
 
+    public BirthDay getBirthDay() {
+        return birthDay;
+    }
 
-
+    public void setBirthDay(BirthDay birthDay) {
+        this.birthDay = birthDay;
+    }
 }
 

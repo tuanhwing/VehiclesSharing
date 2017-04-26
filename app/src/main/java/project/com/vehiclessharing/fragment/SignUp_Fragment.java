@@ -31,6 +31,7 @@ import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.activity.MainActivity;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.custom.CustomToast;
+import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserAddress;
 import project.com.vehiclessharing.model.Validation;
@@ -331,7 +332,7 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
                                                         "",
                                                         getFullName.toString(),
                                                         getMobileNumber.toString(),
-                                                        getSex.toString(), new UserAddress());
+                                                        getSex.toString(), new UserAddress(), new BirthDay());
                                                 Toast.makeText(getActivity(), "Sign up successed!",
                                                         Toast.LENGTH_SHORT).show();
                                                 login.callOnClick();
@@ -362,8 +363,8 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
      */
 
     private void writeNewUser(String userId, String email, String image, String fullname, String phone,
-                              String sex, UserAddress address) {
-        User user = new User(email, image, fullname, phone, sex, address);
+                              String sex, UserAddress address, BirthDay birthDay) {
+        User user = new User(email, image, fullname, phone, sex, address, birthDay);
         //[START]Storage in Firebase Database
         mDatabase.child("users").child(userId).setValue(user);
         FirebaseUser mUser = mAuth2.getCurrentUser();
@@ -380,15 +381,6 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 });
-        //[END]Storage in Firebase Database
-
-        //[START]Storage in SQLITE
-//        Log.d("Insert User","START");
-//        if(db.insertUser(user,userId))
-//            Log.d("Insert User","SUCCEED");
-//        else Log.d("Insert User","FAIL");
-//        Log.d("Insert User","END");
-        //[END]Storage in SQLITE
     }
 
 }
