@@ -44,4 +44,16 @@ public class BirthDay {
     public void setYear(int year) {
         this.year = year;
     }
+
+    /**
+     * Compare between two object birthday
+     * @param birthDay
+     * @return true - both birthday is match
+     */
+    public boolean compareBirhtday(BirthDay birthDay){
+        if(this.day != birthDay.getDay() ||
+                this.month != birthDay.getMonth() ||
+                this.year != birthDay.getYear()) return false;
+        return true;
+    }
 }

@@ -136,7 +136,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
     private void addControls() {
         imgUser = (ImageView) view.findViewById(R.id.imgUser);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
-        btnChangeImgSD = (Button) view.findViewById(R.id.btnChangeImgSD);
+//        btnChangeImgSD = (Button) view.findViewById(R.id.btnChangeImgSD);
         if(HomeActivity.loginWith != 0){
             btnChangeImgSD.setVisibility(View.GONE);
         }
@@ -146,14 +146,14 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btnChangeImgSD:
-
-                // Call checkValidation method
-                callIntentPickImg();
-                break;
-
-        }
+//        switch (view.getId()) {
+//            case R.id.btnChangeImgSD:
+//
+//                // Call checkValidation method
+//                callIntentPickImg();
+//                break;
+//
+//        }
     }
 
     // Pick image in SDcard

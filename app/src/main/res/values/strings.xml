@@ -28,4 +28,27 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="default_web_client_id1">1093380309543-o85979qbsnp54ppfi91m1pdaceb4p86o.apps.googleusercontent.com</string>
+
+    <string-array name="sexs_array">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Middle</item>
+    </string-array>
+
+    <string-array name="country_array">
+        <item></item>
+        <item>Vietnam</item>
+        <item>Laos</item>
+    </string-array>
+    <string-array name="province_array">
+        <item></item>
+        <item>TP HCM</item>
+        <item>Hanoi</item>
+    </string-array>
+    <string-array name="district_array">
+        <item></item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 </resources>

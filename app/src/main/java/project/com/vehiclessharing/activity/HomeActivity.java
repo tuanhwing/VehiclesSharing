@@ -6,8 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -39,6 +40,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -482,14 +485,10 @@ public class HomeActivity extends AppCompatActivity
         String mfullName = "";
         String memail = "";
         currentUser = db.getUser(mUser.getUid());
+        String url = String.valueOf(mUser.getPhotoUrl());
         if(loginWith == 0){
             mfullName = currentUser.getFullName();
             memail = currentUser.getEmail();
-            if(currentUser.getImage().equals("")){
-                if(currentUser.getSex().equals("Male"))
-                    imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.image_male));
-                else imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.image_female));
-            }
         }
         else {
             mfullName = mUser.getDisplayName();
@@ -499,7 +498,26 @@ public class HomeActivity extends AppCompatActivity
         txtEmail.setText(memail);
         txtFullName.setText(mfullName);
 
+        if(!url.equals("")){
+            if(isOnline())
+                Picasso.with(getApplicationContext()).load(url).into(imgUser);
+            else Picasso.with(getApplicationContext())
+                    .load(url)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(imgUser);
+        }
 
+    }
+
+    /**
+     * Internet is avaibalility
+     * @return true if can access internet
+     */
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
 

@@ -471,6 +471,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
+                            mProgress.dismiss();
                             new CustomToast().Show_Toast(getActivity(), view,
                                     task.getException().getMessage());
                         }

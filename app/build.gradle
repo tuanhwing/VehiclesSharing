@@ -49,5 +49,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.google.android.gms:play-services:10.2.0'
     compile 'com.google.android.gms:play-services-maps:10.2.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'//libary to cache image
+    compile 'com.squareup.okhttp:okhttp:2.4.0'//libary to cache image
 }
 apply plugin: 'com.google.gms.google-services'

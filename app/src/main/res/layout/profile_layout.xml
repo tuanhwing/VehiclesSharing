@@ -44,7 +44,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnChangeImgSD"
+        android:id="@+id/btn_change_img"
         android:text="Change Avatar"/>
 
     <EditText
@@ -65,26 +65,49 @@
         android:id="@+id/txt_phone"
         android:text="Phone"/>
 
-    <EditText
+    <Spinner
+        android:id="@+id/sex_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt_sex"
-        android:text="Sex"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt_address"
-        android:text="Address"/>
+        android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/country_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/province_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/district_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
-    <EditText
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt_birthday"
-        android:text="Birthday"/>
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_birthday"
+            android:layout_weight="2"
+            android:text="Birthday"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="picker"
+            android:layout_weight="1"
+            android:id="@+id/btn_date_picker"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_save_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SAVE"/>
+        android:text="SAVE"
+        android:visibility="invisible"/>
 </LinearLayout>

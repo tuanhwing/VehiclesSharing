@@ -268,4 +268,163 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return user;
     }
 
+    /**
+     * update fullname's user
+     * @param userId
+     * @param value new value of fullname
+     * @return
+     */
+    public boolean updateFullName(String userId, String value){
+        if(value == null || value.isEmpty()) return false;
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(FULL_NAME_COLUMN, value);
+        int ret = db.update(TABLE_USER,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update phonenumber's user
+     * @param userId
+     * @param value new value of phonenumber
+     * @return
+     */
+    public boolean updatePhoneNumber(String userId, String value){
+        if(value == null || value.isEmpty()) return false;
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(PHONE_NUMBER_COLUMN, value);
+        int ret = db.update(TABLE_USER,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update sex's user
+     * @param userId
+     * @param value new value of sex
+     * @return
+     */
+    public boolean updateSex(String userId, String value){
+        if(value == null || value.isEmpty()) return false;
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SEX_COLUMN, value);
+        int ret = db.update(TABLE_USER,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update country's user
+     * @param userId
+     * @param value new value of country
+     * @return
+     */
+    public boolean updateCountry(String userId, String value){
+        if(value == null) value = "";
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COUNTRY_COLUMN, value);
+        int ret = db.update(TABLE_ADDRESS,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update province's user
+     * @param userId
+     * @param value new value of province
+     * @return
+     */
+    public boolean updateProvince(String userId, String value){
+        if(value == null) value = "";
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(PROVINCE_COLUMN, value);
+        int ret = db.update(TABLE_ADDRESS,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update district's user
+     * @param userId
+     * @param value new value of district
+     * @return
+     */
+    public boolean updateDistrict(String userId, String value){
+        if(value == null) value = "";
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DISTRICT_COLUMN, value);
+        int ret = db.update(TABLE_ADDRESS,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update day's birthday user
+     * @param userId
+     * @param value new value of day
+     * @return
+     */
+    public boolean updateDay(String userId, int value){
+        if(value <= 0) return false;
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DAY_COLUMN, value);
+        int ret = db.update(TABLE_BIRTHDAY,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update month's birthday user
+     * @param userId
+     * @param value new value of month
+     * @return
+     */
+    public boolean updateMonth(String userId, int value){
+        if(value <= 0) return false;
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(MONTH_COLUMN, value);
+        int ret = db.update(TABLE_BIRTHDAY,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update year's birthday user
+     * @param userId
+     * @param value new value of year
+     * @return
+     */
+    public boolean updateYear(String userId, int value){
+        if(value <= 0) return false;
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(YEAR_COLUMN, value);
+        int ret = db.update(TABLE_BIRTHDAY,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
+
+    /**
+     * update url avatar user
+     * @param userId
+     * @param url
+     * @return
+     */
+    public boolean uploadURLImage(String userId,String url){
+        if(url.isEmpty()) return false;
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(IMAGE_COLUMN, url);
+        int ret = db.update(TABLE_USER,values,USER_ID + "=?",new String[]{userId});
+        if(ret != 0) return true;//success
+        return false;//failed
+    }
 }

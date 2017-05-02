@@ -1,5 +1,9 @@
 package project.com.vehiclessharing.model;
 
+import android.icu.util.Calendar;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,6 +117,20 @@ public class Validation {
     public static Validation checkValidConfirmPassword(String password, String confirmPassword){
         if(!confirmPassword.equals(password)){
             return new Validation(false,"Both password doesn't match!");
+        }
+        return new Validation(true, "");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static Validation checkValidBirthDay(BirthDay birthDay){
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        if(birthDay.getYear() > year) return new Validation(false,"Birthday is invalid!");
+        else {
+            if(birthDay.getMonth() > month) return new Validation(false,"Birthday is invalid!");
+            else if(birthDay.getDay() > day) return new Validation(false,"Birthday is invalid!");
         }
         return new Validation(true, "");
     }
