@@ -51,5 +51,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:10.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'//libary to cache image
     compile 'com.squareup.okhttp:okhttp:2.4.0'//libary to cache image
+
+    compile 'com.github.jd-alexander:library:1.1.0'//Routing in google map
 }
 apply plugin: 'com.google.gms.google-services'

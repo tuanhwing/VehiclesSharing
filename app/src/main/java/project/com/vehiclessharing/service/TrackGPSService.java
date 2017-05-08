@@ -1,5 +1,6 @@
 package project.com.vehiclessharing.service;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
@@ -24,7 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 import project.com.vehiclessharing.activity.HomeActivity;
-import project.com.vehiclessharing.utils.ReadTask;
+import project.com.vehiclessharing.activity.MainActivity;
 
 import static project.com.vehiclessharing.activity.HomeActivity.mGoogleMap;
 
@@ -40,6 +41,8 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
     public static boolean canGetLocation = false;
 
     boolean zoomOneTime = true;//Just zoom 1 time
+
+    public static Location mLocation = null;
 
     private static String DIRECTION_KEY_API = "AIzaSyAGjxiNRAHypiFYNCN-qcmUgoejyZPtS9c";
 
@@ -73,46 +76,64 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
     public boolean checkLocationPermission() {
 
         if (ActivityCompat.checkSelfPermission(mContext,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale((HomeActivity) mContext,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
 
                 //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions((HomeActivity) mContext,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                ActivityCompat.requestPermissions((MainActivity) mContext,
+                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                         REQ_PERMISSION);
 
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions((Activity) mContext,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                         REQ_PERMISSION);
             }
             canGetLocation = false;
             return false;
         } else {
-            mGoogleMap.setMyLocationEnabled(true);
+            //mGoogleMap.setMyLocationEnabled(true);
             canGetLocation = true;
             return true;
         }
     }
+
+    /**
+     * Check permission to using location for setMyLocationEnable (Point blue in google map)
+     * @return true - can
+     */
+    public boolean checkPermission() {
+        if (ActivityCompat.checkSelfPermission(mContext,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * get Current Location
+     * @param callback callback when user can get location
      * @return location
      */
-    public Location getCurrentLocation(){
-        Location mLastLocation = null;
-        if(checkLocationPermission()) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+    public void getCurrentLocation(project.com.vehiclessharing.utils.LocationCallback callback){
+        if(!checkPermission()) return;
+        try {
+            mLocation = LocationServices.FusedLocationApi.getLastLocation(
                     mGoogleApiClient);
+            if(mLocation != null)
+                callback.onSuccess();
+        } catch (Exception e){
+            callback.onError(e);
         }
-
-        //        Log.d("CurrentLocation",mLastLocation.getLatitude() + " | " + mLastLocation.getLongitude());
-        return mLastLocation;
     }
 
     /**
@@ -142,9 +163,10 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000); //5 seconds
         mLocationRequest.setFastestInterval(3000); //3 seconds
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 //        mLocationRequest.setSmallestDisplacement(5); //5 meter
         controllonLocationChanged(CONTROLL_ON);//Enable Listener
+
     }
 
     @Override
@@ -166,32 +188,10 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
         if(zoomOneTime){//Just zoom 1 time
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),11));
             zoomOneTime =false;
-            drawroadBetween2Location(new LatLng(location.getLatitude(),location.getLongitude()),new LatLng(10.8719808,106.790409));
         }
         Log.d("ONLOCATIONCHANGE","AAAAAAAAAAAAA");
     }
 
-    /**
-     * Draw road between 2 location in google map
-     */
-    private void    drawroadBetween2Location(LatLng latLng1, LatLng latLng2) {
-//        ArrayList<LatLng> temp = new ArrayList<LatLng>();
-//        temp.add(new LatLng(10.8719808, 106.790409));
-        String url = getMapsApiDirectionsUrl(latLng1, latLng2, null);
-
-        Log.d("onMapClick", url.toString());
-        ReadTask downloadTask = new ReadTask();
-        // Start downloading json data from Google Directions API
-        downloadTask.execute(url);
-        Log.d("Log12/4", "12");
-
-        //To calculate distance between points
-//        float[] results = new float[1];
-//        Location.distanceBetween(latitude, longitude,
-//                10.882323, 106.782625,
-//                results);
-//        Log.d("onMapClick",String.valueOf(results));
-    }
 
     private String getMapsApiDirectionsUrl(LatLng origin, LatLng dest, ArrayList<LatLng> waypoints) {
         // Origin of route

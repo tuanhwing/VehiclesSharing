@@ -1,11 +1,13 @@
 package project.com.vehiclessharing.activity;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,6 +30,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.ResultCallback;
@@ -37,6 +43,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -51,12 +59,12 @@ import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.service.TrackGPSService;
 import project.com.vehiclessharing.sqlite.DatabaseHelper;
-import project.com.vehiclessharing.utils.ReadTask;
+import project.com.vehiclessharing.utils.LocationCallback;
 
 import static project.com.vehiclessharing.R.id.map;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener, OnMapReadyCallback{
+        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener, OnMapReadyCallback, RoutingListener{
 
     private NavigationView navigationView = null;
     private Toolbar toolbar = null;
@@ -71,6 +79,7 @@ public class HomeActivity extends AppCompatActivity
     public static int loginWith; //Determine user authen email/facebook/google
 
     public static GoogleMap mGoogleMap = null;//Instance google map API
+    public static Polyline polyline = null;//Instance
     private static TrackGPSService trackgps;
 
     private DatabaseHelper db;//Instace DatabaseHelper
@@ -78,6 +87,8 @@ public class HomeActivity extends AppCompatActivity
     public static User currentUser;//Instace current user logined
     final private static int REQ_PERMISSION = 20;//Value request permission
     private static String DIRECTION_KEY_API = "AIzaSyAGjxiNRAHypiFYNCN-qcmUgoejyZPtS9c";
+
+    private static String TAG_ERROR_ROUTING = "ERROR_ROUTING";
 
 
 
@@ -129,46 +140,6 @@ public class HomeActivity extends AppCompatActivity
 
     private void addEvents() {
 
-
-//        txtFullName.setText(mUser.getDisplayName());
-//        txtEmail.setText(mUser.getEmail());
-        //downloadInformationUser();
-//        fab.setOnClickListener(this);
-//        updateUIHeader(loginWith);//Update information user into header layout
-//        //[Start]Listen for value events
-//        mUserListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Log.d("Demo","0");
-////                UserAddress address = dataSnapshot.getValue(UserAddress.class);
-////                String name = dataSnapshot.getValue().toString();
-//                user = dataSnapshot.getValue(User.class);
-//                Log.d("Demo",user.getEmail());
-//                Log.d("Demo",user.getFullName());
-//                Log.d("Demo",user.getAddress().getCountry());
-//                Log.d("Demo",user.getAddress().getDistrict());
-//                Log.d("Demo",user.getImage());
-//                Log.d("Demo",user.getPhoneNumber());
-//                Log.d("Demo","1");
-//                txtFullName.setText(user.getFullName());
-//                txtEmail.setText(user.getEmail());
-//                Log.d("Demo","3");
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                // Getting Post failed, log a message
-//                Log.w("Warning", "loadPost:onCancelled", databaseError.toException());
-//                // [START_EXCLUDE]
-//                Toast.makeText(getApplicationContext(), "Failed to load post.",
-//                        Toast.LENGTH_SHORT).show();
-//                // [END_EXCLUDE]
-//            }
-//        };
-//        mUserReference.addValueEventListener(mUserListener);
-//        //[End]Listen for value events
-
-
     }
 
     private void addControls() {
@@ -180,33 +151,7 @@ public class HomeActivity extends AppCompatActivity
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
-//        prgImgUser = (ProgressBar) viewHeader.findViewById(R.id.prgImgUser);
-//        session = new UserSessionManager(getApplicationContext());
-//        fab = (FloatingActionButton) findViewById(R.id.fab);
-
-//        Log.d("UPLOADAAAA", String.valueOf(mUser.getPhotoUrl()));
-//
-//        //Storage iamge in Firebase
-//        StorageReference fileRef =  FirebaseStorage.getInstance().getReference().child("avatar").child(mUser.getUid()+".jpg");
-//        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.temp);
-//        fileRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//            @Override
-//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                Log.d("UPLOADDDDAAAAA",taskSnapshot.getDownloadUrl().toString());
-//                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-//                        .setPhotoUri(taskSnapshot.getDownloadUrl())
-//                        .build();
-//                mUser.updateProfile(profileUpdates)
-//                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                if (task.isSuccessful()) {
-//                                    Log.d("UPLOADDDDAAAAA", "User URL updated.");
-//                                }
-//                            }
-//                        });
-//            }
-//        });
+        trackgps = new TrackGPSService(HomeActivity.this);
     }
     @Override
     public void onBackPressed() {
@@ -301,7 +246,6 @@ public class HomeActivity extends AppCompatActivity
         mGoogleMap = googleMap;
 //        makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
-        trackgps = new TrackGPSService(HomeActivity.this);
     }
 
     /**
@@ -351,28 +295,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     /**
-     * Draw road between 2 location in google map
-     */
-    private void    drawroadBetween2Location(LatLng latLng1, LatLng latLng2) {
-        ArrayList<LatLng> temp = new ArrayList<LatLng>();
-        temp.add(new LatLng(10.8719808, 106.790409));
-        String url = getMapsApiDirectionsUrl(latLng1, latLng2, temp);
-
-        Log.d("onMapClick", url.toString());
-        ReadTask downloadTask = new ReadTask();
-        // Start downloading json data from Google Directions API
-        downloadTask.execute(url);
-        Log.d("Log12/4", "12");
-
-        //To calculate distance between points
-//        float[] results = new float[1];
-//        Location.distanceBetween(latitude, longitude,
-//                10.882323, 106.782625,
-//                results);
-//        Log.d("onMapClick",String.valueOf(results));
-    }
-
-    /**
      * Make a Maker in google map
      * @param location location maker
      * @param title title maker
@@ -385,32 +307,13 @@ public class HomeActivity extends AppCompatActivity
 
     /**
      * Check permission Location service
-     * @return
+     * @return true - can
      */
     public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-                //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQ_PERMISSION);
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQ_PERMISSION);
-            }
             return false;
         } else {
             return true;
@@ -428,7 +331,7 @@ public class HomeActivity extends AppCompatActivity
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
                     // permission was granted, yay!
                     if (ActivityCompat.checkSelfPermission(this,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         mGoogleMap.setMyLocationEnabled(true);
                         trackgps.controllonLocationChanged(CONTROLL_ON);
 
@@ -443,16 +346,32 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    //Check GPS is enable everytime
-    private BroadcastReceiver gpsReceiver = new BroadcastReceiver() {
+    //Check GPS + Internet is enable everytime
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-            if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if ((lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                    lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) &&
+                    isOnline()) {
                 //Do your stuff on GPS status change
-                Toast.makeText(HomeActivity.this,"GPS enable!",Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this,"GPS + Internet enable!",Toast.LENGTH_LONG).show();
             }
-            else  Toast.makeText(HomeActivity.this,"GPS disable!",Toast.LENGTH_LONG).show();
+            else {
+                if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                        lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+                    mGoogleMap.setMyLocationEnabled(true);
+                    Toast.makeText(HomeActivity.this,"GPS enable!",Toast.LENGTH_LONG).show();
+                }
+                else  {
+                    mGoogleMap.setMyLocationEnabled(false);
+                    Toast.makeText(HomeActivity.this,"GPS disable!",Toast.LENGTH_LONG).show();
+                }
+                if(isOnline()) Toast.makeText(HomeActivity.this,"Internet enable!",Toast.LENGTH_LONG).show();
+                else Toast.makeText(HomeActivity.this,"Internet disable!",Toast.LENGTH_LONG).show();
+            }
+
+
         }
     };
 
@@ -461,20 +380,37 @@ public class HomeActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         updateUIHeader(loginWith);//Update information user into header layout
+        trackgps.getCurrentLocation(new LocationCallback() {
+            @Override
+            public void onSuccess() {
+                drawroadBetween2Location(new LatLng(TrackGPSService.mLocation.getLatitude(),
+                        TrackGPSService.mLocation.getLongitude()),new LatLng(10.8719808,106.790409));
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG_ERROR_ROUTING, e.getMessage());
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //Unregister receiver on destroy
-        if (gpsReceiver != null)
-            unregisterReceiver(gpsReceiver);
+        trackgps.controllonLocationChanged(CONTROLL_OFF);
+        if (mReceiver != null)
+            unregisterReceiver(mReceiver);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(gpsReceiver, new IntentFilter("android.location.PROVIDERS_CHANGED"));//Register broadcast r
+        //Register broadcast reciver Location/Network state
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        filter.addAction("android.location.PROVIDERS_CHANGED");
+        registerReceiver(mReceiver, filter);
     }
 
     /**
@@ -520,5 +456,59 @@ public class HomeActivity extends AppCompatActivity
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
+
+    /**
+     * Draw road between 2 location in google map
+     */
+    private void drawroadBetween2Location(LatLng latLng1, LatLng latLng2) {
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if(!isOnline() || !checkLocationPermission() ||
+                !lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) return;
+        Routing routing = new Routing.Builder()
+                .travelMode(Routing.TravelMode.DRIVING)
+                .withListener(this)
+                .waypoints(latLng1, latLng2)
+                .build();
+        routing.execute();
+    }
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> arrayList, int shortestRouteIndex) {
+        try {
+            if(polyline != null) polyline.remove();
+            PolylineOptions polyoptions = new PolylineOptions();
+            polyoptions.color(Color.BLUE);
+            polyoptions.width(10);
+            for (int i = 0; i <arrayList.size(); i++) {
+
+                //In case of more than 5 alternative routes
+                PolylineOptions polyOptions = new PolylineOptions();
+                polyOptions.color(getResources().getColor(R.color.black));
+                polyOptions.width(10 + i * 3);
+                polyOptions.addAll(arrayList.get(i).getPoints());
+                polyline = mGoogleMap.addPolyline(polyOptions);
+                Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ arrayList.get(i).getDistanceValue()+": duration - "+ arrayList.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+            }
+
+        }catch (Exception e){
+            Log.e(TAG_ERROR_ROUTING,e.getMessage());
+        }
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+
+    }
 
 }

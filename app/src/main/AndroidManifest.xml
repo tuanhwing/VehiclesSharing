@@ -57,6 +57,7 @@
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <!--Add this-->
