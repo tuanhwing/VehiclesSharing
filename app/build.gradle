@@ -30,28 +30,32 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    //Authentication
+    //button facebook
+    // this line must be included to use FCM
+    //using Database
+    //storage Firebase
+    //circle image
+    //libary to cache image
+    //libary to cache image
+
+    //Routing in google map
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.google.firebase:firebase-core:10.2.0'
-    //Authentication
     compile 'com.google.firebase:firebase-auth:10.2.0'
-    //button facebook
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     compile 'com.google.android.gms:play-services-auth:10.2.0'
-    // this line must be included to use FCM
     compile 'com.google.firebase:firebase-messaging:10.2.0'
-    //using Database
     compile 'com.google.firebase:firebase-database:10.2.0'
-    //storage Firebase
     compile 'com.google.firebase:firebase-storage:10.2.0'
     compile 'com.android.support:design:25.2.0'
     compile 'junit:junit:4.12'
-    //circle image
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.google.android.gms:play-services:10.2.0'
     compile 'com.google.android.gms:play-services-maps:10.2.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'//libary to cache image
-    compile 'com.squareup.okhttp:okhttp:2.4.0'//libary to cache image
-
-    compile 'com.github.jd-alexander:library:1.1.0'//Routing in google map
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.github.jd-alexander:library:1.1.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 apply plugin: 'com.google.gms.google-services'

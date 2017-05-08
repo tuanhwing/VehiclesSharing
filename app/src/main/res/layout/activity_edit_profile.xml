@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/img_user"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/temp"
+                app:civ_border_color="#95a5a6" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="7dp"
+                android:layout_marginRight="7dp"
+                android:src="@drawable/camera"
+                app:civ_border_color="#95a5a6"
+                app:civ_border_width="1dp"
+                app:civ_fill_color="@color/white" />
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/ed_phone_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/edit" />
+
+            <EditText
+                android:id="@+id/ed_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/edit" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/rd_male"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:focusable="false"
+                    android:text="@string/male" />
+
+                <RadioButton
+                    android:id="@+id/rd_female"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:focusable="false"
+                    android:text="@string/female" />
+            </LinearLayout>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_line_field"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="5dp"/>
+
+
+            <TextView
+                android:id="@+id/txt_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:drawableRight="@drawable/edit"
+                android:paddingBottom="10dp"
+                android:paddingRight="5dp"
+                android:paddingTop="10dp" />
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_line_field"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="5dp"/>
+
+            <EditText
+                android:id="@+id/ed_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/edit" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/update_profile"/>
+
+</LinearLayout>

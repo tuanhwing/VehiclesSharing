@@ -68,7 +68,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.profile_layout, container, false);
+        view = inflater.inflate(R.layout.activity_profile, container, false);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         Log.d("ProfileAAAAAAAA", String.valueOf(mUser.getPhotoUrl()));
 //        Log.d("ProfileAAAAAAAA",mUser.getDisplayName());

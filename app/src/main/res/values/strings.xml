@@ -6,6 +6,15 @@
     <string name="email">Email Id</string>
     <string name="passowrd">Password</string>
     <string name="login">LOGIN</string>
+    <string name="sex">Sex</string>
+    <string name="phonenumber">Phone Number</string>
+    <string name="birthday">Birth Day</string>
+    <string name="rate">Rate</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="update_profile">Update profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="address">Address</string>
     <string name="show_pwd">Show Password</string>
     <string name="hide_pwd">Hide Password</string>
     <string name="forgot">Forgot password?</string>

@@ -48,7 +48,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -144,9 +143,9 @@ public class HomeActivity extends AppCompatActivity
 
     private void addControls() {
 
-
         mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
         db = new DatabaseHelper(HomeActivity.this);
+        currentUser = db.getUser(mUser.getUid());
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
@@ -420,7 +419,6 @@ public class HomeActivity extends AppCompatActivity
     private void updateUIHeader(int loginWith){
         String mfullName = "";
         String memail = "";
-        currentUser = db.getUser(mUser.getUid());
         String url = String.valueOf(mUser.getPhotoUrl());
         if(loginWith == 0){
             mfullName = currentUser.getFullName();
@@ -435,12 +433,12 @@ public class HomeActivity extends AppCompatActivity
         txtFullName.setText(mfullName);
 
         if(!url.equals("")){
-            if(isOnline())
-                Picasso.with(getApplicationContext()).load(url).into(imgUser);
-            else Picasso.with(getApplicationContext())
-                    .load(url)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(imgUser);
+//            if(isOnline())
+                Picasso.with(HomeActivity.this).load(url).into(imgUser);
+//            else Picasso.with(getApplicationContext())
+//                    .load(url)
+//                    .networkPolicy(NetworkPolicy.OFFLINE)
+//                    .into(imgUser);
         }
 
     }
