@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="F:\Vehiclesharing\VehiclesSharing\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
+        <dex dex="F:\Vehiclesharing\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_78bb17875719797b459b7d7082bd6d509f961137\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\Vehiclesharing\VehiclesSharing\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="c1a85981191ed531563f9e65c3ec03e2817b46c7">
+        <dex dex="F:\Vehiclesharing\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_608de2032a11bad634f3c4866d0d553526c7712f\classes.dex" />
+    </item>
+
+</items>
