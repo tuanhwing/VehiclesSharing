@@ -38,16 +38,17 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/ed_phone_number"
+                android:id="@+id/ed_full_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableRight="@drawable/edit" />
 
             <EditText
-                android:id="@+id/ed_full_name"
+                android:id="@+id/ed_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableRight="@drawable/edit" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -108,6 +109,7 @@
         android:id="@+id/btn_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         android:text="@string/update_profile"/>
 
 </LinearLayout>

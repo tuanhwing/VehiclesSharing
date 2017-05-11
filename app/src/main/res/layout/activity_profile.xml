@@ -170,6 +170,7 @@
             android:text="@string/edit_profile"
             android:textColor="@color/white"
             android:layout_margin="@dimen/activity_vertical_margin"
+            android:visibility="invisible"
             android:background="@color/button_edit_profile"/>
     </LinearLayout>
 
