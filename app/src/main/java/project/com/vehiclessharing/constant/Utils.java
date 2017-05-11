@@ -44,4 +44,9 @@ public class Utils {
 
     //Text for button
     public static final String TextButtonGG = "Log in with Google +";
+    /**
+     * Device token key's name.
+     */
+    public static final String DEVICE_TOKEN = "device_token";
+
 }

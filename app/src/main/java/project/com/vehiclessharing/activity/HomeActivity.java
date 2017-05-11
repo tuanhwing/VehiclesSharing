@@ -55,9 +55,10 @@ import java.util.ArrayList;
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.Login_Fragment;
-import project.com.vehiclessharing.model.User;
+import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
 import project.com.vehiclessharing.sqlite.DatabaseHelper;
+import project.com.vehiclessharing.sqlite.RealmDatabase;
 import project.com.vehiclessharing.utils.LocationCallback;
 
 import static project.com.vehiclessharing.R.id.map;
@@ -83,7 +84,7 @@ public class HomeActivity extends AppCompatActivity
 
     private DatabaseHelper db;//Instace DatabaseHelper
 
-    public static User currentUser;//Instace current user logined
+    public static UserOnDevice currentUser;//Instace current user logined
     final private static int REQ_PERMISSION = 20;//Value request permission
     private static String DIRECTION_KEY_API = "AIzaSyAGjxiNRAHypiFYNCN-qcmUgoejyZPtS9c";
 
@@ -145,7 +146,13 @@ public class HomeActivity extends AppCompatActivity
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
         db = new DatabaseHelper(HomeActivity.this);
-        currentUser = db.getUser(mUser.getUid());
+        currentUser = RealmDatabase.getListData().get(0);
+
+        Log.d("real_database",currentUser.getUserId());
+        Log.d("real_database", String.valueOf(currentUser.getUser().getBirthDay().getDay()));
+        Log.d("real_database", String.valueOf(currentUser.getUser().getAddress().getCountry()));
+
+
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
@@ -421,8 +428,8 @@ public class HomeActivity extends AppCompatActivity
         String memail = "";
         String url = String.valueOf(mUser.getPhotoUrl());
         if(loginWith == 0){
-            mfullName = currentUser.getFullName();
-            memail = currentUser.getEmail();
+            mfullName = currentUser.getUser().getFullName();
+            memail = currentUser.getUser().getEmail();
         }
         else {
             mfullName = mUser.getDisplayName();
