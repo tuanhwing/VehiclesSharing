@@ -27,14 +27,15 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.activity.MainActivity;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.custom.CustomToast;
+import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.User;
+import project.com.vehiclessharing.model.UserAddress;
+import project.com.vehiclessharing.model.Validation;
+import project.com.vehiclessharing.sqlite.DatabaseHelper;
 
 import static com.google.android.gms.internal.zzt.TAG;
 
@@ -44,23 +45,26 @@ import static com.google.android.gms.internal.zzt.TAG;
  */
 
 public class SignUp_Fragment extends Fragment implements View.OnClickListener {
-    //Add new;
+
     private FirebaseAuth mAuth2;
     private ProgressDialog mProgress;
     private Drawable mDrawable;
     private DatabaseReference mDatabase;
 
-    //End new
-
-
     private static View view;
-    private static EditText txtFullName, txtEmail, txtPhone, txtLocation,
-            txtPassword, txtConfirmPassword;
-
+    private static EditText txtFullName;
+    private static EditText txtEmail;
+    private static EditText txtPhone;
+    private static EditText txtPassword;
+    private static EditText txtConfirmPassword;
     private static RadioButton rdMale, rdFemale;
     private static TextView login;
     private static Button btnSignup;
     private static CheckBox terms_conditions;
+
+    DatabaseHelper db;//Instance to using SQLITE
+
+    private Validation validation = null;//Instance to check validation
 
     public SignUp_Fragment() {
 
@@ -75,36 +79,29 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    // Initialize all views
+    /**
+     * Initialize all views
+     */
     private void addControls() {
-        //Add new
-        //config second FirebaseAuth
 
-//        FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
-//                .setDatabaseUrl("https://vehiclessharing-74957.firebaseio.com/")
-//                .setApiKey("AIzaSyCe6VAITl-FDrMnbOxvhaMudE8RCR0dPSU")
-//                .setApplicationId("1:1093380309543:android:56f0bc5cd958205a").build();
-//        FirebaseApp myApp = FirebaseApp.initializeApp(getApplicationContext(),firebaseOptions,
-//                "VehiclesSharing");
-        mAuth2 = FirebaseAuth.getInstance(Utils.myApp);
-        //End config second FirebaseAuth
+        mAuth2 = FirebaseAuth.getInstance(Utils.myApp); //Instance second FirebaseAuth
 
+        mDatabase = FirebaseDatabase.getInstance(Utils.myApp).getReference(); //Instance Database
 
-        mDatabase = FirebaseDatabase.getInstance(Utils.myApp).getReference();
+        db = DatabaseHelper.getInstance(getActivity());//get Instance SQLITE
+        //[Start] Setup for progress
         mProgress =new ProgressDialog(getActivity());
-        String titleId="Signing up...";
-        mProgress.setTitle(titleId);
-        mProgress.setMessage("Please Wait...");
+        mProgress.setTitle(Utils.SignUp);
+        mProgress.setMessage(Utils.PleaseWait);
         mProgress.setCancelable(false);
         mProgress.setCanceledOnTouchOutside(false);
-        //End new
+        //[End] Setup for progress
 
         txtFullName = (EditText) view.findViewById(R.id.txtFullName);
         rdMale = (RadioButton) view.findViewById(R.id.rdMale);
         rdFemale = (RadioButton) view.findViewById(R.id.rdFemale);
         txtEmail = (EditText) view.findViewById(R.id.txtEmail);
         txtPhone = (EditText) view.findViewById(R.id.txtPhone);
-        //txtLocation = (EditText) view.findViewById(R.id.txtLocation);
         txtPassword = (EditText) view.findViewById(R.id.txtPassword);
         txtConfirmPassword = (EditText) view.findViewById(R.id.txtConfirmPassword);
         btnSignup = (Button) view.findViewById(R.id.btnSignup);
@@ -125,31 +122,39 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    // Set Listeners
+    /**
+     * Set Listeners
+     */
     private void addEvents() {
         btnSignup.setOnClickListener(this);
         login.setOnClickListener(this);
         txtEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if(txtFullName.getText().equals("") || txtFullName.getText().length() == 0)
+                if(Validation.isEmpty(txtFullName.getText().toString()))
                     txtFullName.setError("Fullname is required", mDrawable);
             }
         });
         txtPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if(txtFullName.getText().equals("") || txtFullName.getText().length() == 0)
+                if(Validation.isEmpty(txtFullName.getText().toString()))
                     txtFullName.setError("Fullname is required", mDrawable);
-                if(txtEmail.getText().length() == 0){
+                if(Validation.isEmpty(txtEmail.getText().toString())){
                     txtEmail.setError("Email is required",mDrawable);
-                } else if(!checkValidEmail(txtEmail.getText().toString())){
-                    txtEmail.setError("Your Email is Invalid",mDrawable);
+                } else {
+                    validation = Validation.checkValidEmail(txtEmail.getText().toString());
+                    if(!validation.getIsValid()){
+                        txtEmail.setError(validation.getMessageValid(),mDrawable);
+                    }
                 }
-                if(txtPhone.getText().length() == 0){
+                if(Validation.isEmpty(txtPhone.getText().toString())){
                     txtPhone.setError("Phone is required",mDrawable);
-                } else if(!checkValidPhone(txtPhone.getText().toString())){
-                    txtPhone.setError("Your Phone is Invalid!",mDrawable);
+                } else {
+                    validation = Validation.checkValidPhone(txtPhone.getText().toString());
+                    if(!validation.getIsValid()){
+                        txtPhone.setError(validation.getMessageValid(),mDrawable);
+                    }
                 }
             }
         });
@@ -157,12 +162,15 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
         txtPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if(txtFullName.getText().equals("") || txtFullName.getText().length() == 0)
+                if(Validation.isEmpty(txtFullName.getText().toString()))
                     txtFullName.setError("Fullname is required", mDrawable);
-                if(txtEmail.getText().length() == 0){
+                if(Validation.isEmpty(txtEmail.getText().toString())){
                     txtEmail.setError("Email is required",mDrawable);
-                } else if(!checkValidEmail(txtEmail.getText().toString())){
-                    txtEmail.setError("Your Email is Invalid",mDrawable);
+                } else {
+                    validation = Validation.checkValidEmail(txtEmail.getText().toString());
+                    if(!validation.getIsValid()){
+                        txtEmail.setError(validation.getMessageValid(),mDrawable);
+                    }
                 }
             }
         });
@@ -170,22 +178,31 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
         txtConfirmPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if(txtFullName.getText().equals("") || txtFullName.getText().length() == 0)
+                if(Validation.isEmpty(txtFullName.getText().toString()))
                     txtFullName.setError("Fullname is required", mDrawable);
-                if(txtEmail.getText().length() == 0){
+                if(Validation.isEmpty(txtEmail.getText().toString())){
                     txtEmail.setError("Email is required",mDrawable);
-                } else if(!checkValidEmail(txtEmail.getText().toString())){
-                    txtEmail.setError("Your Email is Invalid",mDrawable);
+                } else {
+                    validation = Validation.checkValidEmail(txtEmail.getText().toString());
+                    if(!validation.getIsValid()){
+                        txtEmail.setError(validation.getMessageValid(),mDrawable);
+                    }
                 }
-                if(txtPhone.getText().length() == 0){
+                if(Validation.isEmpty(txtPhone.getText().toString())){
                     txtPhone.setError("Phone is required",mDrawable);
-                } else if(!checkValidPhone(txtPhone.getText().toString())){
-                    txtPhone.setError("Your Phone is Invalid!",mDrawable);
+                } else {
+                    validation = Validation.checkValidPhone(txtPhone.getText().toString());
+                    if(!validation.getIsValid()){
+                        txtPhone.setError(validation.getMessageValid(),mDrawable);
+                    }
                 }
-                if(txtPassword.getText().length() == 0){
-                    txtPassword.setError("Password is required cccccccccccccccccccc",mDrawable);
-                } else if(txtPassword.getText().length() < 6) {
-                    txtPassword.setError("Your Password must be at least 6 characters.", mDrawable);
+                if(Validation.isEmpty(txtPassword.getText().toString())){
+                    txtPassword.setError("Password is required",mDrawable);
+                } else {
+                    validation = Validation.checkValidPassword(txtPassword.getText().toString());
+                    if(!validation.getIsValid()) {
+                        txtPassword.setError(validation.getMessageValid(), mDrawable);
+                    }
                 }
             }
         });
@@ -194,38 +211,6 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
         rdMale.setOnClickListener(this);
     }
 
-    private boolean checkValidEmail(String s) {
-        Pattern p = Pattern.compile(Utils.regEx);
-        Matcher m = p.matcher(s);
-        if(!m.find()){
-            return false;
-        }
-        return true;
-    }
-
-    private boolean checkValidPhone(String number) {
-        Pattern pattern = Pattern.compile(Utils.regPx);
-        Matcher matcher = pattern.matcher(number);
-        if (!matcher.matches()) {
-            return false;
-        } else
-        if (number.length() == 10 || number.length() == 11) {
-            if (number.length() == 10) {
-                if (number.substring(0, 2).equals("09")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else
-            if (number.substring(0, 2).equals("01")) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
 
     @Override
     public void onClick(View v) {
@@ -244,134 +229,148 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
             case R.id.rdFemale:
                 rdMale.setChecked(false);
                 rdFemale.setChecked(true);
-                Log.d("AAAAAAAAA",rdFemale.getText().toString());
                 break;
 
             case R.id.rdMale:
                 rdMale.setChecked(true);
                 rdFemale.setChecked(false);
-                Log.d("AAAAAAAAA",rdMale.getText().toString());
                 break;
         }
 
     }
 
-    // Check Validation Method
+    /**
+     * Check Validation Method
+     */
     private void checkValidation() {
 
         // Get all edittext texts
         final String getFullName = txtFullName.getText().toString();
         final String getEmailId = txtEmail.getText().toString();
         final String getMobileNumber = txtPhone.getText().toString();
-        final String sex;
-//        String getLocation = txtLocation.getText().toString();
         final String getPassword = txtPassword.getText().toString();
         String getConfirmPassword = txtConfirmPassword.getText().toString();
-
-        // Pattern match for email id
-//        Pattern p = Pattern.compile(Utils.regEx);
-//        Matcher m = p.matcher(getEmailId);
+        Validation validation;//Instance to check feild is valid
 
         // Check if all strings are null or not
-        if (getFullName.equals("") || getFullName.length() == 0
+        if (Validation.isEmpty(getFullName)
                 || (!rdMale.isChecked() && !rdFemale.isChecked())
-                || getEmailId.equals("") || getEmailId.length() == 0
-                || getMobileNumber.equals("") || getMobileNumber.length() == 0
-//                || getLocation.equals("") || getLocation.length() == 0
-                || getPassword.equals("") || getPassword.length() == 0
-                || getConfirmPassword.equals("")
-                || getConfirmPassword.length() == 0)
+                || Validation.isEmpty(getEmailId)
+                || Validation.isEmpty(getMobileNumber)
+                || Validation.isEmpty(getPassword)
+                || Validation.isEmpty(getConfirmPassword))
 
             new CustomToast().Show_Toast(getActivity(), view,
                     "All fields are required.");
 
 
             // Check if email id valid or not
-        else if (!checkValidEmail(getEmailId))
-            new CustomToast().Show_Toast(getActivity(), view,
-                    "Your Email is Invalid.");
-
-            //Check if phone valid or not
-        else if (!checkValidPhone(getMobileNumber))
-            new CustomToast().Show_Toast(getActivity(), view,
-                    "Your Phone is Invalid.");
-
-            //Check if password must be at least 6 characters
-        else if(getPassword.length() < 6)
-            new CustomToast().Show_Toast(getActivity(), view,
-                    "Your Password must be at least 6 characters.");
-
-            // Check if both password should be equal
-        else if (!getConfirmPassword.equals(getPassword))
-            new CustomToast().Show_Toast(getActivity(), view,
-                    "Both password doesn't match.");
-
-            // Make sure user should check Terms and Conditions checkbox
-        else if (!terms_conditions.isChecked())
-            new CustomToast().Show_Toast(getActivity(), view,
-                    "Please select Terms and Conditions.");
-
-            // Else do signup or do your stuff
         else {
+            validation = Validation.checkValidEmail(getEmailId);
+            if (!validation.getIsValid())
+                new CustomToast().Show_Toast(getActivity(), view,
+                        validation.getMessageValid());
 
-//            Toast.makeText(getActivity(), "Do SignUp.", Toast.LENGTH_SHORT).show();
-            final String getSex;
-            if(rdMale.isChecked()){
-                getSex = rdMale.getText().toString();
-            }
-            else getSex = rdFemale.getText().toString();
+                //Check if phone valid or not
+            else {
+                validation = Validation.checkValidPhone(getMobileNumber);
+                if (!validation.getIsValid())
+                    new CustomToast().Show_Toast(getActivity(), view,
+                            validation.getMessageValid());
 
-            mProgress.show();
+                    //Check if password must be at least 6 characters
+                else {
+                    validation = Validation.checkValidPassword(getPassword);
+                    if(!validation.getIsValid())
+                        new CustomToast().Show_Toast(getActivity(), view,
+                                validation.getMessageValid());
 
-            //Create new account
-            mAuth2.createUserWithEmailAndPassword(getEmailId, getPassword)
-                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            mProgress.dismiss();
-                            Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+                        // Check if both password should be equal
+                    else {
+                        validation = Validation.checkValidConfirmPassword(getPassword,getConfirmPassword);
+                        if (!validation.getIsValid())
+                            new CustomToast().Show_Toast(getActivity(), view,
+                                   validation.getMessageValid());
 
+                            // Make sure user should check Terms and Conditions checkbox
+                        else if (!terms_conditions.isChecked())
+                            new CustomToast().Show_Toast(getActivity(), view,
+                                    "Please select Terms and Conditions.");
 
-                            // If sign in fails, display a message to the user. If sign in succeeds
-                            // the auth state listener will be notified and logic to handle the
-                            // signed in user can be handled in the listener.
-                            if (!task.isSuccessful()) {
-                                new CustomToast().Show_Toast(getActivity(), view,
-                                        task.getException().getMessage());
-                                Log.d("Sign uppppppppppp", task.getException().toString());
+                            // Else do signup or do your stuff
+                        else {
+
+                            final String getSex;
+                            if(rdMale.isChecked()){
+                                getSex = rdMale.getText().toString();
                             }
-                            else {
-//                                Log.d("USERID AAAAAA", FirebaseAuth.getInstance().getCurrentUser().getUid());
-//                                Log.d("EMAIL AAAAAA", FirebaseAuth.getInstance().getCurrentUser().getEmail());
-//                                Log.d("PHONE AAAAAA", getMobileNumber.toString());
-//                                Log.d("SEX AAAAAA",getSex.toString());
-                                writeNewUser(mAuth2.getCurrentUser().getUid(),
-                                        getFullName.toString(),
-                                        mAuth2.getCurrentUser().getEmail(),
-                                        getMobileNumber.toString(),
-                                        getSex.toString());
-                                Toast.makeText(getActivity(), "Sign up successed!",
-                                        Toast.LENGTH_SHORT).show();
-                                login.callOnClick();
-                                mAuth2.signOut();//Sign out user
-                                Log.d("sssssssss","Sign upppppppppppppp");
-                            }
+                            else getSex = rdFemale.getText().toString();
 
-                            // ...
+                            mProgress.show();
 
+                            //Create new account
+                            mAuth2.createUserWithEmailAndPassword(getEmailId, getPassword)
+                                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            mProgress.dismiss();
+                                            Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+
+
+                                            // If sign in fails, display a message to the user. If sign in succeeds
+                                            // the auth state listener will be notified and logic to handle the
+                                            // signed in user can be handled in the listener.
+                                            if (!task.isSuccessful()) {
+                                                new CustomToast().Show_Toast(getActivity(), view,
+                                                        task.getException().getMessage());
+                                                Log.d("Sign uppppppppppp", task.getException().toString());
+                                            }
+                                            else {
+//                                                UserAddress userAddress = new UserAddress();
+                                                writeNewUser(mAuth2.getCurrentUser().getUid(),
+                                                        mAuth2.getCurrentUser().getEmail(),
+                                                        "",
+                                                        getFullName.toString(),
+                                                        getMobileNumber.toString(),
+                                                        getSex.toString(), new UserAddress(), new BirthDay());
+                                                Toast.makeText(getActivity(), "Sign up successed!",
+                                                        Toast.LENGTH_SHORT).show();
+                                                login.callOnClick();
+                                                mAuth2.signOut();//Sign out user
+                                            }
+
+                                            // ...
+
+                                        }
+                                    });
                         }
-                    });
+                    }
+                }
+            }
         }
 
     }
 
-    private void writeNewUser(String userId, String name, String email, String phone,String sex) {
-        User user = new User(name, email, phone, sex);
+    /**
+     * Storage profile's user into both Firebase Database and SQLite
+     * @param userId - userid
+     * @param email - user's email
+     * @param image - user's url image
+     * @param fullname - user's fullname
+     * @param phone - user's phoneNumber
+     * @param sex - user's sex
+     * @param address - user's address
+     */
+
+    private void writeNewUser(String userId, String email, String image, String fullname, String phone,
+                              String sex, UserAddress address, BirthDay birthDay) {
+        User user = new User(email, image, fullname, phone, sex, address, birthDay);
+        //[START]Storage in Firebase Database
         mDatabase.child("users").child(userId).setValue(user);
         FirebaseUser mUser = mAuth2.getCurrentUser();
 
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(name)
+                .setDisplayName(fullname)
                 .build();
         mUser.updateProfile(profileUpdates)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -382,7 +381,6 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 });
-//        FirebaseAuth.getInstance().signOut();
-//        Log.d("AAAAAAAAAAA", String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid()));
     }
+
 }

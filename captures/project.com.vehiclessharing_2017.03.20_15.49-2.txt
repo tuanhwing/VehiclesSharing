@@ -1,0 +1,295 @@
+CURRENT STATS:
+System memory usage:
+  SOff/Norm: 7 samples:
+    Cached: 217MB min, 264MB avg, 340MB max
+    Free: 55MB min, 72MB avg, 111MB max
+    ZRam: 0,00 min, 0,00 avg, 0,00 max
+    Kernel: 435MB min, 439MB avg, 442MB max
+    Native: 20MB min, 30MB avg, 50MB max
+  SOn /Norm: 3 samples:
+    Cached: 246MB min, 295MB avg, 343MB max
+    Free: 54MB min, 59MB avg, 64MB max
+    ZRam: 0,00 min, 0,00 avg, 0,00 max
+    Kernel: 435MB min, 437MB avg, 439MB max
+    Native: 32MB min, 33MB avg, 34MB max
+
+Per-Package Stats:
+  * project.com.vehiclessharing / u0a193 / v1:
+      * project.com.vehiclessharing / u0a193 / v1:
+               TOTAL: 0,85% (45MB-45MB-45MB/41MB-41MB-41MB over 1)
+                 Top: 0,85% (45MB-45MB-45MB/41MB-41MB-41MB over 1)
+            Bg TOTAL: 0,02%
+            (Cached): 0,02%
+  * project.com.vehiclessharing / u0a194 / v1:
+      * project.com.vehiclessharing / u0a194 / v1:
+               TOTAL: 11% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+                 Top: 11% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+            Bg TOTAL: 0,49%
+            (Cached): 0,49%
+      * project.com.vehiclessharing.service.FirebaseIDService:
+        Process: project.com.vehiclessharing
+            Running count 2 / time 0,10%
+            Started count 1 / time 0,10%
+          Executing count 2 / time 0,01%
+  * project.com.vehiclessharing / u0a195 / v1:
+      * project.com.vehiclessharing / u0a195 / v1:
+               TOTAL: 36% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+                 Top: 36% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+            Bg TOTAL: 17% (39MB-45MB-56MB/35MB-40MB-51MB over 4)
+          (Last Act): 5,2% (41MB-41MB-41MB/37MB-37MB-37MB over 1)
+            (Cached): 11% (39MB-46MB-56MB/35MB-41MB-51MB over 3)
+      * project.com.vehiclessharing.service.FirebaseIDService:
+        Process: project.com.vehiclessharing
+            Running count 2 / time 0,09%
+            Started count 1 / time 0,09%
+          Executing count 2 / time 0,02%
+
+Summary:
+  * project.com.vehiclessharing / u0a195 / v1:
+           TOTAL: 36% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+             Top: 36% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+        Bg TOTAL: 17% (39MB-45MB-56MB/35MB-40MB-51MB over 4)
+      (Last Act): 5,2% (41MB-41MB-41MB/37MB-37MB-37MB over 1)
+        (Cached): 11% (39MB-46MB-56MB/35MB-41MB-51MB over 3)
+  * project.com.vehiclessharing / u0a194 / v1:
+           TOTAL: 11% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+             Top: 11% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+        Bg TOTAL: 0,49%
+        (Cached): 0,49%
+  * project.com.vehiclessharing / u0a193 / v1:
+           TOTAL: 0,85% (45MB-45MB-45MB/41MB-41MB-41MB over 1)
+             Top: 0,85% (45MB-45MB-45MB/41MB-41MB-41MB over 1)
+        Bg TOTAL: 0,02%
+        (Cached): 0,02%
+
+Run time Stats:
+  SOff/Norm: +1h14m42s861ms (running)
+  SOn /Norm: +42m30s812ms
+      TOTAL: +1h57m13s673ms
+
+Memory usage:
+  Kernel : 438MB (70 samples)
+  Native : 31MB (70 samples)
+  Persist: 232MB (100 samples)
+  Top    : 88MB (574 samples)
+  ImpFg  : 78MB (797 samples)
+  ImpBg  : 15MB (189 samples)
+  Backup : 1,2KB (49 samples)
+  Service: 197MB (1483 samples)
+  Receivr: 475KB (1887 samples)
+  Home   : 24MB (40 samples)
+  LastAct: 2,2MB (43 samples)
+  CchAct : 8,2MB (54 samples)
+  CchCAct: 8,9KB (20 samples)
+  CchEmty: 239MB (1105 samples)
+  Cached : 275MB (70 samples)
+  Free   : 67MB (70 samples)
+  TOTAL  : 1,7GB
+  ServRst: 176KB (579 samples)
+
+          Start time: 2017-03-20 13:52:47
+  Total elapsed time: +1h57m13s692ms (partial) libart.so
+
+AGGREGATED OVER LAST 24 HOURS:
+System memory usage:
+  SOff/Norm: 15 samples:
+    Cached: 78MB min, 207MB avg, 340MB max
+    Free: 51MB min, 71MB avg, 111MB max
+    ZRam: 0,00 min, 0,00 avg, 0,00 max
+    Kernel: 409MB min, 434MB avg, 447MB max
+    Native: 20MB min, 32MB avg, 50MB max
+  SOn /Norm: 39 samples:
+    Cached: 114MB min, 210MB avg, 343MB max
+    Free: 50MB min, 66MB avg, 138MB max
+    ZRam: 0,00 min, 0,00 avg, 0,00 max
+    Kernel: 410MB min, 430MB avg, 449MB max
+    Native: 23MB min, 34MB avg, 47MB max
+
+Per-Package Stats:
+  * project.com.vehiclessharing / u0a192 / v1:
+      * project.com.vehiclessharing / u0a192 / v1:
+               TOTAL: 2,2% (41MB-53MB-77MB/36MB-49MB-72MB over 15)
+                 Top: 2,2% (41MB-53MB-77MB/36MB-49MB-72MB over 15)
+            Bg TOTAL: 1,1% (47MB-53MB-62MB/43MB-48MB-56MB over 3)
+          (Last Act): 0,54% (47MB-47MB-47MB/43MB-43MB-43MB over 1)
+            (Cached): 0,61% (50MB-56MB-62MB/45MB-51MB-56MB over 2)
+  * project.com.vehiclessharing / u0a193 / v1:
+      * project.com.vehiclessharing / u0a193 / v1:
+               TOTAL: 5,6% (40MB-45MB-53MB/36MB-41MB-48MB over 21)
+                 Top: 5,6% (40MB-45MB-53MB/36MB-41MB-48MB over 21)
+            Bg TOTAL: 0,24% (27MB-27MB-27MB/22MB-22MB-22MB over 1)
+          (Last Act): 0,03%
+            (Cached): 0,21% (27MB-27MB-27MB/22MB-22MB-22MB over 1)
+      * project.com.vehiclessharing.service.FirebaseIDService:
+        Process: project.com.vehiclessharing
+            Running count 2 / time 0,00%
+            Started count 1 / time 0,00%
+          Executing count 2 / time 0,00%
+  * project.com.vehiclessharing / u0a194 / v1:
+      * project.com.vehiclessharing / u0a194 / v1:
+               TOTAL: 0,96% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+                 Top: 0,96% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+            Bg TOTAL: 0,04%
+            (Cached): 0,04%
+      * project.com.vehiclessharing.service.FirebaseIDService:
+        Process: project.com.vehiclessharing
+            Running count 2 / time 0,01%
+            Started count 1 / time 0,01%
+          Executing count 2 / time 0,00%
+  * project.com.vehiclessharing / u0a195 / v1:
+      * project.com.vehiclessharing / u0a195 / v1:
+               TOTAL: 3,0% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+                 Top: 3,0% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+            Bg TOTAL: 1,4% (39MB-45MB-56MB/35MB-40MB-51MB over 4)
+          (Last Act): 0,44% (41MB-41MB-41MB/37MB-37MB-37MB over 1)
+            (Cached): 0,97% (39MB-46MB-56MB/35MB-41MB-51MB over 3)
+      * project.com.vehiclessharing.service.FirebaseIDService:
+        Process: project.com.vehiclessharing
+            Running count 2 / time 0,01%
+            Started count 1 / time 0,01%
+          Executing count 2 / time 0,00%
+
+Summary:
+  * project.com.vehiclessharing / u0a193 / v1:
+           TOTAL: 5,6% (40MB-45MB-53MB/36MB-41MB-48MB over 21)
+             Top: 5,6% (40MB-45MB-53MB/36MB-41MB-48MB over 21)
+        Bg TOTAL: 0,24% (27MB-27MB-27MB/22MB-22MB-22MB over 1)
+      (Last Act): 0,03%
+        (Cached): 0,21% (27MB-27MB-27MB/22MB-22MB-22MB over 1)
+  * project.com.vehiclessharing / u0a195 / v1:
+           TOTAL: 3,0% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+             Top: 3,0% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+        Bg TOTAL: 1,4% (39MB-45MB-56MB/35MB-40MB-51MB over 4)
+      (Last Act): 0,44% (41MB-41MB-41MB/37MB-37MB-37MB over 1)
+        (Cached): 0,97% (39MB-46MB-56MB/35MB-41MB-51MB over 3)
+  * project.com.vehiclessharing / u0a192 / v1:
+           TOTAL: 2,2% (41MB-53MB-77MB/36MB-49MB-72MB over 15)
+             Top: 2,2% (41MB-53MB-77MB/36MB-49MB-72MB over 15)
+        Bg TOTAL: 1,1% (47MB-53MB-62MB/43MB-48MB-56MB over 3)
+      (Last Act): 0,54% (47MB-47MB-47MB/43MB-43MB-43MB over 1)
+        (Cached): 0,61% (50MB-56MB-62MB/45MB-51MB-56MB over 2)
+  * project.com.vehiclessharing / u0a194 / v1:
+           TOTAL: 0,96% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+             Top: 0,96% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+        Bg TOTAL: 0,04%
+        (Cached): 0,04%
+
+Run time Stats:
+  SOff/Norm: +19h56m22s760ms
+  SOn /Norm: +3h1m9s502ms
+      TOTAL: +22h57m32s262ms
+
+Memory usage:
+  Kernel : 433MB (378 samples)
+  Native : 33MB (378 samples)
+  Persist: 241MB (794 samples)
+  Top    : 122MB (3172 samples)
+  ImpFg  : 77MB (4281 samples)
+  ImpBg  : 12MB (2679 samples)
+  Backup : 75 (377 samples)
+  Service: 199MB (7997 samples)
+  Receivr: 139KB (9989 samples)
+  Home   : 41MB (1099 samples)
+  LastAct: 5,0MB (377 samples)
+  CchAct : 2,2MB (52 samples)
+  CchCAct: 1,7MB (217 samples)
+  CchEmty: 180MB (5095 samples)
+  Cached : 208MB (378 samples)
+  Free   : 70MB (378 samples)
+  TOTAL  : 1,6GB
+  ServRst: 3,1MB (5829 samples)
+
+          Start time: 2017-03-19 16:47:22
+  Total elapsed time: +23h2m57s743ms (partial) libart.so
+
+AGGREGATED OVER LAST 3 HOURS:
+System memory usage:
+  SOff/Norm: 7 samples:
+    Cached: 217MB min, 264MB avg, 340MB max
+    Free: 55MB min, 72MB avg, 111MB max
+    ZRam: 0,00 min, 0,00 avg, 0,00 max
+    Kernel: 435MB min, 439MB avg, 442MB max
+    Native: 20MB min, 30MB avg, 50MB max
+  SOn /Norm: 3 samples:
+    Cached: 246MB min, 295MB avg, 343MB max
+    Free: 54MB min, 59MB avg, 64MB max
+    ZRam: 0,00 min, 0,00 avg, 0,00 max
+    Kernel: 435MB min, 437MB avg, 439MB max
+    Native: 32MB min, 33MB avg, 34MB max
+
+Per-Package Stats:
+  * project.com.vehiclessharing / u0a193 / v1:
+      * project.com.vehiclessharing / u0a193 / v1:
+               TOTAL: 0,85% (45MB-45MB-45MB/41MB-41MB-41MB over 1)
+                 Top: 0,85% (45MB-45MB-45MB/41MB-41MB-41MB over 1)
+            Bg TOTAL: 0,02%
+            (Cached): 0,02%
+  * project.com.vehiclessharing / u0a194 / v1:
+      * project.com.vehiclessharing / u0a194 / v1:
+               TOTAL: 11% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+                 Top: 11% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+            Bg TOTAL: 0,49%
+            (Cached): 0,49%
+      * project.com.vehiclessharing.service.FirebaseIDService:
+        Process: project.com.vehiclessharing
+            Running count 2 / time 0,10%
+            Started count 1 / time 0,10%
+          Executing count 2 / time 0,01%
+  * project.com.vehiclessharing / u0a195 / v1:
+      * project.com.vehiclessharing / u0a195 / v1:
+               TOTAL: 36% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+                 Top: 36% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+            Bg TOTAL: 17% (39MB-45MB-56MB/35MB-40MB-51MB over 4)
+          (Last Act): 5,2% (41MB-41MB-41MB/37MB-37MB-37MB over 1)
+            (Cached): 11% (39MB-46MB-56MB/35MB-41MB-51MB over 3)
+      * project.com.vehiclessharing.service.FirebaseIDService:
+        Process: project.com.vehiclessharing
+            Running count 2 / time 0,09%
+            Started count 1 / time 0,09%
+          Executing count 2 / time 0,02%
+
+Summary:
+  * project.com.vehiclessharing / u0a195 / v1:
+           TOTAL: 36% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+             Top: 36% (6,2MB-59MB-126MB/5,7MB-55MB-121MB over 22)
+        Bg TOTAL: 17% (39MB-45MB-56MB/35MB-40MB-51MB over 4)
+      (Last Act): 5,2% (41MB-41MB-41MB/37MB-37MB-37MB over 1)
+        (Cached): 11% (39MB-46MB-56MB/35MB-41MB-51MB over 3)
+  * project.com.vehiclessharing / u0a194 / v1:
+           TOTAL: 11% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+             Top: 11% (6,0MB-43MB-60MB/5,4MB-39MB-54MB over 8)
+        Bg TOTAL: 0,49%
+        (Cached): 0,49%
+  * project.com.vehiclessharing / u0a193 / v1:
+           TOTAL: 0,85% (45MB-45MB-45MB/41MB-41MB-41MB over 1)
+             Top: 0,85% (45MB-45MB-45MB/41MB-41MB-41MB over 1)
+        Bg TOTAL: 0,02%
+        (Cached): 0,02%
+
+Run time Stats:
+  SOff/Norm: +1h14m43s24ms
+  SOn /Norm: +42m30s812ms
+      TOTAL: +1h57m13s836ms
+
+Memory usage:
+  Kernel : 438MB (70 samples)
+  Native : 31MB (70 samples)
+  Persist: 232MB (100 samples)
+  Top    : 88MB (574 samples)
+  ImpFg  : 78MB (797 samples)
+  ImpBg  : 15MB (189 samples)
+  Backup : 1,2KB (49 samples)
+  Service: 197MB (1483 samples)
+  Receivr: 475KB (1887 samples)
+  Home   : 24MB (40 samples)
+  LastAct: 2,2MB (43 samples)
+  CchAct : 8,2MB (54 samples)
+  CchCAct: 8,9KB (20 samples)
+  CchEmty: 239MB (1106 samples)
+  Cached : 275MB (70 samples)
+  Free   : 67MB (70 samples)
+  TOTAL  : 1,7GB
+  ServRst: 176KB (579 samples)
+
+          Start time: 2017-03-20 13:52:47
+  Total elapsed time: +1h57m13s836ms (partial) libart.so

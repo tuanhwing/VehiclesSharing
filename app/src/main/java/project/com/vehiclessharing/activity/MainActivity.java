@@ -1,7 +1,9 @@
 package project.com.vehiclessharing.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,20 +17,33 @@ import android.widget.ImageView;
 import com.facebook.FacebookSdk;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.Login_Fragment;
+import project.com.vehiclessharing.model.User;
+import project.com.vehiclessharing.sqlite.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    //Add new
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseUser mUser;
-    //End new
+    public static FirebaseAuth mAuth; // Instance Authentication used by all fragment inside MainActivity
+    private FirebaseAuth.AuthStateListener mAuthListener;// Instance listener state user
+    private FirebaseUser mUser;// Instance user to get information
+    private DatabaseReference mUserReference;//Instance database firebase table users
 
-    private static FragmentManager fragmentManager;
+    public static ProgressDialog mProgress;//Progress to wait login
+
+    //get Instance.
+    private DatabaseHelper db;
+
+
+    private static FragmentManager fragmentManager;// Instance fragmentManager to switch fragment
     ImageView imgClose;
 
     @Override
@@ -37,18 +52,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //set up notitle
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        //set up full screen
+//        //set up full screen
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        FacebookSdk.sdkInitialize(this);// Add new
+
+        FacebookSdk.sdkInitialize(this);// This function initializes the Facebook SDK
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
-        Log.d("MAINAAAAAAAAAAAA","AAAAAAAAAAA");
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-//            Log.d("MAINAAAAAAAAAAAA",String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid()));
-            startActivity(new Intent(MainActivity.this, HomeActivity.class));
-            finish();
-        }
 
         // If savedinstnacestate is null then replace login fragment
         if (savedInstanceState == null) {
@@ -59,57 +69,91 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
-
-//        Log.d("MAINssssss", "onAuthStateChanged:signed_out1");
         addControls();
         addEvents();
-//        Log.d("MAINssssss", "onAuthStateChanged:signed_out2");
+
 
     }
 
+    /**
+     * Set Listeners
+     */
     private void addEvents() {
-//         mUser = mAuth.getCurrentUser();
-//        if (mUser != null) {
-//            // User is signed in
-//            Log.d("ssssss", "onAuthStateChanged:signed_in1");
-//            startActivity(new Intent(MainActivity.this, HomeActivity.class));
-//            finish();
-//            Log.d("ssssss", "onAuthStateChanged:signed_in2");
-//        } else {
-//            // User is signed out
-//            Log.d("ssssss", "onAuthStateChanged:signed_out");
-//        }
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    if(!mProgress.isShowing()) mProgress.show();
+                    // User is signed in
+                    for (UserInfo usera: FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+                        if(usera.getProviderId().equals(Utils.Email_Signin)){
+                            String userId = user.getUid();
+                            if(db.isUserExists(userId)) {
+                                switchActivity();
+                                break;
+                            } else {
+                                getProfileUser(userId);
+                                break;
+                            }
+                        } else if(usera.getProviderId().equals(Utils.Facebook_Signin)
+                                || usera.getProviderId().equals(Utils.Google_Signin)){
+                            switchActivity();//go to the Home Activity
+                            break;
+                        }
+                    }
+                } else {
+                    // User is signed out
+                }
+                // ...
+            }
+        };
+
         // On close icon click finish activity
-        Log.d("DemoAAAA1",imgClose.toString());
         imgClose.setOnClickListener(this);
-        Log.d("DemoAAAA2",imgClose.toString());
 
     }
 
+    /**
+     * Handling button/textview click
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
             case R.id.close_activity:
-                Log.d("DemoAAAA3",imgClose.toString());
                 finish();
                 break;
         }
 
     }
 
-
+    /**
+     * Initiate Views
+     */
     private void addControls() {
         mAuth = FirebaseAuth.getInstance();
+
+        db = DatabaseHelper.getInstance(MainActivity.this);//Instance DatabaseHelper
+
+        //[Start] Setup for progress
+        mProgress =new ProgressDialog(this);
+        mProgress.setTitle(Utils.SignIn);
+        mProgress.setMessage(Utils.PleaseWait);
+        mProgress.setCancelable(false);
+        mProgress.setCanceledOnTouchOutside(false);
+        //[End] Setup for progress
 
         imgClose = (ImageView) findViewById(R.id.close_activity);
         //set animation Close
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulum);
         imgClose.startAnimation(animation);
-        Log.d("DemoAAAA",imgClose.toString());
     }
 
-    // Replace Login Fragment with animation
+    /**
+     * Replace Login Fragment with animation
+     */
     public void replaceLoginFragment() {
         fragmentManager
                 .beginTransaction()
@@ -118,6 +162,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Utils.Login_Fragment).commit();
     }
 
+    /**
+     * Handling press Back in device
+     */
     @Override
     public void onBackPressed() {
 
@@ -137,6 +184,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             replaceLoginFragment();
         else
             super.onBackPressed();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    /**
+     * Get user's profile in Database Firebase
+     * @return
+     */
+    private void getProfileUser(final String userId) {
+//        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mUserReference = FirebaseDatabase.getInstance().getReference().child("users").child(userId); //Instance database firebase
+        ValueEventListener getProfileUser = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
+                User user = dataSnapshot.getValue(User.class);
+                storageProfileOnDevice(user,userId);//Save profile user on Sqlite
+                // ...
+                switchActivity();//go to the Home Activity
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("Canceled", "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
+        mUserReference.addListenerForSingleValueEvent(getProfileUser);
+    }
+
+    /**
+     * Switch to Home Activity when login succeed
+     */
+    private void switchActivity(){
+        mProgress.dismiss();
+        startActivity(new Intent(MainActivity.this,HomeActivity.class));
+        finish();
+    }
+
+
+    /**
+     * Storage user's profile in device
+     * @param user object user
+     */
+    private void storageProfileOnDevice(User user,String userId) {
+        Log.d("DemoLogin","3");
+        if(db.insertUser(user,userId));
+        Log.d("DemoLogin","4");
     }
 
 }
