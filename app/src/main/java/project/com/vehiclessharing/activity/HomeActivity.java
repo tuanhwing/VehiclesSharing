@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -42,26 +43,36 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.application.ApplicationController;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.Login_Fragment;
+import project.com.vehiclessharing.model.LocationRequest;
+import project.com.vehiclessharing.model.RequestDemo;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
-import project.com.vehiclessharing.sqlite.DatabaseHelper;
 import project.com.vehiclessharing.sqlite.RealmDatabase;
 import project.com.vehiclessharing.utils.LocationCallback;
 
 import static project.com.vehiclessharing.R.id.map;
+import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener, OnMapReadyCallback, RoutingListener{
@@ -75,20 +86,27 @@ public class HomeActivity extends AppCompatActivity
     public static Bitmap bmImgUser = null; // Bitmap of avatar
     private static int CONTROLL_ON = 1;//Controll to on Locationchanged
     private static int CONTROLL_OFF = -1;//Controll to off Locationchanged
-    private FloatingActionButton fab; // button fab action
     public static int loginWith; //Determine user authen email/facebook/google
 
     public static GoogleMap mGoogleMap = null;//Instance google map API
     public static Polyline polyline = null;//Instance
     private static TrackGPSService trackgps;
+    private DatabaseReference mDatabase;
 
-    private DatabaseHelper db;//Instace DatabaseHelper
+    private FloatingActionButton btnFindPeople;
+    private FloatingActionButton btnFindVihecle;
+
+    private ValueEventListener requestNeederListener;
+    private DatabaseReference requestNeederRef;
+    private String mRequestKey;
+    private ArrayList<RequestDemo> arrRequest;
+
 
     public static UserOnDevice currentUser;//Instace current user logined
     final private static int REQ_PERMISSION = 20;//Value request permission
     private static String DIRECTION_KEY_API = "AIzaSyAGjxiNRAHypiFYNCN-qcmUgoejyZPtS9c";
 
-    private static String TAG_ERROR_ROUTING = "ERROR_ROUTING";
+
 
 
 
@@ -134,19 +152,21 @@ public class HomeActivity extends AppCompatActivity
 
         addControls();
         addEvents();
-        updateUIHeader(loginWith);//Update information user into header layout
 
     }
 
     private void addEvents() {
+        btnFindPeople.setOnClickListener(this);
+        btnFindVihecle.setOnClickListener(this);
 
     }
 
     private void addControls() {
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
-        db = new DatabaseHelper(HomeActivity.this);
-        currentUser = RealmDatabase.getListData().get(0);
+        currentUser = RealmDatabase.getCurrentUser(mUser.getUid());
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        arrRequest = new ArrayList<RequestDemo>();
 
         Log.d("real_database",currentUser.getUserId());
         Log.d("real_database", String.valueOf(currentUser.getUser().getBirthDay().getDay()));
@@ -158,6 +178,37 @@ public class HomeActivity extends AppCompatActivity
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
         trackgps = new TrackGPSService(HomeActivity.this);
+
+        btnFindVihecle = (FloatingActionButton) findViewById(R.id.btn_find_vehicle);
+        btnFindPeople = (FloatingActionButton) findViewById(R.id.btn_find_people);
+
+        //Listener request of vehicle-sharing from database Firebase
+        requestNeederListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                try {
+                    for(DataSnapshot temp : dataSnapshot.getChildren()) {
+                        RequestDemo requestDemo = temp.getValue(RequestDemo.class);
+                        arrRequest.add(requestDemo);
+                    }
+                    mGoogleMap.clear();
+                    for(RequestDemo a : arrRequest){
+                        makeMaker(new LatLng(a.getLocationRequest().getLocationLat(),a.getLocationRequest().getLocationLong()),
+                                a.getGraberId());
+                    }
+                } catch (Exception e){
+                    Log.d("database_firebaseaaaaa",String.valueOf(e.getMessage()));
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
     @Override
     public void onBackPressed() {
@@ -221,7 +272,27 @@ public class HomeActivity extends AppCompatActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_find_people:
-                //logout();
+                try {
+                    trackgps.getCurrentLocation(new LocationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            mRequestKey = mDatabase.child("requests_needer").push().getKey();
+                            RequestDemo requestDemo = new RequestDemo(currentUser.getUserId(),
+                                    ApplicationController.sharedPreferences.getString(Utils.DEVICE_TOKEN, null),
+                                    new LocationRequest(TrackGPSService.mLocation.getLatitude(),TrackGPSService.mLocation.getLongitude()));
+                            mDatabase.child("requests_needer").child(mRequestKey).setValue(requestDemo);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e("error_get_location",String.valueOf(e.getMessage()));
+                        }
+                    });
+
+                } catch (Exception e){
+                    Log.e("upload_data_request",String.valueOf(e.getMessage()));
+                }
+
                 break;
             case R.id.btn_find_vehicle:
                 //
@@ -251,6 +322,8 @@ public class HomeActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 //        makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
+        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+        requestNeederRef.addValueEventListener(requestNeederListener);
 
     }
 
@@ -306,8 +379,9 @@ public class HomeActivity extends AppCompatActivity
      * @param title title maker
      */
     private void makeMaker(LatLng location, String title) {
-        LatLng maker = new LatLng(location.latitude, location.longitude);
-        mGoogleMap.addMarker(new MarkerOptions().title(title).position(maker));
+        LatLng latLng = new LatLng(location.latitude, location.longitude);
+        Marker  marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng));
+        marker.setTag(title);
     }
 
 
@@ -426,7 +500,6 @@ public class HomeActivity extends AppCompatActivity
     private void updateUIHeader(int loginWith){
         String mfullName = "";
         String memail = "";
-        String url = String.valueOf(mUser.getPhotoUrl());
         if(loginWith == 0){
             mfullName = currentUser.getUser().getFullName();
             memail = currentUser.getUser().getEmail();
@@ -439,15 +512,17 @@ public class HomeActivity extends AppCompatActivity
         txtEmail.setText(memail);
         txtFullName.setText(mfullName);
 
-        if(!url.equals("")){
-//            if(isOnline())
+        String url = String.valueOf(currentUser.getUser().getImage());//url avatar user
+        if(url.equals("null") || url.isEmpty()){
+            imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
+        } else {
+            if(isOnline())
                 Picasso.with(HomeActivity.this).load(url).into(imgUser);
-//            else Picasso.with(getApplicationContext())
-//                    .load(url)
-//                    .networkPolicy(NetworkPolicy.OFFLINE)
-//                    .into(imgUser);
+            else Picasso.with(getApplicationContext())
+                    .load(url)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(imgUser);
         }
-
     }
 
     /**
@@ -515,5 +590,7 @@ public class HomeActivity extends AppCompatActivity
     public void onRoutingCancelled() {
 
     }
+
+
 
 }

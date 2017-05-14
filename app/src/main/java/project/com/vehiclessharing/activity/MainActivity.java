@@ -288,9 +288,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         );
         UserOnDevice temp = new UserOnDevice(userId,informationUserOnDivce);
         RealmDatabase.storageOnDiviceRealm(temp);
-//        Log.d("DemoLogin","3");
-//        if(db.insertUser(user,userId));
-//        Log.d("DemoLogin","4");
     }
 
 }

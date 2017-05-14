@@ -49,4 +49,11 @@ public class Utils {
      */
     public static final String DEVICE_TOKEN = "device_token";
 
+    //Tag error try cat
+    public static final String TAG_ERROR_GET_BYTE_IMAGE = "error_get_byte_image";
+    public static final String TAG_ERROR_UPLOAD_IMAGE_FIREBASE = "error_upload_image";
+    public static final String TAG_UPLOAD_IMAGE = "upload_image";
+    public static final String TAG_UPDATE_PROFILE = "update_profile";
+    public static final String TAG_ERROR_ROUTING = "ERROR_ROUTING";
+
 }
