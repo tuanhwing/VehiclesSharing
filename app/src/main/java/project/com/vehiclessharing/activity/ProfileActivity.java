@@ -17,6 +17,7 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.custom.DialogChangePassword;
 import project.com.vehiclessharing.model.AddressOnDevice;
 import project.com.vehiclessharing.model.BirthdayOnDevice;
 
@@ -33,11 +34,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView imgProfile;
     private TextView txtFullName;
     private TextView txtEmail;
+    private TextView txtPassword;
     private TextView txtPhone;
     private TextView txtSex;
     public static TextView txtBirthday;
     private TextView txtAddress;
     private Button btnEditProfile;
+
+    private DialogChangePassword dialogChangePassword;
 
 
     @Override
@@ -80,6 +84,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         txtPhone = (TextView) findViewById(R.id.txt_phone);
         txtBirthday = (TextView) findViewById(R.id.txt_birthday);
         txtAddress = (TextView) findViewById(R.id.txt_address);
+        txtPassword = (TextView) findViewById(R.id.txt_password);
         btnEditProfile = (Button) findViewById(R.id.btn_edit);
 
     }
@@ -89,6 +94,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
      */
     private void addEvents() {
         btnEditProfile.setOnClickListener(this);
+        txtPassword.setOnClickListener(this);
     }
 
 
@@ -143,6 +149,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         switch (v.getId()){
             case R.id.btn_edit: {
                 startActivity(new Intent(ProfileActivity.this,EditProfileActivity.class));
+                break;
+            }
+            case R.id.txt_password: {
+                dialogChangePassword = new DialogChangePassword(ProfileActivity.this);
+                dialogChangePassword.show();
                 break;
             }
         }

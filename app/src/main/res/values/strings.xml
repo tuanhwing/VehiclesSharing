@@ -13,7 +13,12 @@
     <string name="male">Male</string>
     <string name="female">Female</string>
     <string name="update_profile">Update profile</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="comfirm_password">Comfirm Password</string>
+    <string name="cancel">Cancel</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="change_password">Change Password</string>
     <string name="address">Address</string>
     <string name="show_pwd">Show Password</string>
     <string name="hide_pwd">Hide Password</string>

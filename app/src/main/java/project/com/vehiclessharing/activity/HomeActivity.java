@@ -316,7 +316,7 @@ public class HomeActivity extends AppCompatActivity
         if(loginWith == 1)
             //Sign out Facebook
             LoginManager.getInstance().logOut();
-        else
+        if(loginWith == 2)
             //Sign out Google plus
             Auth.GoogleSignInApi.signOut(Login_Fragment.session.mGoogleApiClient).setResultCallback(
                     new ResultCallback<Status>() {

@@ -78,6 +78,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private static Drawable mDrawable;//Icon edittext when text invalid
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
