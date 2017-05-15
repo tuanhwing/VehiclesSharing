@@ -36,6 +36,7 @@ public class RealmDatabase {
 
     public static UserOnDevice getCurrentUser(String userId){
         RealmResults<UserOnDevice> result1 = realm.where(UserOnDevice.class).equalTo("userId",userId).findAll();
+        if(result1.size() == 0) return null;
         return result1.get(0);
     }
 

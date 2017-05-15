@@ -47,6 +47,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -164,14 +166,23 @@ public class HomeActivity extends AppCompatActivity
     private void addControls() {
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
+        //[Start]Send verification
+        mUser.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.d("send_verification", "Email sent.");
+                        } else {
+                            Log.d("send_verification1", "Email sent unsuccessful!");
+                            Log.d("send_verification1", String.valueOf(task.getException().getMessage()));
+                        }
+                    }
+                });
+        //[END]Send verification
         currentUser = RealmDatabase.getCurrentUser(mUser.getUid());
         mDatabase = FirebaseDatabase.getInstance().getReference();
         arrRequest = new ArrayList<RequestDemo>();
-
-        Log.d("real_database",currentUser.getUserId());
-        Log.d("real_database", String.valueOf(currentUser.getUser().getBirthDay().getDay()));
-        Log.d("real_database", String.valueOf(currentUser.getUser().getAddress().getCountry()));
-
 
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
@@ -500,19 +511,22 @@ public class HomeActivity extends AppCompatActivity
     private void updateUIHeader(int loginWith){
         String mfullName = "";
         String memail = "";
+        String url = "";
         if(loginWith == 0){
             mfullName = currentUser.getUser().getFullName();
             memail = currentUser.getUser().getEmail();
+            url = String.valueOf(currentUser.getUser().getImage());//url avatar user
         }
         else {
             mfullName = mUser.getDisplayName();
             memail = mUser.getEmail();
+            url = String.valueOf(mUser.getPhotoUrl());
         }
 
         txtEmail.setText(memail);
         txtFullName.setText(mfullName);
 
-        String url = String.valueOf(currentUser.getUser().getImage());//url avatar user
+
         if(url.equals("null") || url.isEmpty()){
             imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
         } else {
