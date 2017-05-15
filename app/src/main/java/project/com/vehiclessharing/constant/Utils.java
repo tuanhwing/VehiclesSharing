@@ -38,6 +38,7 @@ public class Utils {
 
     //Message ProgressDialog
     public static final String SignIn = "Sign in...";
+    public static final String ChangePassword = "Updating password...";
     public static final String PleaseWait = "Please Wait...";
     public static final String SignUp = "Sign up...";
     public static final String EnterBothCredentials = "Enter both credentials.";
