@@ -39,6 +39,7 @@ public class Utils {
     //Message ProgressDialog
     public static final String SignIn = "Sign in...";
     public static final String ChangePassword = "Updating password...";
+    public static final String Updating = "Updating...";
     public static final String PleaseWait = "Please Wait...";
     public static final String SignUp = "Sign up...";
     public static final String EnterBothCredentials = "Enter both credentials.";
@@ -55,6 +56,7 @@ public class Utils {
     public static final String TAG_ERROR_UPLOAD_IMAGE_FIREBASE = "error_upload_image";
     public static final String TAG_UPLOAD_IMAGE = "upload_image";
     public static final String TAG_UPDATE_PROFILE = "update_profile";
-    public static final String TAG_ERROR_ROUTING = "ERROR_ROUTING";
+    public static final String TAG_ERROR_ROUTING = "error_routing";
+    public static final String TAG_ERROR_SELECT_IMAGE = "error_select_iamge";
 
 }

@@ -1,15 +1,19 @@
 package project.com.vehiclessharing.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -20,6 +24,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -59,12 +65,14 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private RadioButton rdFemale;//Instance reference radio button inside layout
     public static TextView txtBirthday;//Instance reference textview inside layout
     private EditText edAddress;//Instance reference edittext inside layout
-    private static Button btnSave;//Instance reference button inside layout
+    private static Button btnSave;//Instance reference button save profile inside layout
+    private static ProgressBar progressBar;//Instance reference progress load image inside layout
 
     private static int REQUEST_IMAGE_SDCARD = 100;//Value request activity pick image in SDcard
-    private static Bitmap bmImageUser;//Instance to save image picked by user in SDcard
+    private static int REQUEST_IAMGE_CAMERA = 200;//Value request activity take image using CAMERA
+    private static int MY_CAMERA_REQUEST_CODE = 69;//Value request permission Camera
+    private static Bitmap bmImageUser;//Instance to save image picked by user in SDcard / from camera
 
-    private static boolean isImageChanged = false;//Controll avatar's user is changed or not
     private static boolean isFullNameChanged = false;//Controll fullname's user is changed or not
     private static boolean isPhoneNumberChanged = false;//Controll phonenumber's user is changed or not
     private static boolean isSexChanged = false;//Controll fullname's user is changed or not
@@ -76,6 +84,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private Realm realm;//Instance to work with Realm
     private DatabaseReference mDatabase;//Instance reference Realtime Database Firebase
     private static Drawable mDrawable;//Icon edittext when text invalid
+
 
 
 
@@ -107,7 +116,18 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         String url = HomeActivity.currentUser.getUser().getImage();
         if(!url.isEmpty() || !url.equals("null")){
             if(isOnline())
-                Picasso.with(EditProfileActivity.this).load(url).into(avatarUser);
+                Picasso.with(EditProfileActivity.this).load(url).into(avatarUser, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(EditProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
+                    }
+                });
             else Picasso.with(getApplicationContext())
                     .load(url)
                     .networkPolicy(NetworkPolicy.OFFLINE)
@@ -139,6 +159,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         realm = Realm.getDefaultInstance();
 
         avatarUser = (ImageView) findViewById(R.id.img_user);
+        progressBar = (ProgressBar) findViewById(R.id.loading_progress_img);
         edFullName = (EditText) findViewById(R.id.ed_full_name);
         edPhoneNumber = (EditText) findViewById(R.id.ed_phone_number);
         edAddress = (EditText) findViewById(R.id.ed_address);
@@ -151,21 +172,42 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
         mDrawable = getResources().getDrawable(R.drawable.errorvalid);
         mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+
     }
 
     /**
      * Pick image in SDcard
      */
     private void callIntentPickImg() {
-        Intent intent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, REQUEST_IMAGE_SDCARD);
+        Intent intent = new Intent(
+                Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(
+                Intent.createChooser(intent, "Select File"),
+                REQUEST_IMAGE_SDCARD);
     }
+
+    /**
+     * Take picture using Camera
+     */
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void callIntentTakePicture() {
+        if (checkSelfPermission(Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA},
+                    MY_CAMERA_REQUEST_CODE);
+            return;
+        }
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, REQUEST_IAMGE_CAMERA);
+    }
+
+
     /**
      * Visible button when user changed profile
      */
     public static void hideOrShowButton(){
-        if(isImageChanged || isFullNameChanged || isPhoneNumberChanged ||
+        if(isFullNameChanged || isPhoneNumberChanged ||
                 isSexChanged || isBirthdayChanged || isAddressChanged)
             btnSave.setVisibility(View.VISIBLE);
         else btnSave.setVisibility(View.INVISIBLE);
@@ -175,10 +217,6 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
      * Update data profile
      */
     private void uploadProfileData(){
-        if(isImageChanged){
-            updateImage(getByteFromImageView());
-            isImageChanged = false;
-        }
         if(isFullNameChanged){
             updateFullName(edFullName.getText().toString());
             isFullNameChanged = false;
@@ -206,6 +244,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
      */
     private void updateImage(byte[] data){
         if(data != null){
+
+            progressBar.setVisibility(View.VISIBLE);
             // Create a storage reference from our app
             StorageReference storageRef = storage.getReference();
 
@@ -246,6 +286,19 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                     realm.beginTransaction();
                     HomeActivity.currentUser.getUser().setImage(String.valueOf(downloadUrl));
                     realm.commitTransaction();
+
+                    Picasso.with(EditProfileActivity.this).load(String.valueOf(downloadUrl)).into(avatarUser, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(EditProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
                 }
             });
@@ -334,6 +387,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             if(rdMale.isChecked()) sex = rdMale.getText().toString();
             else sex = rdFemale.getText().toString();
 
+
             //Update data Firebase
             mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("sex").setValue(sex);
 
@@ -413,6 +467,29 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
+    /**
+     * Select image from Library or take picture using Camera
+     */
+    private void selectImage() {
+        final CharSequence[] items = {"Take Photo", "Choose from Library",
+                "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+                    callIntentTakePicture();
+                } else if (items[item].equals("Choose from Library")) {
+                    callIntentPickImg();
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -429,38 +506,46 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_IMAGE_SDCARD){
-            if(resultCode == RESULT_OK){
-
-                Uri targetUri = data.getData();
-                try {
-                    bmImageUser = ImageClass.decodeUri(EditProfileActivity.this,targetUri,100);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                avatarUser.setImageBitmap(bmImageUser);
-                isImageChanged = true;
-                hideOrShowButton();//Visible button save profile
+        if(resultCode == EditProfileActivity.RESULT_OK){
+            Uri targetUri = data.getData();
+            try {
+                bmImageUser = ImageClass.decodeUri(EditProfileActivity.this,targetUri,100);
+            } catch (FileNotFoundException e) {
+                Log.e(Utils.TAG_ERROR_SELECT_IMAGE,String.valueOf(e.getMessage()));
             }
-
+            updateImage(getByteFromImageView());
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == MY_CAMERA_REQUEST_CODE){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, REQUEST_IAMGE_CAMERA);
+            }
+        }
+    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.rd_male:{
-                if(HomeActivity.currentUser.getUser().getSex().equals("FeMale")) isSexChanged = true;
-                else isSexChanged = false;
+                if(HomeActivity.currentUser.getUser().getSex().equals("Female"))
+                    isSexChanged = true;
+                else
+                    isSexChanged = false;
                 rdMale.setChecked(true);
                 rdFemale.setChecked(false);
                 hideOrShowButton();
                 break;
             }
             case R.id.rd_female: {
-                if(HomeActivity.currentUser.getUser().getSex().equals("Male")) isSexChanged = true;
-                else isSexChanged = false;
+                if(HomeActivity.currentUser.getUser().getSex().equals("Male"))
+                    isSexChanged = true;
+                else
+                    isSexChanged = false;
                 rdMale.setChecked(false);
                 rdFemale.setChecked(true);
                 hideOrShowButton();
@@ -485,7 +570,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 break;
             }
             case R.id.img_user:{
-                callIntentPickImg();
+                selectImage();
                 break;
             }
             case R.id.txt_birthday: {

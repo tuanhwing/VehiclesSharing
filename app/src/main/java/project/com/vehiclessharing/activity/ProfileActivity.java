@@ -11,8 +11,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -31,12 +34,13 @@ import static project.com.vehiclessharing.activity.HomeActivity.mUser;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private ImageView imgProfile;
+    public static ImageView imgProfile;
     private TextView txtFullName;
     private TextView txtEmail;
     private TextView txtPassword;
     private TextView txtPhone;
     private TextView txtSex;
+    public static ProgressBar progressBar;//Instance reference progress load image inside layout
     public static TextView txtBirthday;
     private TextView txtAddress;
     private Button btnEditProfile;
@@ -78,6 +82,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void addControls() {
 
         imgProfile = (ImageView) findViewById(R.id.img_user);
+        progressBar = (ProgressBar) findViewById(R.id.loading_progress_img);
         txtFullName = (TextView) findViewById(R.id.txt_fullname);
         txtEmail = (TextView) findViewById(R.id.txt_email);
         txtSex = (TextView) findViewById(R.id.txt_sex);
@@ -116,9 +121,22 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             if(url.equals("null") || url.isEmpty()){
                  imgProfile.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
             } else {
-                if(isOnline())
-                    Picasso.with(ProfileActivity.this).load(url).into(imgProfile);
-                else Picasso.with(getApplicationContext())
+
+                if(isOnline()){
+                    progressBar.setVisibility(View.VISIBLE);
+                    Picasso.with(ProfileActivity.this).load(url).into(imgProfile, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(ProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else Picasso.with(getApplicationContext())
                         .load(url)
                         .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(imgProfile);

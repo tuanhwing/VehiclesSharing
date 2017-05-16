@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -85,6 +87,7 @@ public class HomeActivity extends AppCompatActivity
     private TextView txtFullName,txtEmail;
     public static FirebaseUser mUser; //CurrentUser
     public static ImageView imgUser; // Avatar of user
+    public static ProgressBar progressBar;
     public static Bitmap bmImgUser = null; // Bitmap of avatar
     private static int CONTROLL_ON = 1;//Controll to on Locationchanged
     private static int CONTROLL_OFF = -1;//Controll to off Locationchanged
@@ -188,6 +191,7 @@ public class HomeActivity extends AppCompatActivity
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
+        progressBar = (ProgressBar) viewHeader.findViewById(R.id.loading_progress_img);
         trackgps = new TrackGPSService(HomeActivity.this);
 
         btnFindVihecle = (FloatingActionButton) findViewById(R.id.btn_find_vehicle);
@@ -471,18 +475,18 @@ public class HomeActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         updateUIHeader(loginWith);//Update information user into header layout
-        trackgps.getCurrentLocation(new LocationCallback() {
-            @Override
-            public void onSuccess() {
-                drawroadBetween2Location(new LatLng(TrackGPSService.mLocation.getLatitude(),
-                        TrackGPSService.mLocation.getLongitude()),new LatLng(10.8719808,106.790409));
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.e(TAG_ERROR_ROUTING, e.getMessage());
-            }
-        });
+//        trackgps.getCurrentLocation(new LocationCallback() {
+//            @Override
+//            public void onSuccess() {
+//                drawroadBetween2Location(new LatLng(TrackGPSService.mLocation.getLatitude(),
+//                        TrackGPSService.mLocation.getLongitude()),new LatLng(10.8719808,106.790409));
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                Log.e(TAG_ERROR_ROUTING, e.getMessage());
+//            }
+//        });
     }
 
     @Override
@@ -530,9 +534,21 @@ public class HomeActivity extends AppCompatActivity
         if(url.equals("null") || url.isEmpty()){
             imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
         } else {
-            if(isOnline())
-                Picasso.with(HomeActivity.this).load(url).into(imgUser);
-            else Picasso.with(getApplicationContext())
+            if(isOnline()) {
+                progressBar.setVisibility(View.VISIBLE);
+                Picasso.with(HomeActivity.this).load(url).into(imgUser, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(HomeActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else Picasso.with(getApplicationContext())
                     .load(url)
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(imgUser);
