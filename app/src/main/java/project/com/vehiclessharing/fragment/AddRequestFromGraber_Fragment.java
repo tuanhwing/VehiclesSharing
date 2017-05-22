@@ -135,7 +135,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
             }
         });
-        txtDesLocation.addTextChangedListener(new TextWatcher() {
+        /*txtDesLocation.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if(!s.toString().equals("") && mGoogleApiClient.isConnected()){
@@ -159,23 +159,8 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
             public void afterTextChanged(Editable s) {
 
             }
-        });
-      //  mRecyclerView.addOnItemTouchListener(mActivity,new RecycleView.);
-
-       /* txtDesLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //callPlaceAutocompleteActivityIntent();
-            }
         });*/
-      /*  autoCompleteLocation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String description = (String) parent.getItemAtPosition(position);
-                Toast.makeText(getActivity(), description, Toast.LENGTH_SHORT).show();
-            }
-        });*/
+     
     }
 
     private boolean validateRequest() {

@@ -61,6 +61,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
@@ -181,12 +184,7 @@ public class HomeActivity extends AppCompatActivity
                 return false;
             }
         });
-        btnFindVehicles.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                displayAllVehicleOnMap();
-            }
-        });
+        btnFindVehicles.setOnClickListener(this);
     }
 
 
@@ -283,17 +281,29 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void displayAllVehicleOnMap() {
-      //  Toast.makeText(this, "on disPlay all vehicle into map", Toast.LENGTH_SHORT).show();
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgrabber");
+        Toast.makeText(this, "on disPlay all vehicle into map", Toast.LENGTH_SHORT).show();
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber");
         ValueEventListener valueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
-                RequestFromGraber fromGraber = dataSnapshot.getValue(RequestFromGraber.class);
-                LatLngAddress curLocation=fromGraber.getSourceLocation();
+               // Log.d("load_data","datachanged");
+               // makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
+               Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
+
+               Map<String, RequestFromGraber> td = (HashMap<String,RequestFromGraber>) dataSnapshot.getValue();
+               //List<RequestFromGraber> fromGraber = new ArrayList<>(td.values());
+
+              //  Toast.makeText(HomeActivity.this, fromGraber.get(0).getUserId(), Toast.LENGTH_SHORT).show();
+                /*for (RequestFromGraber fromAGraber:fromGraber) {
+
+
+                    Toast.makeText(HomeActivity.this, "sfsdfdsf", Toast.LENGTH_SHORT).show();fromAGraber.getUserId();
+                }*/
+               /* LatLngAddress curLocation=fromGraber.getSourceLocation();
                 LatLng latLng=new LatLng(curLocation.getLatitude(),curLocation.getLongitude());
-             //   Toast.makeText(HomeActivity.this, "Location"+latLng.latitude+","+latLng.longitude, Toast.LENGTH_SHORT).show();
-                 // makeMaker(latLng,"khanhhoi");
+
+               Toast.makeText(HomeActivity.this, "Location"+latLng.latitude+","+latLng.longitude, Toast.LENGTH_SHORT).show();
+                */ // makeMaker(latLng,"khanhhoi");
 
                // makeMaker(new Latq                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Lng(10.8719808, 106.790409), "Nong Lam University");
                 //storageProfileOnDevice(user,userId);//Save profile user on realm
@@ -303,9 +313,10 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("load_data",databaseError.getMessage());
             }
         };
+        mDatabase.addListenerForSingleValueEvent(valueEventListener);
     }
 
 
@@ -330,6 +341,9 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        btnFindVehicles.setVisibility(View.VISIBLE);
+        btnFindPeople.setVisibility(View.VISIBLE);
+
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
     }

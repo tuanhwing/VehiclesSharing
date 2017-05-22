@@ -50,7 +50,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
 
     java.util.Calendar calendar= java.util.Calendar.getInstance();
     java.text.SimpleDateFormat sdf1=new java.text.SimpleDateFormat("HH:mm");
-
+    java.text.SimpleDateFormat sdf2=new java.text.SimpleDateFormat("dd/MM/yyyy");
     private static final LatLngBounds myBound=new LatLngBounds(new LatLng(-0,0),new LatLng(0,0));
 
     public static AddRequestFromNeeder_Fragment newIstance(String title){
@@ -171,12 +171,10 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         LatLng latLngDesLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtDesLocation.getText().toString());
         LatLngAddress curLocation=new LatLngAddress(latLngCurLocation.latitude,latLngCurLocation.longitude);
         LatLngAddress desLocation=new LatLngAddress(latLngDesLocation.latitude,latLngDesLocation.longitude);
-        Date date=new Date();
-        String curDate=date.getDate()+"/"+date.getMonth()+"/"+date.getYear();
+        //Date date=new Date();
+        String curDate=sdf2.format(calendar.getTime());
         String timeStart=txtTimeStart.getText().toString();
         RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,curLocation,desLocation,timeStart,curDate);
         mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
-
     }
-
 }
