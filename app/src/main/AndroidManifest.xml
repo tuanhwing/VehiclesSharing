@@ -15,8 +15,8 @@
         android:required="true" />
 
     <application
-        android:allowBackup="true"
         android:name=".application.ApplicationController"
+        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.ProfileActivity"></activity>
+        <activity android:name=".activity.ProfileActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -65,7 +65,11 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".activity.EditProfileActivity"></activity>
+        <activity android:name=".activity.EditProfileActivity" />
+
+        <activity android:name=".activity.AddRequireFindPeople"
+            android:theme="@android:style/Theme.Holo.Dialog"
+            />
     </application>
 
 </manifest>

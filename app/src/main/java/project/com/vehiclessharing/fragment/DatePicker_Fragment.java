@@ -10,6 +10,8 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
+import project.com.vehiclessharing.activity.EditProfileActivity;
+
 /**
  * Created by Tuan on 01/05/2017.
  */
@@ -32,23 +34,7 @@ public class DatePicker_Fragment extends DialogFragment implements DatePickerDia
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        // Do something with the date chosen by the user
-//        String userId = HomeActivity.mUser.getUid();
-//        ProfileActivity.mDatabase.child("users").child(userId).child("birthDay").child("day").setValue(dayOfMonth);
-//        ProfileActivity.mDatabase.child("users").child(userId).child("birthDay").child("month").setValue(month);
-//        ProfileActivity.mDatabase.child("users").child(userId).child("birthDay").child("year").setValue(year);
-//        db.updateDay(userId,dayOfMonth);
-//        db.updateMonth(userId,month);
-//        db.updateYear(userId,year);
-//        Toast.makeText(getActivity(), "Update birthday success!", Toast.LENGTH_SHORT).show();
-//        if(!HomeActivity.currentUser.getBirthDay().compareBirhtday(new BirthDay(dayOfMonth,month,year)) &&
-//                Validation.checkValidBirthDay(new BirthDay(dayOfMonth,month,year)).getIsValid()){
-//            ProfileActivity.isBirthDayChanged = true;
-//            ProfileActivity.day = dayOfMonth;
-//            ProfileActivity.month = month;
-//            ProfileActivity.year = year;
-//            ProfileActivity.hideOrShowSave();
-//            ProfileActivity.txtBirthday.setText(dayOfMonth + "/" + month + "/" + year);
+      //  EditProfileActivity.handleDatePick(dayOfMonth,month,year);
 //        }
     }
 }

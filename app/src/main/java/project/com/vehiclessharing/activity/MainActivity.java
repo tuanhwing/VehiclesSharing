@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.google.firebase.auth.FirebaseAuth;
@@ -75,11 +76,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Utils.Login_Fragment).commit();
         }
 
-
         addControls();
         addEvents();
-
-
     }
 
     /**
@@ -97,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if(usera.getProviderId().equals(Utils.Email_Signin)){
                             String userId = user.getUid();
                             if(!RealmDatabase.isUserExists(userId)){
+                                Toast.makeText(MainActivity.this, userId, Toast.LENGTH_SHORT).show();
                                 Log.d("real_database","true");
                                 getProfileUser(userId);//get profile and save data on device
                             }
@@ -229,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @return
      */
     private void getProfileUser(final String userId) {
+
 //        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mUserReference = FirebaseDatabase.getInstance().getReference().child("users").child(userId); //Instance database firebase
         ValueEventListener getProfileUser = new ValueEventListener() {
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Get Post object and use the values to update the UI
                 Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
                 User user = dataSnapshot.getValue(User.class);
-                storageProfileOnDevice(user,userId);//Save profile user on Sqlite
+                storageProfileOnDevice(user,userId);//Save profile user on realm
                 // ...
                 switchActivity();//go to the Home Activity
             }

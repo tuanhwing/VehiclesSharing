@@ -1,6 +1,8 @@
 package project.com.vehiclessharing.activity;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -26,6 +29,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,13 +53,23 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
+import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
+import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
+import project.com.vehiclessharing.model.LatLngAddress;
+import project.com.vehiclessharing.model.RequestFromGraber;
+import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
 import project.com.vehiclessharing.sqlite.DatabaseHelper;
@@ -72,10 +87,10 @@ public class HomeActivity extends AppCompatActivity
     private TextView txtFullName,txtEmail;
     public static FirebaseUser mUser; //CurrentUser
     public static ImageView imgUser; // Avatar of user
-    public static Bitmap bmImgUser = null; // Bitmap of avatar
+    public static Bitmap bmImgUser = null; // Bitmap of avonatar
     private static int CONTROLL_ON = 1;//Controll to on Locationchanged
     private static int CONTROLL_OFF = -1;//Controll to off Locationchanged
-    private FloatingActionButton fab; // button fab action
+
     public static int loginWith; //Determine user authen email/facebook/google
 
     public static GoogleMap mGoogleMap = null;//Instance google map API
@@ -90,14 +105,17 @@ public class HomeActivity extends AppCompatActivity
 
     private static String TAG_ERROR_ROUTING = "ERROR_ROUTING";
 
-
+    private FloatingActionButton btnFindPeople; // button fab action
+    private FloatingActionButton btnFindVehicles;
+    private static  DialogFragment dialogFragment;// Instance fragmentManager to switch fragment
+    private DatabaseReference mDatabase;
 
 //    private static FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+      //  fragmentManager = getSupportFragmentManager();
         //set fragment initially
 //        fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
@@ -140,15 +158,48 @@ public class HomeActivity extends AppCompatActivity
 
     private void addEvents() {
 
+        final String[] dialogTitle =new String[1];
+        btnFindPeople.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                //addRequestFromGraber();
+                dialogTitle[0] ="If you have avehicle and you want find a people together you can fill out the form to find it";
+                dialogFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
+                dialogFragment.show(getFragmentManager(),"From Grabber");
+                //fragmentManager.beginTransaction().add(R.id.addRequestFromGraber,fragmentManager).commit();
+                return false;
+
+            }
+        });
+        btnFindVehicles.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                //addRequestFromNeeder();
+                dialogTitle[0]="";
+                dialogFragment=new AddRequestFromNeeder_Fragment();
+                dialogFragment.show(getFragmentManager(),"From Needer");
+                return false;
+            }
+        });
+        btnFindVehicles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayAllVehicleOnMap();
+            }
+        });
     }
 
+
     private void addControls() {
+
+        btnFindPeople=(FloatingActionButton) findViewById(R.id.btnFindPeople);
+        btnFindVehicles=(FloatingActionButton) findViewById(R.id.btnFindVehicle);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
         db = new DatabaseHelper(HomeActivity.this);
         currentUser = RealmDatabase.getListData().get(0);
 
-        Log.d("real_database",currentUser.getUserId());
+       Log.d("real_database",currentUser.getUserId());
         Log.d("real_database", String.valueOf(currentUser.getUser().getBirthDay().getDay()));
         Log.d("real_database", String.valueOf(currentUser.getUser().getAddress().getCountry()));
 
@@ -220,14 +271,43 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_find_people:
-                //logout();
-                break;
-            case R.id.btn_find_vehicle:
+            case R.id.btnFindPeople:
                 //
+                //displayMenuHowFindPeople();
+                break;
+            case R.id.btnFindVehicle:
+                //
+               displayAllVehicleOnMap();
                 break;
         }
     }
+
+    private void displayAllVehicleOnMap() {
+      //  Toast.makeText(this, "on disPlay all vehicle into map", Toast.LENGTH_SHORT).show();
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgrabber");
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
+                RequestFromGraber fromGraber = dataSnapshot.getValue(RequestFromGraber.class);
+                LatLngAddress curLocation=fromGraber.getSourceLocation();
+                LatLng latLng=new LatLng(curLocation.getLatitude(),curLocation.getLongitude());
+             //   Toast.makeText(HomeActivity.this, "Location"+latLng.latitude+","+latLng.longitude, Toast.LENGTH_SHORT).show();
+                 // makeMaker(latLng,"khanhhoi");
+
+               // makeMaker(new Latq                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Lng(10.8719808, 106.790409), "Nong Lam University");
+                //storageProfileOnDevice(user,userId);//Save profile user on realm
+                // ...
+                //switchActivity();//go to the Home Activity
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
 
     private void logout() {
         FirebaseAuth.getInstance().signOut();
@@ -250,7 +330,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-//        makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
+//       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
     }
 
