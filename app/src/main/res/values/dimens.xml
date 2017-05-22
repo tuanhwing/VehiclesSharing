@@ -12,5 +12,8 @@
     <dimen name="text_profile_margin">14dp</dimen>
     <dimen name="margin_field_profile">12dp</dimen>
     <dimen name="margin_profile_line">14dp</dimen>
+    <dimen name="margin_edit_profile">10dp</dimen>
+    <dimen name="margin_5_dp">5dp</dimen>
+    <dimen name="margin_4_dp">4dp</dimen>
 
 </resources>

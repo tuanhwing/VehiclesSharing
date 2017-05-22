@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,9 +49,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -58,6 +63,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -66,6 +73,7 @@ import java.util.List;
 import java.util.Map;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.application.ApplicationController;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
 import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
@@ -75,11 +83,11 @@ import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
-import project.com.vehiclessharing.sqlite.DatabaseHelper;
 import project.com.vehiclessharing.sqlite.RealmDatabase;
 import project.com.vehiclessharing.utils.LocationCallback;
 
 import static project.com.vehiclessharing.R.id.map;
+import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener, OnMapReadyCallback, RoutingListener{
@@ -90,28 +98,36 @@ public class HomeActivity extends AppCompatActivity
     private TextView txtFullName,txtEmail;
     public static FirebaseUser mUser; //CurrentUser
     public static ImageView imgUser; // Avatar of user
-    public static Bitmap bmImgUser = null; // Bitmap of avonatar
+    public static ProgressBar progressBar;
+    public static Bitmap bmImgUser = null; // Bitmap of avatar
     private static int CONTROLL_ON = 1;//Controll to on Locationchanged
     private static int CONTROLL_OFF = -1;//Controll to off Locationchanged
-
     public static int loginWith; //Determine user authen email/facebook/google
 
     public static GoogleMap mGoogleMap = null;//Instance google map API
     public static Polyline polyline = null;//Instance
     private static TrackGPSService trackgps;
+    private DatabaseReference mDatabase;
 
-    private DatabaseHelper db;//Instace DatabaseHelper
+    private FloatingActionButton btnFindPeople;
+    private FloatingActionButton btnFindVihecle;
+
+    private ValueEventListener requestNeederListener;
+    private DatabaseReference requestNeederRef;
+    private String mRequestKey;
+    private ArrayList<RequestDemo> arrRequest;
+
 
     public static UserOnDevice currentUser;//Instace current user logined
     final private static int REQ_PERMISSION = 20;//Value request permission
     private static String DIRECTION_KEY_API = "AIzaSyAGjxiNRAHypiFYNCN-qcmUgoejyZPtS9c";
 
-    private static String TAG_ERROR_ROUTING = "ERROR_ROUTING";
 
     private FloatingActionButton btnFindPeople; // button fab action
     private FloatingActionButton btnFindVehicles;
     private static  DialogFragment dialogFragment;// Instance fragmentManager to switch fragment
     private DatabaseReference mDatabase;
+
 
 //    private static FragmentManager fragmentManager;
     @Override
@@ -155,11 +171,12 @@ public class HomeActivity extends AppCompatActivity
 
         addControls();
         addEvents();
-        updateUIHeader(loginWith);//Update information user into header layout
 
     }
 
     private void addEvents() {
+        btnFindPeople.setOnClickListener(this);
+        btnFindVihecle.setOnClickListener(this);
 
         final String[] dialogTitle =new String[1];
         btnFindPeople.setOnLongClickListener(new View.OnLongClickListener() {
@@ -194,19 +211,61 @@ public class HomeActivity extends AppCompatActivity
         btnFindVehicles=(FloatingActionButton) findViewById(R.id.btnFindVehicle);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
-        db = new DatabaseHelper(HomeActivity.this);
-        currentUser = RealmDatabase.getListData().get(0);
-
-       Log.d("real_database",currentUser.getUserId());
-        Log.d("real_database", String.valueOf(currentUser.getUser().getBirthDay().getDay()));
-        Log.d("real_database", String.valueOf(currentUser.getUser().getAddress().getCountry()));
-
+        //[Start]Send verification
+        mUser.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.d("send_verification", "Email sent.");
+                        } else {
+                            Log.d("send_verification1", "Email sent unsuccessful!");
+                            Log.d("send_verification1", String.valueOf(task.getException().getMessage()));
+                        }
+                    }
+                });
+        //[END]Send verification
+        currentUser = RealmDatabase.getCurrentUser(mUser.getUid());
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        arrRequest = new ArrayList<RequestDemo>();
 
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
+        progressBar = (ProgressBar) viewHeader.findViewById(R.id.loading_progress_img);
         trackgps = new TrackGPSService(HomeActivity.this);
+
+        btnFindVihecle = (FloatingActionButton) findViewById(R.id.btn_find_vehicle);
+        btnFindPeople = (FloatingActionButton) findViewById(R.id.btn_find_people);
+
+        //Listener request of vehicle-sharing from database Firebase
+        requestNeederListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                try {
+                    for(DataSnapshot temp : dataSnapshot.getChildren()) {
+                        RequestDemo requestDemo = temp.getValue(RequestDemo.class);
+                        arrRequest.add(requestDemo);
+                    }
+                    mGoogleMap.clear();
+                    for(RequestDemo a : arrRequest){
+                        makeMaker(new LatLng(a.getLocationRequest().getLocationLat(),a.getLocationRequest().getLocationLong()),
+                                a.getGraberId());
+                    }
+                } catch (Exception e){
+                    Log.d("database_firebaseaaaaa",String.valueOf(e.getMessage()));
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
     @Override
     public void onBackPressed() {
@@ -325,7 +384,7 @@ public class HomeActivity extends AppCompatActivity
         if(loginWith == 1)
             //Sign out Facebook
             LoginManager.getInstance().logOut();
-        else
+        if(loginWith == 2)
             //Sign out Google plus
             Auth.GoogleSignInApi.signOut(Login_Fragment.session.mGoogleApiClient).setResultCallback(
                     new ResultCallback<Status>() {
@@ -343,6 +402,8 @@ public class HomeActivity extends AppCompatActivity
         mGoogleMap = googleMap;
         btnFindVehicles.setVisibility(View.VISIBLE);
         btnFindPeople.setVisibility(View.VISIBLE);
+        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+        requestNeederRef.addValueEventListener(requestNeederListener);
 
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
@@ -400,8 +461,9 @@ public class HomeActivity extends AppCompatActivity
      * @param title title maker
      */
     private void makeMaker(LatLng location, String title) {
-        LatLng maker = new LatLng(location.latitude, location.longitude);
-        mGoogleMap.addMarker(new MarkerOptions().title(title).position(maker));
+        LatLng latLng = new LatLng(location.latitude, location.longitude);
+        Marker  marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng));
+        marker.setTag(title);
     }
 
 
@@ -480,18 +542,18 @@ public class HomeActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         updateUIHeader(loginWith);//Update information user into header layout
-        trackgps.getCurrentLocation(new LocationCallback() {
-            @Override
-            public void onSuccess() {
-                drawroadBetween2Location(new LatLng(TrackGPSService.mLocation.getLatitude(),
-                        TrackGPSService.mLocation.getLongitude()),new LatLng(10.8719808,106.790409));
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.e(TAG_ERROR_ROUTING, e.getMessage());
-            }
-        });
+//        trackgps.getCurrentLocation(new LocationCallback() {
+//            @Override
+//            public void onSuccess() {
+//                drawroadBetween2Location(new LatLng(TrackGPSService.mLocation.getLatitude(),
+//                        TrackGPSService.mLocation.getLongitude()),new LatLng(10.8719808,106.790409));
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                Log.e(TAG_ERROR_ROUTING, e.getMessage());
+//            }
+//        });
     }
 
     @Override
@@ -520,28 +582,44 @@ public class HomeActivity extends AppCompatActivity
     private void updateUIHeader(int loginWith){
         String mfullName = "";
         String memail = "";
-        String url = String.valueOf(mUser.getPhotoUrl());
+        String url = "";
         if(loginWith == 0){
             mfullName = currentUser.getUser().getFullName();
             memail = currentUser.getUser().getEmail();
+            url = String.valueOf(currentUser.getUser().getImage());//url avatar user
         }
         else {
             mfullName = mUser.getDisplayName();
             memail = mUser.getEmail();
+            url = String.valueOf(mUser.getPhotoUrl());
         }
 
         txtEmail.setText(memail);
         txtFullName.setText(mfullName);
 
-        if(!url.equals("")){
-//            if(isOnline())
-                Picasso.with(HomeActivity.this).load(url).into(imgUser);
-//            else Picasso.with(getApplicationContext())
-//                    .load(url)
-//                    .networkPolicy(NetworkPolicy.OFFLINE)
-//                    .into(imgUser);
-        }
 
+        if(url.equals("null") || url.isEmpty()){
+            imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
+        } else {
+            if(isOnline()) {
+                progressBar.setVisibility(View.VISIBLE);
+                Picasso.with(HomeActivity.this).load(url).into(imgUser, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(HomeActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else Picasso.with(getApplicationContext())
+                    .load(url)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(imgUser);
+        }
     }
 
     /**
@@ -609,5 +687,7 @@ public class HomeActivity extends AppCompatActivity
     public void onRoutingCancelled() {
 
     }
+
+
 
 }

@@ -8,28 +8,40 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/img_user"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/temp"
-                app:civ_border_color="#95a5a6" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/img_user"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/temp"
+                    app:civ_border_color="#95a5a6" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginRight="7dp"
+                    android:src="@drawable/camera"
+                    app:civ_border_color="#95a5a6"
+                    app:civ_border_width="1dp"
+                    app:civ_fill_color="@color/white" />
+            </FrameLayout>
+            <ProgressBar
+                android:id="@+id/loading_progress_img"
+                style="?android:attr/progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="7dp"
-                android:layout_marginRight="7dp"
-                android:src="@drawable/camera"
-                app:civ_border_color="#95a5a6"
-                app:civ_border_width="1dp"
-                app:civ_fill_color="@color/white" />
-        </FrameLayout>
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:visibility="visible"/>
+        </RelativeLayout>
 
 
         <LinearLayout
@@ -72,12 +84,14 @@
                     android:focusable="false"
                     android:text="@string/female" />
             </LinearLayout>
+
+
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
                 android:background="@color/color_line_field"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="5dp"/>
+                android:layout_marginLeft="@dimen/margin_4_dp"
+                android:layout_marginRight="@dimen/margin_5_dp"/>
 
 
             <TextView
@@ -85,15 +99,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:drawableRight="@drawable/edit"
-                android:paddingBottom="10dp"
-                android:paddingRight="5dp"
-                android:paddingTop="10dp" />
+                android:textColor="@color/black"
+                android:paddingBottom="@dimen/margin_edit_profile"
+                android:paddingRight="@dimen/margin_5_dp"
+                android:paddingTop="@dimen/margin_edit_profile" />
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
                 android:background="@color/color_line_field"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="5dp"/>
+                android:layout_marginLeft="@dimen/margin_4_dp"
+                android:layout_marginRight="@dimen/margin_5_dp"/>
 
             <EditText
                 android:id="@+id/ed_address"

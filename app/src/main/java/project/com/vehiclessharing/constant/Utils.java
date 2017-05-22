@@ -38,6 +38,8 @@ public class Utils {
 
     //Message ProgressDialog
     public static final String SignIn = "Sign in...";
+    public static final String ChangePassword = "Updating password...";
+    public static final String Updating = "Updating...";
     public static final String PleaseWait = "Please Wait...";
     public static final String SignUp = "Sign up...";
     public static final String EnterBothCredentials = "Enter both credentials.";
@@ -48,5 +50,13 @@ public class Utils {
      * Device token key's name.
      */
     public static final String DEVICE_TOKEN = "device_token";
+
+    //Tag error try cat
+    public static final String TAG_ERROR_GET_BYTE_IMAGE = "error_get_byte_image";
+    public static final String TAG_ERROR_UPLOAD_IMAGE_FIREBASE = "error_upload_image";
+    public static final String TAG_UPLOAD_IMAGE = "upload_image";
+    public static final String TAG_UPDATE_PROFILE = "update_profile";
+    public static final String TAG_ERROR_ROUTING = "error_routing";
+    public static final String TAG_ERROR_SELECT_IMAGE = "error_select_iamge";
 
 }

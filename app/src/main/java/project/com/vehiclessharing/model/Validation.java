@@ -121,6 +121,11 @@ public class Validation {
         return new Validation(true, "");
     }
 
+    /**
+     *
+     * @param birthDay
+     * @return
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static Validation checkValidBirthDay(BirthDay birthDay){
         final Calendar c = Calendar.getInstance();

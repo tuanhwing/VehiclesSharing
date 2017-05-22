@@ -369,18 +369,15 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            mProgress.show();
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
+                mProgress.show();
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...
-//                mProgress.dismiss();
-                Toast.makeText(getActivity(),"Sign in google failed!",Toast.LENGTH_SHORT).show();
-                Log.d("RESULTAAAAA", String.valueOf(result.getStatus()));
             }
         }
         else {

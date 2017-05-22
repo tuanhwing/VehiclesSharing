@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
 import project.com.vehiclessharing.activity.EditProfileActivity;
@@ -16,7 +15,7 @@ import project.com.vehiclessharing.activity.EditProfileActivity;
  * Created by Tuan on 01/05/2017.
  */
 
-public class DatePicker_Fragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+public class DatePicker_Fragment extends android.app.DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @NonNull
@@ -34,7 +33,6 @@ public class DatePicker_Fragment extends DialogFragment implements DatePickerDia
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-      //  EditProfileActivity.handleDatePick(dayOfMonth,month,year);
-//        }
+        EditProfileActivity.handleDatePick(dayOfMonth,month,year);
     }
 }

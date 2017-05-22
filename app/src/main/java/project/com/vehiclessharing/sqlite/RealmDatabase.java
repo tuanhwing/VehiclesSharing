@@ -34,6 +34,12 @@ public class RealmDatabase {
         return result1;
     }
 
+    public static UserOnDevice getCurrentUser(String userId){
+        RealmResults<UserOnDevice> result1 = realm.where(UserOnDevice.class).equalTo("userId",userId).findAll();
+        if(result1.size() == 0) return null;
+        return result1.get(0);
+    }
+
     /**
      * Delete data in Realm
      * @param target
@@ -56,6 +62,11 @@ public class RealmDatabase {
     }
 
 
+    /**
+     * Check user is exists on device
+     * @param userId
+     * @return true if exists
+     */
     public static boolean isUserExists(String userId){
         // Build the query looking at all users:
         RealmQuery<UserOnDevice> query = realm.where(UserOnDevice.class);
@@ -67,6 +78,16 @@ public class RealmDatabase {
         RealmResults<UserOnDevice> result1 = query.findAll();
         if(result1.size() > 0) return true;
         return false;
+    }
+
+    /**
+     * Update url image's user
+     * @param url
+     */
+    public static void updateImageUser(String url){
+        realm.beginTransaction();
+
+        realm.commitTransaction();
     }
 
 }
