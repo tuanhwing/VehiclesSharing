@@ -107,15 +107,11 @@ public class HomeActivity extends AppCompatActivity
     public static GoogleMap mGoogleMap = null;//Instance google map API
     public static Polyline polyline = null;//Instance
     private static TrackGPSService trackgps;
-    private DatabaseReference mDatabase;
-
-    private FloatingActionButton btnFindPeople;
-    private FloatingActionButton btnFindVihecle;
 
     private ValueEventListener requestNeederListener;
     private DatabaseReference requestNeederRef;
     private String mRequestKey;
-    private ArrayList<RequestDemo> arrRequest;
+   private ArrayList<RequestFromGraber> arrRequest;
 
 
     public static UserOnDevice currentUser;//Instace current user logined
@@ -168,7 +164,6 @@ public class HomeActivity extends AppCompatActivity
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
 
-
         addControls();
         addEvents();
 
@@ -176,32 +171,32 @@ public class HomeActivity extends AppCompatActivity
 
     private void addEvents() {
         btnFindPeople.setOnClickListener(this);
-        btnFindVihecle.setOnClickListener(this);
-
-        final String[] dialogTitle =new String[1];
-        btnFindPeople.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                //addRequestFromGraber();
-                dialogTitle[0] ="If you have avehicle and you want find a people together you can fill out the form to find it";
-                dialogFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
-                dialogFragment.show(getFragmentManager(),"From Grabber");
-                //fragmentManager.beginTransaction().add(R.id.addRequestFromGraber,fragmentManager).commit();
-                return false;
-
-            }
-        });
-        btnFindVehicles.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                //addRequestFromNeeder();
-                dialogTitle[0]="";
-                dialogFragment=new AddRequestFromNeeder_Fragment();
-                dialogFragment.show(getFragmentManager(),"From Needer");
-                return false;
-            }
-        });
         btnFindVehicles.setOnClickListener(this);
+
+//        final String[] dialogTitle =new String[1];
+//        btnFindPeople.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                //addRequestFromGraber();
+//                dialogTitle[0] ="If you have avehicle and you want find a people together you can fill out the form to find it";
+//                dialogFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
+//                dialogFragment.show(getFragmentManager(),"From Grabber");
+//                //fragmentManager.beginTransaction().add(R.id.addRequestFromGraber,fragmentManager).commit();
+//                return false;
+//
+//            }
+//        });
+//        btnFindVehicles.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                //addRequestFromNeeder();
+//                dialogTitle[0]="";
+//                dialogFragment=new AddRequestFromNeeder_Fragment();
+//                dialogFragment.show(getFragmentManager(),"From Needer");
+//                return false;
+//            }
+//        });
+       // btnFindVehicles.setOnClickListener(this);
     }
 
 
@@ -227,7 +222,7 @@ public class HomeActivity extends AppCompatActivity
         //[END]Send verification
         currentUser = RealmDatabase.getCurrentUser(mUser.getUid());
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        arrRequest = new ArrayList<RequestDemo>();
+        arrRequest = new ArrayList<RequestFromGraber>();
 
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
@@ -236,15 +231,15 @@ public class HomeActivity extends AppCompatActivity
         progressBar = (ProgressBar) viewHeader.findViewById(R.id.loading_progress_img);
         trackgps = new TrackGPSService(HomeActivity.this);
 
-        btnFindVihecle = (FloatingActionButton) findViewById(R.id.btn_find_vehicle);
-        btnFindPeople = (FloatingActionButton) findViewById(R.id.btn_find_people);
+        btnFindVehicles = (FloatingActionButton) findViewById(R.id.btnFindVehicle);
+        btnFindPeople = (FloatingActionButton) findViewById(R.id.btnFindPeople);
 
         //Listener request of vehicle-sharing from database Firebase
         requestNeederListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                try {
+               /* try {
                     for(DataSnapshot temp : dataSnapshot.getChildren()) {
                         RequestDemo requestDemo = temp.getValue(RequestDemo.class);
                         arrRequest.add(requestDemo);
@@ -257,7 +252,7 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e){
                     Log.d("database_firebaseaaaaa",String.valueOf(e.getMessage()));
                 }
-
+*/
 
             }
 
@@ -327,55 +322,21 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
+        final String[] dialogTitle =new String[1];
+        Intent intent=new Intent();
         switch (view.getId()) {
             case R.id.btnFindPeople:
-                //
-                //displayMenuHowFindPeople();
+                dialogTitle[0] ="If you have avehicle and you want find a people together you can fill out the form to find it";
+                dialogFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
+                dialogFragment.setTargetFragment(dialogFragment,1);
+                dialogFragment.show(getFragmentManager(),"From Grabber");
                 break;
             case R.id.btnFindVehicle:
-                //
-               displayAllVehicleOnMap();
+                dialogTitle[0]="";
+                dialogFragment=new AddRequestFromNeeder_Fragment();
+                dialogFragment.show(getFragmentManager(),"From Needer");
                 break;
         }
-    }
-
-    private void displayAllVehicleOnMap() {
-        Toast.makeText(this, "on disPlay all vehicle into map", Toast.LENGTH_SHORT).show();
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber");
-        ValueEventListener valueEventListener=new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-               // Log.d("load_data","datachanged");
-               // makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
-               Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
-
-               Map<String, RequestFromGraber> td = (HashMap<String,RequestFromGraber>) dataSnapshot.getValue();
-               //List<RequestFromGraber> fromGraber = new ArrayList<>(td.values());
-
-              //  Toast.makeText(HomeActivity.this, fromGraber.get(0).getUserId(), Toast.LENGTH_SHORT).show();
-                /*for (RequestFromGraber fromAGraber:fromGraber) {
-
-
-                    Toast.makeText(HomeActivity.this, "sfsdfdsf", Toast.LENGTH_SHORT).show();fromAGraber.getUserId();
-                }*/
-               /* LatLngAddress curLocation=fromGraber.getSourceLocation();
-                LatLng latLng=new LatLng(curLocation.getLatitude(),curLocation.getLongitude());
-
-               Toast.makeText(HomeActivity.this, "Location"+latLng.latitude+","+latLng.longitude, Toast.LENGTH_SHORT).show();
-                */ // makeMaker(latLng,"khanhhoi");
-
-               // makeMaker(new Latq                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Lng(10.8719808, 106.790409), "Nong Lam University");
-                //storageProfileOnDevice(user,userId);//Save profile user on realm
-                // ...
-                //switchActivity();//go to the Home Activity
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("load_data",databaseError.getMessage());
-            }
-        };
-        mDatabase.addListenerForSingleValueEvent(valueEventListener);
     }
 
 
@@ -465,7 +426,22 @@ public class HomeActivity extends AppCompatActivity
         Marker  marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng));
         marker.setTag(title);
     }
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1 && resultCode==1)
+        {
+            makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
+        }
+        else if(requestCode==1 && resultCode==2)
+        {
+            Toast.makeText(this, "Get all request find people", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this, "Get all request find vehicle", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     /**
      * Check permission Location service
@@ -687,7 +663,5 @@ public class HomeActivity extends AppCompatActivity
     public void onRoutingCancelled() {
 
     }
-
-
 
 }

@@ -108,6 +108,9 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
     private void addEvents() {
         final String[] vehicleType = new String[1];
+        final int resultCode=1;
+
+
          btnOK.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -115,6 +118,8 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
             if(checkNull)
                addRequestIntoDB(vehicleType[0]);
             Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
+            //resultCode=getTargetRequestCode();
+            getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,getActivity().getIntent());
             dismiss();
         }
     });
@@ -160,7 +165,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
             }
         });*/
-     
+
     }
 
     private boolean validateRequest() {
@@ -185,7 +190,6 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
         LatLngAddress desLocation=new LatLngAddress(latLngDesLocation.latitude,latLngDesLocation.longitude);
         RequestFromGraber requestFromGraber=new RequestFromGraber(userId,curLocation,desLocation,vehicleType);
         mDatabase.child("requestfromgraber").child(userId).setValue(requestFromGraber);
-
     }
 
     private void addControls() {

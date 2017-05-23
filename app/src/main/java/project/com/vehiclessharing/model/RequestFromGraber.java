@@ -5,6 +5,8 @@ import android.location.Address;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.HashMap;
+
 /**
  * Created by Hihihehe on 5/13/2017.
  */
@@ -56,5 +58,14 @@ public class RequestFromGraber {
 
     public void setVehicleType(String vehicleType) {
         this.vehicleType = vehicleType;
+    }
+
+    public HashMap<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("userId",userId);
+        result.put("sourceLocation",sourceLocation);
+        result.put("destinationLocation",destinationLocation);
+        result.put("vehicleType",vehicleType);
+        return result;
     }
 }
