@@ -311,7 +311,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
      * // Get the data from an ImageView as bytes
      * @return byte[]
      */
-    private byte[] getByteFromImageView() {
+    private byte[] getByteFromBitmap() {
         byte[] data = null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -503,17 +503,20 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == EditProfileActivity.RESULT_OK){
             Uri targetUri = data.getData();
             try {
+//                ImageClass.uploadAvatarFull(ImageClass.getBytesFromUri(EditProfileActivity.this,targetUri));
                 bmImageUser = ImageClass.decodeUri(EditProfileActivity.this,targetUri,100);
+//                bmImageUser = ImageClass.rotateImage(bmImageUser);//Rotating avatar's user before upload Storage Firebase
             } catch (FileNotFoundException e) {
                 Log.e(Utils.TAG_ERROR_SELECT_IMAGE,String.valueOf(e.getMessage()));
             }
-            updateImage(getByteFromImageView());
+            updateImage(getByteFromBitmap());
         }
     }
 
