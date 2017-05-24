@@ -67,7 +67,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
    // private RecyclerView mRecyclerView;
     private GooglePlacesAutocompleteAdapter mplacesAutocompleteAdapter;
     private ImageView imgClearTextCur, imgClearTextDes;
-    //public static UserSessionManager session;
+
 
     private static final LatLngBounds myBound=new LatLngBounds(new LatLng(-0,0),new LatLng(0,0));
 
