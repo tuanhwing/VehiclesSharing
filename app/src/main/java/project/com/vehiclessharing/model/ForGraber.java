@@ -21,6 +21,8 @@ import java.util.Map;
 public class ForGraber {
     private static ForGraber instance;
     private static DatabaseReference mDatabase;
+    private ValueEventListener requestNeederListener;
+    private RequestFromGraber graber;
 
     public static ForGraber getInstance()
     {
@@ -33,7 +35,7 @@ public class ForGraber {
         final List<RequestFromGraber> list=new ArrayList<>();
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber");
-        ValueEventListener valueEventListener=new ValueEventListener() {
+        requestNeederListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("DemoLogin", String.valueOf(dataSnapshot.getChildren()));
@@ -52,14 +54,28 @@ public class ForGraber {
                 Log.d("load_data",databaseError.getMessage());
             }
         };
-        mDatabase.addListenerForSingleValueEvent(valueEventListener);
+        mDatabase.addListenerForSingleValueEvent(requestNeederListener);
 
 
         return list;
     }
     public RequestFromGraber getInfoRequestNeeder(String uId)
     {
-        RequestFromGraber graber=new RequestFromGraber();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber").child(uId);
+        requestNeederListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
+                graber= (RequestFromGraber) dataSnapshot.getValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("load_data",databaseError.getMessage());
+            }
+        };
+        mDatabase.addListenerForSingleValueEvent(requestNeederListener);
         return graber;
     }
 }

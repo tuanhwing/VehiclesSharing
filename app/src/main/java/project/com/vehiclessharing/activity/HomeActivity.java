@@ -78,6 +78,7 @@ import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
 import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
+import project.com.vehiclessharing.model.ForGraber;
 import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.User;
@@ -86,6 +87,7 @@ import project.com.vehiclessharing.service.TrackGPSService;
 import project.com.vehiclessharing.sqlite.RealmDatabase;
 import project.com.vehiclessharing.utils.LocationCallback;
 
+import static project.com.vehiclessharing.R.id.center;
 import static project.com.vehiclessharing.R.id.map;
 import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
@@ -123,7 +125,7 @@ public class HomeActivity extends AppCompatActivity
     private FloatingActionButton btnFindVehicles;
     private static  DialogFragment dialogFragment;// Instance fragmentManager to switch fragment
     private DatabaseReference mDatabase;
-
+    private int checkOnScreen;
 
 //    private static FragmentManager fragmentManager;
     @Override
@@ -170,9 +172,33 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void addEvents() {
-        btnFindPeople.setOnClickListener(this);
-        btnFindVehicles.setOnClickListener(this);
 
+        requestNeederListener  = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+               /* try {
+                    for(DataSnapshot temp : dataSnapshot.getChildren()) {
+                        RequestDemo requestDemo = temp.getValue(RequestDemo.class);
+                        arrRequest.add(requestDemo);
+                    }
+                    mGoogleMap.clear();
+                    for(RequestDemo a : arrRequest){
+                        makeMaker(new LatLng(a.getLocationRequest().getLocationLat(),a.getLocationRequest().getLocationLong()),
+                                a.getGraberId());
+                    }
+                } catch (Exception e){
+                    Log.d("database_firebaseaaaaa",String.valueOf(e.getMessage()));
+                }
+*/
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
 //        final String[] dialogTitle =new String[1];
 //        btnFindPeople.setOnLongClickListener(new View.OnLongClickListener() {
 //            @Override
@@ -197,6 +223,26 @@ public class HomeActivity extends AppCompatActivity
 //            }
 //        });
        // btnFindVehicles.setOnClickListener(this);
+       //
+
+        btnFindVehicles.setOnClickListener(this);
+        btnFindPeople.setOnClickListener(this);
+    }
+
+    private void checkOnScreen() {
+        if(checkOnScreen==0||checkOnScreen==1)
+        {
+            mGoogleMap.clear();
+            makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
+            Toast.makeText(this, "All Vehicle", Toast.LENGTH_SHORT).show();
+         //get all request from graber
+        }
+        else if(checkOnScreen==2)
+        { mGoogleMap.clear();
+            makeMaker(new LatLng(10.8719808, 100.790409), "Nong Lam University");
+            Toast.makeText(this, "All people", Toast.LENGTH_SHORT).show();
+            //get all request from needer
+        }
     }
 
 
@@ -231,36 +277,12 @@ public class HomeActivity extends AppCompatActivity
         progressBar = (ProgressBar) viewHeader.findViewById(R.id.loading_progress_img);
         trackgps = new TrackGPSService(HomeActivity.this);
 
-        btnFindVehicles = (FloatingActionButton) findViewById(R.id.btnFindVehicle);
+       /* btnFindVehicles = (FloatingActionButton) findViewById(R.id.btnFindVehicle);
         btnFindPeople = (FloatingActionButton) findViewById(R.id.btnFindPeople);
-
-        //Listener request of vehicle-sharing from database Firebase
-        requestNeederListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-               /* try {
-                    for(DataSnapshot temp : dataSnapshot.getChildren()) {
-                        RequestDemo requestDemo = temp.getValue(RequestDemo.class);
-                        arrRequest.add(requestDemo);
-                    }
-                    mGoogleMap.clear();
-                    for(RequestDemo a : arrRequest){
-                        makeMaker(new LatLng(a.getLocationRequest().getLocationLat(),a.getLocationRequest().getLocationLong()),
-                                a.getGraberId());
-                    }
-                } catch (Exception e){
-                    Log.d("database_firebaseaaaaa",String.valueOf(e.getMessage()));
-                }
 */
+        checkOnScreen=0;
+        //Listener request of vehicle-sharing from database Firebase
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
     }
     @Override
     public void onBackPressed() {
@@ -323,18 +345,21 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         final String[] dialogTitle =new String[1];
-        Intent intent=new Intent();
         switch (view.getId()) {
-            case R.id.btnFindPeople:
-                dialogTitle[0] ="If you have avehicle and you want find a people together you can fill out the form to find it";
-                dialogFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
-                dialogFragment.setTargetFragment(dialogFragment,1);
-                dialogFragment.show(getFragmentManager(),"From Grabber");
-                break;
             case R.id.btnFindVehicle:
+                checkOnScreen=1;
                 dialogTitle[0]="";
                 dialogFragment=new AddRequestFromNeeder_Fragment();
                 dialogFragment.show(getFragmentManager(),"From Needer");
+                checkOnScreen();
+                break;
+           case R.id.btnFindPeople:
+                checkOnScreen=2;
+                dialogTitle[0] ="If you have avehicle and you want find a people together you can fill out the form to find it";
+                dialogFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
+               // dialogFragment.setTargetFragment(dialogFragment,1);
+                dialogFragment.show(getFragmentManager(),"From Grabber");
+                checkOnScreen();
                 break;
         }
     }
@@ -363,8 +388,8 @@ public class HomeActivity extends AppCompatActivity
         mGoogleMap = googleMap;
         btnFindVehicles.setVisibility(View.VISIBLE);
         btnFindPeople.setVisibility(View.VISIBLE);
-        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
-        requestNeederRef.addValueEventListener(requestNeederListener);
+        /*requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+        requestNeederRef.addValueEventListener(requestNeederListener);*/
 
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
@@ -425,22 +450,6 @@ public class HomeActivity extends AppCompatActivity
         LatLng latLng = new LatLng(location.latitude, location.longitude);
         Marker  marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng));
         marker.setTag(title);
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1 && resultCode==1)
-        {
-            makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
-        }
-        else if(requestCode==1 && resultCode==2)
-        {
-            Toast.makeText(this, "Get all request find people", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            Toast.makeText(this, "Get all request find vehicle", Toast.LENGTH_SHORT).show();
-        }
     }
 
     /**

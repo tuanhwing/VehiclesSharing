@@ -79,7 +79,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         txtTimeStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "timestart", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "timestart", Toast.LENGTH_SHORT).show();
                 showTimePicker();
             }
         });
@@ -90,8 +90,12 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
                 {
                     addRequestIntoDB();
                     Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
+                    dismiss();
                 }
-                dismiss();
+                else{
+                    Toast.makeText(mContext, "Vui lòng điền đầy đủ thông tin vào form", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

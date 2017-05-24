@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -63,8 +64,9 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
     private FirebaseUser mUser;
     private Context mContext;
     private DatabaseReference mDatabase;
-    private RecyclerView mRecyclerView;
+   // private RecyclerView mRecyclerView;
     private GooglePlacesAutocompleteAdapter mplacesAutocompleteAdapter;
+    private ImageView imgClearTextCur, imgClearTextDes;
     //public static UserSessionManager session;
 
     private static final LatLngBounds myBound=new LatLngBounds(new LatLng(-0,0),new LatLng(0,0));
@@ -115,12 +117,16 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
         @Override
         public void onClick(View v) {
             boolean checkNull=validateRequest();
-            if(checkNull)
-               addRequestIntoDB(vehicleType[0]);
-            Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
+            if(checkNull) {
+                addRequestIntoDB(vehicleType[0]);
+                Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
+                dismiss();
+            }
+            else
+                Toast.makeText(mContext, "Vui lòng điền đầy đủ vào thông tin địa chỉ nơi hiện tại và nên đến", Toast.LENGTH_SHORT).show();
             //resultCode=getTargetRequestCode();
-            getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,getActivity().getIntent());
-            dismiss();
+          //  getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,getActivity().getIntent());
+
         }
     });
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -138,6 +144,19 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+
+       imgClearTextCur.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               txtCurLocation.setText("");
+           }
+       });
+        imgClearTextDes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtDesLocation.setText("");
             }
         });
         /*txtDesLocation.addTextChangedListener(new TextWatcher() {
@@ -202,24 +221,21 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
         spVehicleType= (Spinner) view.findViewById(R.id.spVehicleType);
         btnOK= (Button) view.findViewById(R.id.btnOK);
         btnCancel= (Button) view.findViewById(R.id.btnCancel);
-        mRecyclerView= (RecyclerView) view.findViewById(R.id.rvLocation);
+        //mRecyclerView= (RecyclerView) view.findViewById(R.id.rvLocation);
+       imgClearTextCur= (ImageView) view.findViewById(R.id.imgClearCurLocation);
+        imgClearTextDes= (ImageView) view.findViewById(R.id.imgClearDesLocation);
+
 
         //Context acctivity=getActivity();
         String fullAddress=AboutPlace.getInstance().getCurrentPlace(mContext);
         txtCurLocation.setText(fullAddress);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mplacesAutocompleteAdapter=new GooglePlacesAutocompleteAdapter(mContext,R.layout.location_row,mGoogleApiClient,myBound,null);
+        /*mplacesAutocompleteAdapter=new GooglePlacesAutocompleteAdapter(mContext,R.layout.location_row,mGoogleApiClient,myBound,null);
 
         mRecyclerView.setAdapter(mplacesAutocompleteAdapter);
-
-       /* mGoogleApiClient = new GoogleApiClient.Builder(mContext)
-                .addApi(GoogleMap.API)
-                .addScope(Drive.SCOPE_FILE)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();*/
-    }
+*/
+       }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -238,7 +254,14 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
     @Override
     public void onClick(View v) {
-
+        /*switch (view.getId()) {
+            case R.id.imgClearCurLocation:
+                txtCurLocation.setText("");
+                break;
+            case R.id.imgClearDesLocation:
+                txtDesLocation.setText("");
+                break;
+        }*/
     }
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())

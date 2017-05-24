@@ -68,14 +68,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
                     android:hint="Time start"
+                    android:focusable="false"
                     android:textColorHint="@color/black" />
             </TableRow>
 
             <TextView
-                android:layout_width="50dp"
+                android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="5dp"
+
                 android:layout_marginTop="5dp"
                 android:background="@color/background_color" />
 
