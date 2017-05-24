@@ -81,23 +81,25 @@ import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.ForGraber;
 import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromGraber;
+import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
 import project.com.vehiclessharing.sqlite.RealmDatabase;
 import project.com.vehiclessharing.utils.LocationCallback;
+import project.com.vehiclessharing.utils.RequestCallback;
 
 import static project.com.vehiclessharing.R.id.center;
 import static project.com.vehiclessharing.R.id.map;
 import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener, OnMapReadyCallback, RoutingListener{
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, OnMapReadyCallback, RoutingListener {
 
     private NavigationView navigationView = null;
     private Toolbar toolbar = null;
     private View viewHeader = null; // View header
-    private TextView txtFullName,txtEmail;
+    private TextView txtFullName, txtEmail;
     public static FirebaseUser mUser; //CurrentUser
     public static ImageView imgUser; // Avatar of user
     public static ProgressBar progressBar;
@@ -113,7 +115,7 @@ public class HomeActivity extends AppCompatActivity
     private ValueEventListener requestNeederListener;
     private DatabaseReference requestNeederRef;
     private String mRequestKey;
-   private ArrayList<RequestFromGraber> arrRequest;
+    private ArrayList<RequestFromGraber> arrRequest;
 
 
     public static UserOnDevice currentUser;//Instace current user logined
@@ -123,16 +125,16 @@ public class HomeActivity extends AppCompatActivity
 
     private FloatingActionButton btnFindPeople; // button fab action
     private FloatingActionButton btnFindVehicles;
-    private static  DialogFragment dialogFragment;// Instance fragmentManager to switch fragment
+    private static DialogFragment dialogFragment;// Instance fragmentManager to switch fragment
     private DatabaseReference mDatabase;
     private int checkOnScreen;
 
-//    private static FragmentManager fragmentManager;
+    //    private static FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-      //  fragmentManager = getSupportFragmentManager();
+        //  fragmentManager = getSupportFragmentManager();
         //set fragment initially
 //        fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
@@ -151,12 +153,12 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // User signed in by account Email/Facebook/Google
-        for (UserInfo user: FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-            if(user.getProviderId().equals(Utils.Email_Signin)){
+        for (UserInfo user : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+            if (user.getProviderId().equals(Utils.Email_Signin)) {
                 loginWith = 0;
-            } else if(user.getProviderId().equals(Utils.Facebook_Signin)){
+            } else if (user.getProviderId().equals(Utils.Facebook_Signin)) {
                 loginWith = 1;
-            } else if(user.getProviderId().equals(Utils.Google_Signin)){
+            } else if (user.getProviderId().equals(Utils.Google_Signin)) {
                 loginWith = 2;
             }
         }
@@ -173,7 +175,7 @@ public class HomeActivity extends AppCompatActivity
 
     private void addEvents() {
 
-        requestNeederListener  = new ValueEventListener() {
+        requestNeederListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -222,25 +224,44 @@ public class HomeActivity extends AppCompatActivity
 //                return false;
 //            }
 //        });
-       // btnFindVehicles.setOnClickListener(this);
-       //
+        // btnFindVehicles.setOnClickListener(this);
+        //
 
         btnFindVehicles.setOnClickListener(this);
         btnFindPeople.setOnClickListener(this);
     }
 
     private void checkOnScreen() {
-        if(checkOnScreen==0||checkOnScreen==1)
-        {
+        if (checkOnScreen == 0 || checkOnScreen == 1) {
             mGoogleMap.clear();
             makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
             Toast.makeText(this, "All Vehicle", Toast.LENGTH_SHORT).show();
-         //get all request from graber
-        }
-        else if(checkOnScreen==2)
-        { mGoogleMap.clear();
+
+
+            //get all request from graber
+        } else if (checkOnScreen == 2) {
+            mGoogleMap.clear();
             makeMaker(new LatLng(10.8719808, 100.790409), "Nong Lam University");
             Toast.makeText(this, "All people", Toast.LENGTH_SHORT).show();
+
+           ForGraber.getInstance().getInfoRequestNeeder(mUser.getUid(), new RequestCallback() {
+               @Override
+               public void onSuccess(RequestFromGraber requestFromGraber) {
+                   LatLng latLngCurLocation=new LatLng(requestFromGraber.getSourceLocation().getLatitude(),requestFromGraber.getSourceLocation().getLongitude());
+                   LatLng latLngDesLocation=new LatLng(requestFromGraber.getDestinationLocation().getLatitude(),requestFromGraber.getDestinationLocation().getLongitude());
+
+                   makeMaker(latLngCurLocation,"Location Graber");
+                   drawroadBetween2Location(latLngCurLocation,latLngDesLocation);
+                   makeMaker(latLngDesLocation,"Destination Graber");
+               }
+
+               @Override
+               public void onError(DatabaseError e) {
+
+               }
+           });
+
+
             //get all request from needer
         }
     }
@@ -248,8 +269,8 @@ public class HomeActivity extends AppCompatActivity
 
     private void addControls() {
 
-        btnFindPeople=(FloatingActionButton) findViewById(R.id.btnFindPeople);
-        btnFindVehicles=(FloatingActionButton) findViewById(R.id.btnFindVehicle);
+        btnFindPeople = (FloatingActionButton) findViewById(R.id.btnFindPeople);
+        btnFindVehicles = (FloatingActionButton) findViewById(R.id.btnFindVehicle);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();//Get currentuser
         //[Start]Send verification
@@ -257,7 +278,7 @@ public class HomeActivity extends AppCompatActivity
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Log.d("send_verification", "Email sent.");
                         } else {
                             Log.d("send_verification1", "Email sent unsuccessful!");
@@ -280,10 +301,11 @@ public class HomeActivity extends AppCompatActivity
        /* btnFindVehicles = (FloatingActionButton) findViewById(R.id.btnFindVehicle);
         btnFindPeople = (FloatingActionButton) findViewById(R.id.btnFindPeople);
 */
-        checkOnScreen=0;
+        checkOnScreen = 0;
         //Listener request of vehicle-sharing from database Firebase
 
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -326,13 +348,13 @@ public class HomeActivity extends AppCompatActivity
             // Handle the camera action
 //            fragmentManager.beginTransaction().replace(R.id.frameContainer, new Home_Fragment(), Utils.Home_Fragment).commit();
         } else if (id == R.id.nav_profile) {
-         //use activity
-            startActivity(new Intent(HomeActivity.this,ProfileActivity.class));
-          //  fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
+            //use activity
+            startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+            //  fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
         } else if (id == R.id.nav_history) {
 
         } else if (id == R.id.nav_about) {
-           // fab.callOnClick();
+            // fab.callOnClick();
         } else if (id == R.id.nav_logout) {
             logout();
         }
@@ -344,21 +366,21 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
-        final String[] dialogTitle =new String[1];
+        final String[] dialogTitle = new String[1];
         switch (view.getId()) {
             case R.id.btnFindVehicle:
-                checkOnScreen=1;
-                dialogTitle[0]="";
-                dialogFragment=new AddRequestFromNeeder_Fragment();
-                dialogFragment.show(getFragmentManager(),"From Needer");
+                checkOnScreen = 1;
+                dialogTitle[0] = "";
+                dialogFragment = new AddRequestFromNeeder_Fragment();
+                dialogFragment.show(getFragmentManager(), "From Needer");
                 checkOnScreen();
                 break;
-           case R.id.btnFindPeople:
-                checkOnScreen=2;
-                dialogTitle[0] ="If you have avehicle and you want find a people together you can fill out the form to find it";
+            case R.id.btnFindPeople:
+                checkOnScreen = 2;
+                dialogTitle[0] = "If you have avehicle and you want find a people together you can fill out the form to find it";
                 dialogFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
-               // dialogFragment.setTargetFragment(dialogFragment,1);
-                dialogFragment.show(getFragmentManager(),"From Grabber");
+                // dialogFragment.setTargetFragment(dialogFragment,1);
+                dialogFragment.show(getFragmentManager(), "From Grabber");
                 checkOnScreen();
                 break;
         }
@@ -367,10 +389,10 @@ public class HomeActivity extends AppCompatActivity
 
     private void logout() {
         FirebaseAuth.getInstance().signOut();
-        if(loginWith == 1)
+        if (loginWith == 1)
             //Sign out Facebook
             LoginManager.getInstance().logOut();
-        if(loginWith == 2)
+        if (loginWith == 2)
             //Sign out Google plus
             Auth.GoogleSignInApi.signOut(Login_Fragment.session.mGoogleApiClient).setResultCallback(
                     new ResultCallback<Status>() {
@@ -379,7 +401,7 @@ public class HomeActivity extends AppCompatActivity
 
                         }
                     });
-        startActivity(new Intent(HomeActivity.this,MainActivity.class));
+        startActivity(new Intent(HomeActivity.this, MainActivity.class));
         finish();
     }
 
@@ -448,7 +470,7 @@ public class HomeActivity extends AppCompatActivity
      */
     private void makeMaker(LatLng location, String title) {
         LatLng latLng = new LatLng(location.latitude, location.longitude);
-        Marker  marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng));
+        Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng));
         marker.setTag(title);
     }
 
@@ -472,10 +494,10 @@ public class HomeActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d("Permission", "onRequestPermissionsResult()");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch ( requestCode ) {
+        switch (requestCode) {
             case REQ_PERMISSION: {
-                if ( grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
                     if (ActivityCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -502,23 +524,24 @@ public class HomeActivity extends AppCompatActivity
                     lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) &&
                     isOnline()) {
                 //Do your stuff on GPS status change
-                Toast.makeText(HomeActivity.this,"GPS + Internet enable!",Toast.LENGTH_LONG).show();
-            }
-            else {
-                if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                        lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-                    mGoogleMap.setMyLocationEnabled(true);
-                    Toast.makeText(HomeActivity.this,"GPS enable!",Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "GPS + Internet enable!", Toast.LENGTH_LONG).show();
+            } else {
+                if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                        lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    if (checkLocationPermission()) {
+                        mGoogleMap.setMyLocationEnabled(true);
+                        Toast.makeText(HomeActivity.this, "GPS enable!", Toast.LENGTH_LONG).show();
+                    } else {
+                        mGoogleMap.setMyLocationEnabled(false);
+                        Toast.makeText(HomeActivity.this, "GPS disable!", Toast.LENGTH_LONG).show();
+                    }
+                    if (isOnline())
+                        Toast.makeText(HomeActivity.this, "Internet enable!", Toast.LENGTH_LONG).show();
+                    else
+                        Toast.makeText(HomeActivity.this, "Internet disable!", Toast.LENGTH_LONG).show();
                 }
-                else  {
-                    mGoogleMap.setMyLocationEnabled(false);
-                    Toast.makeText(HomeActivity.this,"GPS disable!",Toast.LENGTH_LONG).show();
-                }
-                if(isOnline()) Toast.makeText(HomeActivity.this,"Internet enable!",Toast.LENGTH_LONG).show();
-                else Toast.makeText(HomeActivity.this,"Internet disable!",Toast.LENGTH_LONG).show();
+
             }
-
-
         }
     };
 

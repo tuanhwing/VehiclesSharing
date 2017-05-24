@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import project.com.vehiclessharing.utils.RequestCallback;
+
 /**
  * Created by Hihihehe on 5/23/2017.
  */
@@ -59,7 +61,7 @@ public class ForGraber {
 
         return list;
     }
-    public RequestFromGraber getInfoRequestNeeder(String uId)
+    public void getInfoRequestNeeder(String uId, final RequestCallback callback)
     {
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber").child(uId);
@@ -67,15 +69,17 @@ public class ForGraber {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
-                graber= (RequestFromGraber) dataSnapshot.getValue();
+                graber= dataSnapshot.getValue(RequestFromGraber.class);
+                callback.onSuccess(graber);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d("load_data",databaseError.getMessage());
+                callback.onError(databaseError);
             }
         };
         mDatabase.addListenerForSingleValueEvent(requestNeederListener);
-        return graber;
+      //  return graber;
     }
 }

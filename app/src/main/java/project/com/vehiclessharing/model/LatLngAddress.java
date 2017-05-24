@@ -10,6 +10,10 @@ public class LatLngAddress {
     private double latitude;
     private double longitude;
 
+    public LatLngAddress() {
+
+    }
+
     public LatLngAddress(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
