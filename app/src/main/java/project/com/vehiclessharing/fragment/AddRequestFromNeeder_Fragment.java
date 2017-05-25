@@ -1,6 +1,6 @@
 package project.com.vehiclessharing.fragment;
 
-import android.app.DatePickerDialog;
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,13 +31,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Date;
-
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.model.AboutPlace;
-import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.LatLngAddress;
-import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.Validation;
 
@@ -62,6 +57,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     private PlaceAutocompleteFragment autocompleteCurFragment, autocompleteDesFragment;
     private ImageView imgClearCurLocation, imgClearDesLocation;
     private Drawable mDrawable;
+    private RequestDataFromNeeder requestDataFromNeeder;
 
     public static AddRequestFromNeeder_Fragment newIstance(String title){
         AddRequestFromNeeder_Fragment frag=new AddRequestFromNeeder_Fragment();
@@ -73,6 +69,12 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Activity context) {
+        super.onAttach(context);
+        requestDataFromNeeder= (RequestDataFromNeeder) context;
     }
 
     @Nullable
@@ -225,5 +227,10 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         String timeStart=txtTimeStart.getText().toString();
         RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,curLocation,desLocation,timeStart,curDate);
         mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
+        requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
+     //   getTargetFragment().onActivityResult(getTargetRequestCode(),1);
+    }
+    public interface RequestDataFromNeeder{
+        public void getRequestFromNeeder(RequestFromNeeder requestFromNeeder);
     }
 }

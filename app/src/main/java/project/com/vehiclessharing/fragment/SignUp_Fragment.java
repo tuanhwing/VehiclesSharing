@@ -35,7 +35,7 @@ import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserAddress;
 import project.com.vehiclessharing.model.Validation;
-import project.com.vehiclessharing.sqlite.DatabaseHelper;
+import project.com.vehiclessharing.database.DatabaseHelper;
 
 import static com.google.android.gms.internal.zzt.TAG;
 

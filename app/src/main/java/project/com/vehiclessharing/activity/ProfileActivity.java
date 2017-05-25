@@ -1,5 +1,6 @@
 package project.com.vehiclessharing.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -7,8 +8,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -41,6 +44,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private TextView txtPhone;
     private TextView txtSex;
     public static ProgressBar progressBar;//Instance reference progress load image inside layout
+    private Dialog dialogImageFullScreen;//Dialog to show image full screen
     public static TextView txtBirthday;
     private TextView txtAddress;
     private Button btnEditProfile;
@@ -100,6 +104,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void addEvents() {
         btnEditProfile.setOnClickListener(this);
         txtPassword.setOnClickListener(this);
+        imgProfile.setOnClickListener(this);
     }
 
 
@@ -174,9 +179,42 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 dialogChangePassword.show();
                 break;
             }
+            case R.id.img_user: {
+                dialogImageFullScreen = new Dialog(ProfileActivity.this,R.style.Theme_AppCompat_NoActionBar);
+                dialogImageFullScreen.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialogImageFullScreen.setContentView(R.layout.image_full_screen);
+                final ImageView imgFullScreen = (ImageView) dialogImageFullScreen.findViewById(R.id.image_full_screen);
+                final ProgressBar progressLoadImageFull = (ProgressBar) dialogImageFullScreen.findViewById(R.id.progress_load_full);
+//                String urlhere = "https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/images%2Fi9ulaadp43dAdFkZfpsgmN3TaXs2.jpg?alt=media&token=62e31c9a-102f-48ab-98fb-0efa33c84119";
+
+                Picasso.with(ProfileActivity.this)
+                        .load(currentUser.getUser().getImage())
+                        .into(imgFullScreen, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                progressLoadImageFull.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onError() {
+                                Log.d("download_full_image","failedS");
+                            }
+                        });
+
+                dialogImageFullScreen.show();
+                break;
+            }
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(dialogImageFullScreen.isShowing()) dialogImageFullScreen.dismiss();
+        else {
+        }
+
+    }
 
     @Override
     protected void onStart() {

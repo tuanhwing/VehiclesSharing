@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:id="@+id/layout_profile"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/layout_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/image_male"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@drawable/background_profile">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/activity_vertical_margin">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -74,15 +74,16 @@
                     android:stepSize="0.1" />
             </LinearLayout>
 
+
         </LinearLayout>
     </LinearLayout>
-
     <LinearLayout
+        android:layout_below="@+id/layout_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_weight="4"
-        android:background="@color/backgroud_bottom_profile"
-        android:orientation="vertical">
+        android:background="@color/backgroud_bottom_profile">
 
         <TableLayout
             android:layout_width="match_parent"
@@ -116,9 +117,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:layout_weight="1"
-                    android:text="@string/sex"
-                    android:textColor="@color/black" />
+                    android:text="@string/sex" />
 
                 <TextView
                     android:id="@+id/txt_sex"
@@ -127,14 +128,12 @@
                     android:layout_weight="15"
                     android:textColor="@color/colortextprofile" />
             </TableRow>
-
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
+                android:background="@color/color_line_field"
                 android:layout_marginLeft="@dimen/margin_profile_line"
-                android:layout_marginRight="@dimen/margin_profile_line"
-                android:background="@color/color_line_field" />
-
+                android:layout_marginRight="@dimen/margin_profile_line"/>
             <TableRow android:layout_margin="@dimen/margin_field_profile">
 
                 <TextView
@@ -156,18 +155,18 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
+                android:background="@color/color_line_field"
                 android:layout_marginLeft="@dimen/margin_profile_line"
-                android:layout_marginRight="@dimen/margin_profile_line"
-                android:background="@color/color_line_field" />
+                android:layout_marginRight="@dimen/margin_profile_line"/>
 
             <TableRow android:layout_margin="@dimen/margin_field_profile">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:layout_weight="1"
-                    android:text="@string/birthday"
-                    android:textColor="@color/black" />
+                    android:text="@string/birthday" />
 
                 <TextView
                     android:id="@+id/txt_birthday"
@@ -180,18 +179,18 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
+                android:background="@color/color_line_field"
                 android:layout_marginLeft="@dimen/margin_profile_line"
-                android:layout_marginRight="@dimen/margin_profile_line"
-                android:background="@color/color_line_field" />
+                android:layout_marginRight="@dimen/margin_profile_line"/>
 
             <TableRow android:layout_margin="@dimen/margin_field_profile">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:layout_weight="1"
-                    android:text="@string/address"
-                    android:textColor="@color/black" />
+                    android:text="@string/address" />
 
                 <TextView
                     android:id="@+id/txt_address"
@@ -208,11 +207,11 @@
             android:id="@+id/btn_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_vertical_margin"
-            android:background="@color/button_edit_profile"
             android:text="@string/edit_profile"
             android:textColor="@color/white"
-            android:visibility="invisible" />
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:visibility="invisible"
+            android:background="@color/button_edit_profile"/>
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

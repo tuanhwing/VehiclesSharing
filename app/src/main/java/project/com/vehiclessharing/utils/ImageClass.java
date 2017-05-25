@@ -3,9 +3,15 @@ package project.com.vehiclessharing.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Tuan on 15/05/2017.
@@ -39,7 +45,107 @@ public class ImageClass {
         }
         BitmapFactory.Options o2 = new BitmapFactory.Options();
         o2.inSampleSize = scale;
-        return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
+        return rotateImage(BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2),getExifOrientation(uri.getPath()));
+    }
+
+    /**
+     * Get value rorating from an image
+     * @param filepath
+     * @return
+     */
+    public static int getExifOrientation(String filepath) {
+        int degree = 0;
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(filepath);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        if (exif != null) {
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
+            if (orientation != -1) {
+                // We only recognise a subset of orientation tag values.
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        degree = 90;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        degree = 180;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        degree = 270;
+                        break;
+                }
+
+            }
+        }
+        Log.d("orientation_value",String.valueOf(degree));
+        return degree;
+    }
+
+
+    /**
+     * Rotating image after upload firebase Storage
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap rotateImage(Bitmap bitmap, int orientation){
+        Matrix matrix = new Matrix();
+
+        matrix.postRotate(orientation);
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap,bitmap.getWidth(),bitmap.getHeight(),true);
+
+        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap , 0, 0, scaledBitmap .getWidth(), scaledBitmap .getHeight(), matrix, true);
+        return rotatedBitmap;
+    }
+
+    /**
+     * get bytes array from Uri.
+     * @param context current context.
+     * @param uri uri fo the file to read.
+     * @return a bytes array.
+     * @throws IOException
+     */
+    public static byte[] getBytesFromUri(Context context, Uri uri) throws FileNotFoundException {
+        InputStream iStream = context.getContentResolver().openInputStream(uri);
+        try {
+            return getBytes(iStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // close the stream
+            try {
+                iStream.close();
+            } catch (IOException ignored) { /* do nothing */ }
+        }
+        return null;
+    }
+
+    /**
+     * get bytes from input stream.
+     *
+     * @param inputStream inputStream.
+     * @return byte array read from the inputStream.
+     * @throws IOException
+     */
+    private static byte[] getBytes(InputStream inputStream) throws IOException {
+
+        byte[] bytesResult = null;
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+        try {
+            int len;
+            while ((len = inputStream.read(buffer)) != -1) {
+                byteBuffer.write(buffer, 0, len);
+            }
+            bytesResult = byteBuffer.toByteArray();
+        } finally {
+            // close the stream
+            try{ byteBuffer.close(); } catch (IOException ignored){ /* do nothing */ }
+        }
+        return bytesResult;
     }
 
 }

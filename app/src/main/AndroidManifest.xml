@@ -69,10 +69,6 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".activity.EditProfileActivity" />
-
-        <activity android:name=".activity.AddRequireFindPeople"
-            android:theme="@android:style/Theme.Holo.Dialog"
-            />
     </application>
 
 </manifest>

@@ -1,55 +1,33 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+.gradle/3.3/taskArtifacts/fileHashes.bin
 
-# Folder config file
-Desktop.ini
+.gradle/3.3/taskArtifacts/fileSnapshots.bin
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+3.3/taskArtifacts/taskArtifacts.bin
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+.gradle/3.3/taskArtifacts/taskArtifacts.lock
 
-# Windows shortcuts
-*.lnk
+.idea/.name
 
-# =========================
-# Operating System Files
-# =========================
+.idea/libraries/android_android_25.xml
 
-# OSX
-# =========================
+.idea/libraries/espresso_core_2_2_2.xml
 
-.DS_Store
-.AppleDouble
-.LSOverride
+.idea/libraries/espresso_idling_resource_2_2_2.xml
 
-# Thumbnails
-._*
+.idea/libraries/exposed_instrumentation_api_publish_0_5.xml
 
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
+.idea/libraries/rules_0_5.xml
 
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
+.idea/libraries/runner_0_5.xml
 
-/build
-/.gradle
-/.captures
-/.idea
-/*.iml
-/local.properties
-/app/app.iml
+.idea/misc.xml
+
+.idea/runConfigurations.xml
+
+.idea/workspace.xml
+
+app/app.iml
+
+local.properties
+
+.idea/inspectionProfiles/Project_Default.xml
