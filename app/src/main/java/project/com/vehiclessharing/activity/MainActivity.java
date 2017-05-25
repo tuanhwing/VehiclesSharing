@@ -25,30 +25,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import io.realm.Realm;
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
+import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.AddressOnDevice;
 import project.com.vehiclessharing.model.BirthdayOnDevice;
 import project.com.vehiclessharing.model.InformationUserOnDivce;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
-import project.com.vehiclessharing.sqlite.DatabaseHelper;
-import project.com.vehiclessharing.sqlite.RealmDatabase;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     public static FirebaseAuth mAuth; // Instance Authentication used by all fragment inside MainActivity
     private FirebaseAuth.AuthStateListener mAuthListener;// Instance listener state user
-    private FirebaseUser mUser;// Instance user to get information
     private DatabaseReference mUserReference;//Instance database firebase table users
-    private Realm realm;
 
     public static ProgressDialog mProgress;//Progress to wait login
 
-    //get Instance.
-    private DatabaseHelper db;
 
 
     private static FragmentManager fragmentManager;// Instance fragmentManager to switch fragment
@@ -105,16 +99,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 break;
                             }
 
-//                            // mapping device token with user
-//                            String deviceToken = ApplicationController.sharedPreferences.getString(DEVICE_TOKEN, null);
-//                            Log.d("real_database",deviceToken);
-//                            if(db.isUserExists(userId)) {
-//                                switchActivity();
-//                                break;
-//                            } else {
-//                                getProfileUser(userId);
-//                                break;
-//                            }
 
                         } else if(usera.getProviderId().equals(Utils.Facebook_Signin)
                                 || usera.getProviderId().equals(Utils.Google_Signin)){
@@ -155,10 +139,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void addControls() {
         mAuth = FirebaseAuth.getInstance();
-
-        db = DatabaseHelper.getInstance(MainActivity.this);//Instance DatabaseHelper
-
-        realm = Realm.getDefaultInstance();// The RealmConfiguration is created using the builder pattern.
 
         //[Start] Setup for progress
         mProgress =new ProgressDialog(this);

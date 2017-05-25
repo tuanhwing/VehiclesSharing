@@ -1,4 +1,4 @@
-package project.com.vehiclessharing.sqlite;
+package project.com.vehiclessharing.database;
 
 import android.util.Log;
 

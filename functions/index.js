@@ -15,13 +15,17 @@ exports.addMessage = functions.https.onRequest((req, res) => {
   });
 });
 
+
 exports.demo = functions.https.onRequest((req, res) => {
+	var lat = req.query.lat;
+	var long = req.query.long;
 	var usersRef = admin.database().ref('requests_needer');
 	usersRef.once('value', function(snapshot) {
-		console.log(snapshot.val());
+		// console.log(snapshot.val());
 		var i = 0;
 		snapshot.forEach(function(reqSnapshot){
-			console.log('in position %d with %d points', i++, snapshot.val());
+			console.log('in position %d - %s - %s', i++, reqSnapshot.key,reqSnapshot.graberDiviceId);
+			// if(getDistanceFromLatLonInKm(lat,long,reqSnapshot.val().locationRequest.locationLat,reqSnapshot.val().locationRequest.locationLong) > 0)
 		});
 		res.status(200).send(snapshot.val());
 	});
@@ -121,3 +125,4 @@ exports.inforequest = functions.database.ref('/requests_needer/{pushId}').onWrit
 
 		return event.data.ref.child('uppercase').set("uppercase");
 	});
+

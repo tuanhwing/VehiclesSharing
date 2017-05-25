@@ -1,7 +1,6 @@
 package project.com.vehiclessharing.activity;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -30,8 +28,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -68,28 +64,20 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.application.ApplicationController;
 import project.com.vehiclessharing.constant.Utils;
+import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
 import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.ForGraber;
-import project.com.vehiclessharing.model.LatLngAddress;
+import project.com.vehiclessharing.model.RequestDemo;
 import project.com.vehiclessharing.model.RequestFromGraber;
-import project.com.vehiclessharing.model.RequestFromNeeder;
-import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
-import project.com.vehiclessharing.sqlite.RealmDatabase;
-import project.com.vehiclessharing.utils.LocationCallback;
 import project.com.vehiclessharing.utils.RequestCallback;
 
-import static project.com.vehiclessharing.R.id.center;
 import static project.com.vehiclessharing.R.id.map;
 import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
@@ -116,6 +104,7 @@ public class HomeActivity extends AppCompatActivity
     private DatabaseReference requestNeederRef;
     private String mRequestKey;
     private ArrayList<RequestFromGraber> arrRequest;
+    private ArrayList<RequestDemo> arrRequestDemo;
 
 
     public static UserOnDevice currentUser;//Instace current user logined
@@ -179,20 +168,19 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-               /* try {
+                try {
                     for(DataSnapshot temp : dataSnapshot.getChildren()) {
                         RequestDemo requestDemo = temp.getValue(RequestDemo.class);
-                        arrRequest.add(requestDemo);
+                        arrRequestDemo.add(requestDemo);
                     }
                     mGoogleMap.clear();
-                    for(RequestDemo a : arrRequest){
+                    for(RequestDemo a : arrRequestDemo){
                         makeMaker(new LatLng(a.getLocationRequest().getLocationLat(),a.getLocationRequest().getLocationLong()),
                                 a.getGraberId());
                     }
                 } catch (Exception e){
                     Log.d("database_firebaseaaaaa",String.valueOf(e.getMessage()));
                 }
-*/
 
             }
 
@@ -290,6 +278,7 @@ public class HomeActivity extends AppCompatActivity
         currentUser = RealmDatabase.getCurrentUser(mUser.getUid());
         mDatabase = FirebaseDatabase.getInstance().getReference();
         arrRequest = new ArrayList<RequestFromGraber>();
+        arrRequestDemo = new ArrayList<RequestDemo>();
 
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
@@ -410,56 +399,10 @@ public class HomeActivity extends AppCompatActivity
         mGoogleMap = googleMap;
         btnFindVehicles.setVisibility(View.VISIBLE);
         btnFindPeople.setVisibility(View.VISIBLE);
-        /*requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
-        requestNeederRef.addValueEventListener(requestNeederListener);*/
+        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+        requestNeederRef.addValueEventListener(requestNeederListener);
 
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
-
-    }
-
-    /**
-     * get Url to request the Google Directions API
-     * @param origin start point location
-     * @param dest destination point location
-     * @return
-     */
-    private String getMapsApiDirectionsUrl(LatLng origin, LatLng dest, ArrayList<LatLng> waypoints) {
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-
-        //Waypoints
-        String str_waypoints = "waypoints=";
-        boolean firts = false;
-        for (LatLng latlng : waypoints) {
-            if (!firts) {
-                str_waypoints += "via:" + latlng.latitude + "," + latlng.longitude;
-                firts = true;
-            } else {
-                str_waypoints += "|via:" + latlng.latitude + "," + latlng.longitude;
-            }
-        }
-
-        //key
-        String keyDirection = "key=" + DIRECTION_KEY_API;
-
-        // Building the parameters to the web service
-//        String parameters = str_origin+"&"+str_dest+"&"+sensor;
-        String parameters = str_origin + "&" + str_dest + "&" + str_waypoints + "&" + keyDirection;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-        return url;
 
     }
 
@@ -568,7 +511,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         //Unregister receiver on destroy
-        trackgps.controllonLocationChanged(CONTROLL_OFF);
+//        trackgps.controllonLocationChanged(CONTROLL_OFF);
         if (mReceiver != null)
             unregisterReceiver(mReceiver);
     }
