@@ -87,7 +87,6 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     }
 
     private void addEvents() {
-
         txtTimeStart.setOnClickListener(this);
         btnOk.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
@@ -152,7 +151,8 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnAddNeederCancel:{
-                dismiss();
+               dismiss();
+                break;
             }
             case R.id.btnNeederAddOK: {
                 if(validateRequest())
@@ -161,18 +161,22 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
                     Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
                     dismiss();
                 }
+                break;
             }
             case R.id.imgClearCurLocation:
             {
                 txtCurLocation.setText("");
+                break;
             }
             case R.id.imgClearDesLocation:
             {
                 txtDesLocation.setText("");
+                break;
             }
             case R.id.txtTimeStart:
             {
                 showTimePicker();
+                break;
             }
         }
     }
@@ -188,7 +192,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
             }
         };
         TimePickerDialog timePickerDialog = new TimePickerDialog(
-                getActivity(),
+                mContext,
                 callBack,
                 calendar.get(java.util.Calendar.HOUR_OF_DAY),
                 calendar.get(java.util.Calendar.MINUTE), true
