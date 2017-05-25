@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:padding="50px"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+
+
+            />
+
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/background_color" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
+
+            <TableRow>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="Current location"
+                    android:id="@+id/txtCurLocate"
+                    android:textColorHint="@color/black" />
+            </TableRow>
+
+            <TableRow>
+
+                <EditText
+                    android:id="@+id/txtDesLocate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:hint="Destination location"
+
+                    android:textColorHint="@color/black" />
+            </TableRow>
+
+            <TableRow>
+
+                <EditText
+                    android:id="@+id/txtTimeStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:hint="Time start"
+                    android:focusable="false"
+                    android:textColorHint="@color/black" />
+            </TableRow>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center_horizontal"
+
+                android:layout_marginTop="5dp"
+                android:background="@color/background_color" />
+
+            <TableRow>
+
+                <Button
+                    android:id="@+id/btnNeederAddOK"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+
+                    android:background="@color/white"
+                    android:text="OK"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"
+                    android:background="@color/background_color" />
+
+                <Button
+                    android:id="@+id/btnAddNeederCancel"
+                    android:layout_width="170dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:text="Cancel"
+                    android:textColor="@color/black" />
+
+
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+</LinearLayout>

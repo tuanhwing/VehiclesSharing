@@ -64,5 +64,9 @@
         <item>1</item>
         <item>2</item>
     </string-array>
-
+    <string-array name="vehicle_type">
+        <item>Car</item>
+        <item>Bike</item>
+        <item>Another</item>
+    </string-array>
 </resources>

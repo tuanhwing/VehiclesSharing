@@ -4,6 +4,9 @@ package project.com.vehiclessharing.model;
  * Created by Tuan on 26/04/2017.
  */
 
+import java.security.Timestamp;
+import java.util.Date;
+
 /**
  * birhtday's user
  */
