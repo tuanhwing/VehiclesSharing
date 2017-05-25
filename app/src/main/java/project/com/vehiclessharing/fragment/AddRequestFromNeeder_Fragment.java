@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.icu.util.Calendar;
 import android.icu.util.TimeZone;
 import android.os.Bundle;
@@ -14,10 +15,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,6 +59,9 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     java.text.SimpleDateFormat sdf1=new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat sdf2=new java.text.SimpleDateFormat("dd/MM/yyyy");
     private static final LatLngBounds myBound=new LatLngBounds(new LatLng(-0,0),new LatLng(0,0));
+    private PlaceAutocompleteFragment autocompleteCurFragment, autocompleteDesFragment;
+    private ImageView imgClearCurLocation, imgClearDesLocation;
+    private Drawable mDrawable;
 
     public static AddRequestFromNeeder_Fragment newIstance(String title){
         AddRequestFromNeeder_Fragment frag=new AddRequestFromNeeder_Fragment();
@@ -76,25 +86,30 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
 
     private void addEvents() {
 
-        txtTimeStart.setOnClickListener(new View.OnClickListener() {
+        txtTimeStart.setOnClickListener(this);
+        btnOk.setOnClickListener(this);
+        btnCancel.setOnClickListener(this);
+        imgClearCurLocation.setOnClickListener(this);
+        imgClearDesLocation.setOnClickListener(this);
+        autocompleteCurFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public void onClick(View v) {
-                //Toast.makeText(getActivity(), "timestart", Toast.LENGTH_SHORT).show();
-                showTimePicker();
+            public void onPlaceSelected(Place place) {
+                txtCurLocation.setText(place.getAddress());
+            }
+
+            @Override
+            public void onError(Status status) {
+
             }
         });
-        btnOk.setOnClickListener(new View.OnClickListener() {
+        autocompleteDesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public void onClick(View v) {
-                if(validateRequest())
-                {
-                    addRequestIntoDB();
-                    Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
-                    dismiss();
-                }
-                else{
-                    Toast.makeText(mContext, "Vui lòng điền đầy đủ thông tin vào form", Toast.LENGTH_SHORT).show();
-                }
+            public void onPlaceSelected(Place place) {
+                txtDesLocation.setText(place.getAddress());
+            }
+
+            @Override
+            public void onError(Status status) {
 
             }
         });
@@ -117,6 +132,18 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         String fullAddress= AboutPlace.getInstance().getCurrentPlace(mContext);
         txtCurLocation.setText(fullAddress);
         txtTimeStart.setText(sdf1.format(calendar.getTime()));
+
+        autocompleteCurFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_cur_fragment);
+        autocompleteDesFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_destin_fragment);
+        imgClearCurLocation= (ImageView) view.findViewById(R.id.imgClearCurLocation);
+        imgClearDesLocation= (ImageView) view.findViewById(R.id.imgClearDesLocation);
+        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
+                .build();
+        autocompleteDesFragment.setFilter(typeFilter);
+        autocompleteDesFragment.setFilter(typeFilter);
+        mDrawable = getResources().getDrawable(R.drawable.errorvalid);
+        mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
     }
 
     @Override
@@ -129,11 +156,23 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
                 if(validateRequest())
                 {
                     addRequestIntoDB();
+                    Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
+                    dismiss();
                 }
-                dismiss();
+            }
+            case R.id.imgClearCurLocation:
+            {
+                txtCurLocation.setText("");
+            }
+            case R.id.imgClearDesLocation:
+            {
+                txtDesLocation.setText("");
+            }
+            case R.id.txtTimeStart:
+            {
+                showTimePicker();
             }
         }
-
     }
 
     private void showTimePicker() {
@@ -159,10 +198,16 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     private boolean validateRequest() {
         String curLocate = txtCurLocation.getText().toString();
         String desLocate=txtDesLocation.getText().toString();
-        boolean checkNull=false;
-        if(!Validation.isEmpty(curLocate) && !Validation.isEmpty(desLocate))
+        boolean checkNull=true;
+        if(Validation.isEmpty(curLocate))
         {
-            checkNull=true;
+            txtCurLocation.setError("Vị trí bắt đầu không nên để trống");
+            checkNull=false;
+        }
+        else if(Validation.isEmpty(desLocate))
+        {
+            txtDesLocation.setError("Vị trí kết thúc không nên để trống");
+            checkNull=false;
         }
         return checkNull;
     }
