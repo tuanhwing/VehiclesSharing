@@ -1,9 +1,12 @@
 package project.com.vehiclessharing.fragment;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.icu.util.Calendar;
+import android.icu.util.TimeZone;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -54,6 +57,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     private PlaceAutocompleteFragment autocompleteCurFragment, autocompleteDesFragment;
     private ImageView imgClearCurLocation, imgClearDesLocation;
     private Drawable mDrawable;
+    private RequestDataFromNeeder requestDataFromNeeder;
 
     public static AddRequestFromNeeder_Fragment newIstance(String title){
         AddRequestFromNeeder_Fragment frag=new AddRequestFromNeeder_Fragment();
@@ -67,6 +71,12 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onAttach(Activity context) {
+        super.onAttach(context);
+        requestDataFromNeeder= (RequestDataFromNeeder) context;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -77,7 +87,6 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     }
 
     private void addEvents() {
-
         txtTimeStart.setOnClickListener(this);
         btnOk.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
@@ -142,7 +151,8 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnAddNeederCancel:{
-                dismiss();
+               dismiss();
+                break;
             }
             case R.id.btnNeederAddOK: {
                 if(validateRequest())
@@ -151,18 +161,22 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
                     Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
                     dismiss();
                 }
+                break;
             }
             case R.id.imgClearCurLocation:
             {
                 txtCurLocation.setText("");
+                break;
             }
             case R.id.imgClearDesLocation:
             {
                 txtDesLocation.setText("");
+                break;
             }
             case R.id.txtTimeStart:
             {
                 showTimePicker();
+                break;
             }
         }
     }
@@ -178,7 +192,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
             }
         };
         TimePickerDialog timePickerDialog = new TimePickerDialog(
-                getActivity(),
+                mContext,
                 callBack,
                 calendar.get(java.util.Calendar.HOUR_OF_DAY),
                 calendar.get(java.util.Calendar.MINUTE), true
@@ -210,12 +224,16 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
 
         LatLng latLngCurLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtCurLocation.getText().toString());
         LatLng latLngDesLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtDesLocation.getText().toString());
-        LatLngAddress curLocation=new LatLngAddress(latLngCurLocation.latitude,latLngCurLocation.longitude);
-        LatLngAddress desLocation=new LatLngAddress(latLngDesLocation.latitude,latLngDesLocation.longitude);
+
         //Date date=new Date();
         String curDate=sdf2.format(calendar.getTime());
         String timeStart=txtTimeStart.getText().toString();
-        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,curLocation,desLocation,timeStart,curDate);
+        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,latLngCurLocation,latLngDesLocation,timeStart,curDate);
         mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
+        requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
+     //   getTargetFragment().onActivityResult(getTargetRequestCode(),1);
+    }
+    public interface RequestDataFromNeeder{
+        public void getRequestFromNeeder(RequestFromNeeder requestFromNeeder);
     }
 }

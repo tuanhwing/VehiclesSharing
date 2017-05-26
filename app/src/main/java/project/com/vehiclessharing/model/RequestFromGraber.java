@@ -13,19 +13,18 @@ import java.util.HashMap;
 
 public class RequestFromGraber {
     private String userId;
-    private LatLngAddress sourceLocation;
-    private LatLngAddress destinationLocation;
+    private LatLng sourceLocation;
+    private LatLng destinationLocation;
     private String vehicleType;
 
-    public RequestFromGraber() {
-    }
 
-    public RequestFromGraber(String userId, LatLngAddress sourceLocation, LatLngAddress destinationLocation, String vehicleType) {
 
+    public RequestFromGraber(String userId, LatLng sourceLocation, LatLng destinationLocation, String vehicleType) {
         this.userId = userId;
         this.sourceLocation = sourceLocation;
         this.destinationLocation = destinationLocation;
         this.vehicleType = vehicleType;
+
     }
 
     public String getUserId() {
@@ -36,19 +35,19 @@ public class RequestFromGraber {
         this.userId = userId;
     }
 
-    public LatLngAddress getSourceLocation() {
+    public LatLng getSourceLocation() {
         return sourceLocation;
     }
 
-    public void setSourceLocation(LatLngAddress sourceLocation) {
+    public void setSourceLocation(LatLng sourceLocation) {
         this.sourceLocation = sourceLocation;
     }
 
-    public LatLngAddress getDestinationLocation() {
+    public LatLng getDestinationLocation() {
         return destinationLocation;
     }
 
-    public void setDestinationLocation(LatLngAddress destinationLocation) {
+    public void setDestinationLocation(LatLng destinationLocation) {
         this.destinationLocation = destinationLocation;
     }
 
@@ -60,12 +59,4 @@ public class RequestFromGraber {
         this.vehicleType = vehicleType;
     }
 
-    public HashMap<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("userId",userId);
-        result.put("sourceLocation",sourceLocation);
-        result.put("destinationLocation",destinationLocation);
-        result.put("vehicleType",vehicleType);
-        return result;
-    }
 }

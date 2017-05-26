@@ -29,5 +29,6 @@
 app/app.iml
 
 local.properties
+/build
 
 .idea/inspectionProfiles/Project_Default.xml

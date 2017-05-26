@@ -4,28 +4,40 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.location.Address;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
+
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,10 +47,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.adapter.GooglePlacesAutocompleteAdapter;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromGraber;
+import project.com.vehiclessharing.model.UserSessionManager;
 import project.com.vehiclessharing.model.Validation;
 
 /**
@@ -61,6 +76,9 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
    // private GooglePlacesAutocompleteAdapter mplacesAutocompleteAdapter;
     private ImageView imgClearTextCur, imgClearTextDes;
     private PlaceAutocompleteFragment autocompleteFragment, autocompleteCurFragment;
+    RequestDataFromGraber requestDataFromGraber;
+    private String[] vehicleType = new String[1];
+    private Drawable mDrawable;
    // private AutocompleteFilter typeFilter;
 
     private static final LatLngBounds myBound = new LatLngBounds(new LatLng(-0, 0), new LatLng(0, 0));
@@ -76,7 +94,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mActivity = activity;
+       requestDataFromGraber= (RequestDataFromGraber) activity;
     }
 
     @Override
@@ -90,7 +108,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         // return inflater.inflate(R.layout.add_request_from_graber,container,false);
-        view = inflater.inflate(R.layout.add_request_from_graber, container, false);
+         view = inflater.inflate(R.layout.add_request_from_graber, container, false);
         addControls();
         addEvents();
         return view;
@@ -102,22 +120,15 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
     }
 
     private void addEvents() {
-        final String[] vehicleType = new String[1];
-        final int resultCode = 1;
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean checkNull = validateRequest();
-                if (checkNull) {
+                if (validateRequest()) {
                     addRequestIntoDB(vehicleType[0]);
                     Toast.makeText(mContext, "Create request success", Toast.LENGTH_SHORT).show();
                     dismiss();
-                } else
-                    Toast.makeText(mContext, "Vui lòng điền đầy đủ vào thông tin địa chỉ nơi hiện tại và nên đến", Toast.LENGTH_SHORT).show();
-                //resultCode=getTargetRequestCode();
-                //  getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,getActivity().getIntent());
-
+                }
             }
         });
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -211,9 +222,15 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
     private boolean validateRequest() {
         String curLocate = txtCurLocation.getText().toString();
         String desLocate = txtDesLocation.getText().toString();
-        boolean checkNull = false;
-        if (!Validation.isEmpty(curLocate) && !Validation.isEmpty(desLocate)) {
-            checkNull = true;
+        boolean checkNull = true;
+        if (Validation.isEmpty(curLocate)) {
+            txtCurLocation.setError("Current location must be not empty");
+            checkNull=false;
+        }
+        if(Validation.isEmpty(desLocate))
+        {
+            txtDesLocation.setError("Destination location must be not empty");
+            checkNull=false;
         }
         return checkNull;
     }
@@ -225,10 +242,9 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
         LatLng latLngCurLocation = AboutPlace.getInstance().getLatLngByName(mContext, txtCurLocation.getText().toString());
         LatLng latLngDesLocation = AboutPlace.getInstance().getLatLngByName(mContext, txtDesLocation.getText().toString());
-        LatLngAddress curLocation = new LatLngAddress(latLngCurLocation.latitude, latLngCurLocation.longitude);
-        LatLngAddress desLocation = new LatLngAddress(latLngDesLocation.latitude, latLngDesLocation.longitude);
-        RequestFromGraber requestFromGraber = new RequestFromGraber(userId, curLocation, desLocation, vehicleType);
+        RequestFromGraber requestFromGraber = new RequestFromGraber(userId, latLngCurLocation, latLngDesLocation, vehicleType);
         mDatabase.child("requestfromgraber").child(userId).setValue(requestFromGraber);
+        requestDataFromGraber.getRequestFromGraber(requestFromGraber);
     }
 
     private void addControls() {
@@ -260,6 +276,8 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
                 .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
                 .build();
         autocompleteFragment.setFilter(typeFilter);
+        mDrawable = getResources().getDrawable(R.drawable.errorvalid);
+        mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
         //autocompleteCurFragment.setFilter(typeFilter);
 
        /* mplacesAutocompleteAdapter=new GooglePlacesAutocompleteAdapter(mContext,R.layout.location_row,mGoogleApiClient,myBound,null);
@@ -284,14 +302,14 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
     @Override
     public void onClick(View v) {
-        /*switch (view.getId()) {
+        switch (view.getId()) {
             case R.id.imgClearCurLocation:
                 txtCurLocation.setText("");
                 break;
             case R.id.imgClearDesLocation:
                 txtDesLocation.setText("");
                 break;
-        }*/
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -302,5 +320,10 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
                 .addApi(Places.GEO_DATA_API)
                 .build();
         mGoogleApiClient.connect();
+    }
+
+    public interface RequestDataFromGraber
+    {
+        public void getRequestFromGraber(RequestFromGraber requestFromGraber);
     }
 }
