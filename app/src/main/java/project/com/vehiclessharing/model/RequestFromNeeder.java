@@ -1,20 +1,24 @@
 package project.com.vehiclessharing.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.security.Timestamp;
+
 /**
  * Created by Hihihehe on 5/13/2017.
  */
 
 public class RequestFromNeeder {
     private String userId;
-    private LatLngAddress sourceLocation;
-    private LatLngAddress destinationLocation;
+    private LatLng sourceLocation;
+    private LatLng destinationLocation;
     private String timeStart;
     private String dateStart;
 
     public RequestFromNeeder() {
     }
 
-    public RequestFromNeeder(String userId, LatLngAddress sourceLocation, LatLngAddress destinationLocation, String timeStart, String dateStart) {
+    public RequestFromNeeder(String userId, LatLng sourceLocation, LatLng destinationLocation, String timeStart, String dateStart) {
         this.userId = userId;
         this.sourceLocation = sourceLocation;
         this.destinationLocation = destinationLocation;
@@ -30,19 +34,19 @@ public class RequestFromNeeder {
         this.userId = userId;
     }
 
-    public LatLngAddress getSourceLocation() {
+    public LatLng getSourceLocation() {
         return sourceLocation;
     }
 
-    public void setSourceLocation(LatLngAddress sourceLocation) {
+    public void setSourceLocation(LatLng sourceLocation) {
         this.sourceLocation = sourceLocation;
     }
 
-    public LatLngAddress getDestinationLocation() {
+    public LatLng getDestinationLocation() {
         return destinationLocation;
     }
 
-    public void setDestinationLocation(LatLngAddress destinationLocation) {
+    public void setDestinationLocation(LatLng destinationLocation) {
         this.destinationLocation = destinationLocation;
     }
 

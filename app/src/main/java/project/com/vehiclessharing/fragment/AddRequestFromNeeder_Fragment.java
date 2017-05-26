@@ -224,12 +224,11 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
 
         LatLng latLngCurLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtCurLocation.getText().toString());
         LatLng latLngDesLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtDesLocation.getText().toString());
-        LatLngAddress curLocation=new LatLngAddress(latLngCurLocation.latitude,latLngCurLocation.longitude);
-        LatLngAddress desLocation=new LatLngAddress(latLngDesLocation.latitude,latLngDesLocation.longitude);
+
         //Date date=new Date();
         String curDate=sdf2.format(calendar.getTime());
         String timeStart=txtTimeStart.getText().toString();
-        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,curLocation,desLocation,timeStart,curDate);
+        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,latLngCurLocation,latLngDesLocation,timeStart,curDate);
         mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
         requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
      //   getTargetFragment().onActivityResult(getTargetRequestCode(),1);

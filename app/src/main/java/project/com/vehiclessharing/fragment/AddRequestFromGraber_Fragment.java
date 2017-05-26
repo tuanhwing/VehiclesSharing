@@ -242,9 +242,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
         LatLng latLngCurLocation = AboutPlace.getInstance().getLatLngByName(mContext, txtCurLocation.getText().toString());
         LatLng latLngDesLocation = AboutPlace.getInstance().getLatLngByName(mContext, txtDesLocation.getText().toString());
-        LatLngAddress curLocation = new LatLngAddress(latLngCurLocation.latitude, latLngCurLocation.longitude);
-        LatLngAddress desLocation = new LatLngAddress(latLngDesLocation.latitude, latLngDesLocation.longitude);
-        RequestFromGraber requestFromGraber = new RequestFromGraber(userId, curLocation, desLocation, vehicleType);
+        RequestFromGraber requestFromGraber = new RequestFromGraber(userId, latLngCurLocation, latLngDesLocation, vehicleType);
         mDatabase.child("requestfromgraber").child(userId).setValue(requestFromGraber);
         requestDataFromGraber.getRequestFromGraber(requestFromGraber);
     }
