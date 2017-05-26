@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import project.com.vehiclessharing.utils.RequestCallback;
+import project.com.vehiclessharing.utils.RequestFromGraberCallback;
 
 /**
  * Created by Hihihehe on 5/23/2017.
@@ -60,7 +60,7 @@ public class ForGraber {
 
         return list;
     }
-    public void getInfoRequestNeeder(String uId, final RequestCallback callback)
+    public void getInfoRequestNeeder(String uId, final RequestFromGraberCallback callback)
     {
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber").child(uId);

@@ -1,6 +1,7 @@
 package project.com.vehiclessharing.activity;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,6 +30,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -64,8 +68,12 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.application.ApplicationController;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
@@ -73,10 +81,15 @@ import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.ForGraber;
 import project.com.vehiclessharing.model.RequestDemo;
+import project.com.vehiclessharing.model.ForNeeder;
 import project.com.vehiclessharing.model.RequestFromGraber;
+import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
 import project.com.vehiclessharing.utils.RequestCallback;
+import project.com.vehiclessharing.sqlite.RealmDatabase;
+import project.com.vehiclessharing.utils.RequestFromGraberCallback;
+import project.com.vehiclessharing.utils.RequestFromNeederCallback;
 
 import static project.com.vehiclessharing.R.id.map;
 import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
@@ -104,7 +117,6 @@ public class HomeActivity extends AppCompatActivity
     private DatabaseReference requestNeederRef;
     private String mRequestKey;
     private ArrayList<RequestFromGraber> arrRequest;
-    private ArrayList<RequestDemo> arrRequestDemo;
 
 
     public static UserOnDevice currentUser;//Instace current user logined
@@ -168,19 +180,20 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                try {
+               /* try {
                     for(DataSnapshot temp : dataSnapshot.getChildren()) {
                         RequestDemo requestDemo = temp.getValue(RequestDemo.class);
-                        arrRequestDemo.add(requestDemo);
+                        arrRequest.add(requestDemo);
                     }
                     mGoogleMap.clear();
-                    for(RequestDemo a : arrRequestDemo){
+                    for(RequestDemo a : arrRequest){
                         makeMaker(new LatLng(a.getLocationRequest().getLocationLat(),a.getLocationRequest().getLocationLong()),
                                 a.getGraberId());
                     }
                 } catch (Exception e){
                     Log.d("database_firebaseaaaaa",String.valueOf(e.getMessage()));
                 }
+*/
 
             }
 
@@ -222,32 +235,50 @@ public class HomeActivity extends AppCompatActivity
     private void checkOnScreen() {
         if (checkOnScreen == 0 || checkOnScreen == 1) {
             mGoogleMap.clear();
-            makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
             Toast.makeText(this, "All Vehicle", Toast.LENGTH_SHORT).show();
+            ForNeeder.getInstance().getInfoNeeder(mUser.getUid(), new RequestFromNeederCallback() {
+                @Override
+                public void onSuccess(RequestFromNeeder requestFromNeeder) {
+                    LatLng latLngSource = new LatLng(requestFromNeeder.getSourceLocation().getLatitude(), requestFromNeeder.getSourceLocation().getLongitude());
+                    LatLng latLngDes = new LatLng(requestFromNeeder.getDestinationLocation().getLatitude(), requestFromNeeder.getDestinationLocation().getLongitude());
+                    makeMaker(latLngSource, "Start location");
+                    drawroadBetween2Location(latLngSource, latLngDes);
+                    makeMaker(latLngDes, "Destination location");
+                    if (btnFindPeople.getVisibility() == View.VISIBLE) {
+                        btnFindPeople.setVisibility(View.GONE);
+                    }
+                }
 
+                @Override
+                public void onError(DatabaseError e) {
+
+                }
+            });
 
             //get all request from graber
         } else if (checkOnScreen == 2) {
             mGoogleMap.clear();
-            makeMaker(new LatLng(10.8719808, 100.790409), "Nong Lam University");
             Toast.makeText(this, "All people", Toast.LENGTH_SHORT).show();
 
-           ForGraber.getInstance().getInfoRequestNeeder(mUser.getUid(), new RequestCallback() {
-               @Override
-               public void onSuccess(RequestFromGraber requestFromGraber) {
-                   LatLng latLngCurLocation=new LatLng(requestFromGraber.getSourceLocation().getLatitude(),requestFromGraber.getSourceLocation().getLongitude());
-                   LatLng latLngDesLocation=new LatLng(requestFromGraber.getDestinationLocation().getLatitude(),requestFromGraber.getDestinationLocation().getLongitude());
+            ForGraber.getInstance().getInfoRequestNeeder(mUser.getUid(), new RequestFromGraberCallback() {
+                @Override
+                public void onSuccess(RequestFromGraber requestFromGraber) {
+                    LatLng latLngCurLocation = new LatLng(requestFromGraber.getSourceLocation().getLatitude(), requestFromGraber.getSourceLocation().getLongitude());
+                    LatLng latLngDesLocation = new LatLng(requestFromGraber.getDestinationLocation().getLatitude(), requestFromGraber.getDestinationLocation().getLongitude());
 
-                   makeMaker(latLngCurLocation,"Location Graber");
-                   drawroadBetween2Location(latLngCurLocation,latLngDesLocation);
-                   makeMaker(latLngDesLocation,"Destination Graber");
-               }
+                    makeMaker(latLngCurLocation, "Location Graber");
+                    drawroadBetween2Location(latLngCurLocation, latLngDesLocation);
+                    makeMaker(latLngDesLocation, "Destination Graber");
+                    if (btnFindVehicles.getVisibility() == View.VISIBLE) {
+                        btnFindVehicles.setVisibility(View.GONE);
+                    }
+                }
 
-               @Override
-               public void onError(DatabaseError e) {
+                @Override
+                public void onError(DatabaseError e) {
 
-               }
-           });
+                }
+            });
 
 
             //get all request from needer
@@ -278,7 +309,6 @@ public class HomeActivity extends AppCompatActivity
         currentUser = RealmDatabase.getCurrentUser(mUser.getUid());
         mDatabase = FirebaseDatabase.getInstance().getReference();
         arrRequest = new ArrayList<RequestFromGraber>();
-        arrRequestDemo = new ArrayList<RequestDemo>();
 
         viewHeader = navigationView.getHeaderView(0);
         txtEmail = (TextView) viewHeader.findViewById(R.id.txtEmail);
@@ -399,8 +429,8 @@ public class HomeActivity extends AppCompatActivity
         mGoogleMap = googleMap;
         btnFindVehicles.setVisibility(View.VISIBLE);
         btnFindPeople.setVisibility(View.VISIBLE);
-        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
-        requestNeederRef.addValueEventListener(requestNeederListener);
+        /*requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+        requestNeederRef.addValueEventListener(requestNeederListener);*/
 
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
@@ -408,8 +438,9 @@ public class HomeActivity extends AppCompatActivity
 
     /**
      * Make a Maker in google map
+     *
      * @param location location maker
-     * @param title title maker
+     * @param title    title maker
      */
     private void makeMaker(LatLng location, String title) {
         LatLng latLng = new LatLng(location.latitude, location.longitude);
@@ -419,6 +450,7 @@ public class HomeActivity extends AppCompatActivity
 
     /**
      * Check permission Location service
+     *
      * @return true - can
      */
     public boolean checkLocationPermission() {
@@ -467,7 +499,7 @@ public class HomeActivity extends AppCompatActivity
                     lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) &&
                     isOnline()) {
                 //Do your stuff on GPS status change
-                Toast.makeText(HomeActivity.this, "GPS + Internet enable!", Toast.LENGTH_LONG).show();
+                //Toast.makeText(HomeActivity.this, "GPS + Internet enable!", Toast.LENGTH_LONG).show();
             } else {
                 if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                         lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
@@ -528,18 +560,18 @@ public class HomeActivity extends AppCompatActivity
 
     /**
      * Update information user into header layout
+     *
      * @param loginWith
      */
-    private void updateUIHeader(int loginWith){
+    private void updateUIHeader(int loginWith) {
         String mfullName = "";
         String memail = "";
         String url = "";
-        if(loginWith == 0){
+        if (loginWith == 0) {
             mfullName = currentUser.getUser().getFullName();
             memail = currentUser.getUser().getEmail();
             url = String.valueOf(currentUser.getUser().getImage());//url avatar user
-        }
-        else {
+        } else {
             mfullName = mUser.getDisplayName();
             memail = mUser.getEmail();
             url = String.valueOf(mUser.getPhotoUrl());
@@ -549,10 +581,10 @@ public class HomeActivity extends AppCompatActivity
         txtFullName.setText(mfullName);
 
 
-        if(url.equals("null") || url.isEmpty()){
+        if (url.equals("null") || url.isEmpty()) {
             imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
         } else {
-            if(isOnline()) {
+            if (isOnline()) {
                 progressBar.setVisibility(View.VISIBLE);
                 Picasso.with(HomeActivity.this).load(url).into(imgUser, new Callback() {
                     @Override
@@ -563,7 +595,7 @@ public class HomeActivity extends AppCompatActivity
                     @Override
                     public void onError() {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(HomeActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, "Error load image", Toast.LENGTH_SHORT).show();
                     }
                 });
             } else Picasso.with(getApplicationContext())
@@ -575,6 +607,7 @@ public class HomeActivity extends AppCompatActivity
 
     /**
      * Internet is avaibalility
+     *
      * @return true if can access internet
      */
     public boolean isOnline() {
@@ -590,7 +623,7 @@ public class HomeActivity extends AppCompatActivity
      */
     private void drawroadBetween2Location(LatLng latLng1, LatLng latLng2) {
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if(!isOnline() || !checkLocationPermission() ||
+        if (!isOnline() || !checkLocationPermission() ||
                 !lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) return;
         Routing routing = new Routing.Builder()
@@ -614,11 +647,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onRoutingSuccess(ArrayList<Route> arrayList, int shortestRouteIndex) {
         try {
-            if(polyline != null) polyline.remove();
+            if (polyline != null) polyline.remove();
             PolylineOptions polyoptions = new PolylineOptions();
             polyoptions.color(Color.BLUE);
             polyoptions.width(10);
-            for (int i = 0; i <arrayList.size(); i++) {
+            for (int i = 0; i < arrayList.size(); i++) {
 
                 //In case of more than 5 alternative routes
                 PolylineOptions polyOptions = new PolylineOptions();
@@ -626,11 +659,11 @@ public class HomeActivity extends AppCompatActivity
                 polyOptions.width(10 + i * 3);
                 polyOptions.addAll(arrayList.get(i).getPoints());
                 polyline = mGoogleMap.addPolyline(polyOptions);
-                Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ arrayList.get(i).getDistanceValue()+": duration - "+ arrayList.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Route " + (i + 1) + ": distance - " + arrayList.get(i).getDistanceValue() + ": duration - " + arrayList.get(i).getDurationValue(), Toast.LENGTH_SHORT).show();
             }
 
-        }catch (Exception e){
-            Log.e(TAG_ERROR_ROUTING,e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG_ERROR_ROUTING, e.getMessage());
         }
     }
 
