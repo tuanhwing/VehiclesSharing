@@ -67,9 +67,17 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.asynctask.ImageTask;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
@@ -80,6 +88,7 @@ import project.com.vehiclessharing.model.ForGraber;
 import project.com.vehiclessharing.model.ForNeeder;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
+import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
 
@@ -417,6 +426,27 @@ public class HomeActivity extends AppCompatActivity
         mGoogleMap = googleMap;
         /*btnFindVehicles.setVisibility(View.VISIBLE);
         btnFindPeople.setVisibility(View.VISIBLE);*/
+        BitmapDescriptor bitmapDescriptorFactory;
+        try {
+            String url = "https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/avatar%2F0ea2kDnvz8VjkbqoBMAIIaChsni2.jpg?alt=media&token=1afa116e-3074-49c7-b0b1-d36a829a7add";
+            Bitmap bitmap;
+            ImageTask ima=new ImageTask();
+            ima.execute(url);
+            bitmap=ima.get();
+            bitmapDescriptorFactory=BitmapDescriptorFactory.fromBitmap(bitmap);
+            //bitmapDescriptorFactory=BitmapDescriptorFactory.fromResource(R.drawable.profile);
+
+            //makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
+            LatLng cur=new LatLng(10.8719808, 106.790409);
+            Marker marker = mGoogleMap.addMarker(new MarkerOptions().title("here").position(cur).icon(bitmapDescriptorFactory));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
         mGoogleMap.setOnMarkerClickListener(this);
         if(mGoogleMap!=null)
         {
@@ -508,13 +538,62 @@ public class HomeActivity extends AppCompatActivity
     private void makeMaker(LatLng location, String title) {
         LatLng latLng = new LatLng(location.latitude, location.longitude);
         Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng));
-        marker.setTag(title);
+        marker.setTag(mUser.getUid());
     }
-    private void makeCustomMaker(LatLng location, String title, String type) {
-        LatLng latLng = new LatLng(location.latitude, location.longitude);
+
+    private void makeMarkerForMyself(LatLng location,String title)
+    {
+
+        /*mDatabase=FirebaseDatabase.getInstance().getReference().child("users");
+        ValueEventListener listener;
+        final List<User> list=new ArrayList<>();
+        listener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot temp : dataSnapshot.getChildren()) {
+                    String s=temp.getKey();
+                    Map<String, User> td = (HashMap<String,User>) temp.getValue();
+
+                    User requestFromGraber= (User) td.values();
+                    list.add(requestFromGraber);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        String urlTest="";
+        for(User graber:list)
+        {
+            if(graber.getEmail()=="tuan@g.com")
+            {
+                urlTest=graber.getImage();
+            }
+        }
+*/
+        BitmapDescriptor bitmapDescriptorFactory=BitmapDescriptorFactory.defaultMarker();
+        String url=String.valueOf(mUser.getPhotoUrl());
+        if (url.equals("null") || url.isEmpty()) {
+                bitmapDescriptorFactory =BitmapDescriptorFactory.fromResource(R.drawable.ic_accessibility_orange_a700_24dp);
+        }
+        else {
+            bitmapDescriptorFactory=BitmapDescriptorFactory.fromPath(url);
+        }
+
+
+        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+        //Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(mUser.getPhotoUrl()).getContent());
+        Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(location).icon(bitmapDescriptorFactory));
+        marker.setTag(mUser.getUid());
+    }
+
+    private void makeCustomMakerForVehicle(RequestFromGraber request, String title){
+        LatLng latLng = request.getSourceLocation();
      //  photoURL=mUser.getPhotoUrl();
         BitmapDescriptor bitmapDescriptorFactory=BitmapDescriptorFactory.defaultMarker();
-        switch (type)
+        switch (request.getVehicleType())
         {
             case "Car":
                bitmapDescriptorFactory =BitmapDescriptorFactory.fromResource(R.drawable.ic_directions_car_light_blue_800_24dp);
@@ -522,13 +601,10 @@ public class HomeActivity extends AppCompatActivity
             case "Bike":
                 bitmapDescriptorFactory =BitmapDescriptorFactory.fromResource(R.drawable.ic_motorcycle_green_900_24dp);
                 break;
-            case "People":
-                bitmapDescriptorFactory=BitmapDescriptorFactory.fromResource(R.drawable.ic_accessibility_orange_a700_24dp);
-                break;
         }
 
         Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng).icon(bitmapDescriptorFactory));
-        //marker.setTag(mUser.getUid());
+        marker.setTag(request.getUserId());
     }
 
     /**
@@ -762,7 +838,7 @@ public class HomeActivity extends AppCompatActivity
         LatLng desLocation=requestFromGraber.getDestinationLocation();
         //makeMaker(curLocation,"Source Location");
        // makeCustomMaker(curLocation,"Source");
-        makeCustomMaker(curLocation,"source",requestFromGraber.getVehicleType());
+        makeMarkerForMyself(curLocation,"source");
         makeMaker(desLocation,"Destination Location");
         drawroadBetween2Location(curLocation,desLocation);
 
