@@ -1,19 +1,15 @@
 package project.com.vehiclessharing.fragment;
 
-import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.icu.util.Calendar;
-import android.icu.util.TimeZone;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,13 +28,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Date;
-
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.model.AboutPlace;
-import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.LatLngAddress;
-import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.Validation;
 

@@ -1,7 +1,6 @@
 package project.com.vehiclessharing.activity;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -30,8 +28,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -68,26 +64,19 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.application.ApplicationController;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
 import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.ForGraber;
-import project.com.vehiclessharing.model.RequestDemo;
 import project.com.vehiclessharing.model.ForNeeder;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
-import project.com.vehiclessharing.utils.RequestCallback;
-import project.com.vehiclessharing.sqlite.RealmDatabase;
 import project.com.vehiclessharing.utils.RequestFromGraberCallback;
 import project.com.vehiclessharing.utils.RequestFromNeederCallback;
 

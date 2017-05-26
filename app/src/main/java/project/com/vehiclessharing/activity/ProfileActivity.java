@@ -210,9 +210,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(dialogImageFullScreen.isShowing()) dialogImageFullScreen.dismiss();
-        else {
-        }
+        if(dialogImageFullScreen != null)
+            if(dialogImageFullScreen.isShowing()) dialogImageFullScreen.dismiss();
 
     }
 

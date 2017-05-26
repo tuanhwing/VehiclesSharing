@@ -8,7 +8,7 @@ import project.com.vehiclessharing.model.RequestFromGraber;
  * Created by Tuan on 24/05/2017.
  */
 
-public interface RequestCallback {
+public interface RequestFromGraberCallback {
     void onSuccess(RequestFromGraber requestFromGraber);
     void onError(DatabaseError e);
 }
