@@ -222,14 +222,15 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void checkOnScreen() {
+
         if (checkOnScreen == 0 || checkOnScreen == 1) {
             mGoogleMap.clear();
             Toast.makeText(this, "All Vehicle", Toast.LENGTH_SHORT).show();
             ForNeeder.getInstance().getInfoNeeder(mUser.getUid(), new RequestFromNeederCallback() {
                 @Override
                 public void onSuccess(RequestFromNeeder requestFromNeeder) {
-                    LatLng latLngSource = new LatLng(requestFromNeeder.getSourceLocation().getLatitude(), requestFromNeeder.getSourceLocation().getLongitude());
-                    LatLng latLngDes = new LatLng(requestFromNeeder.getDestinationLocation().getLatitude(), requestFromNeeder.getDestinationLocation().getLongitude());
+                    LatLng latLngSource = new LatLng(requestFromNeeder.getSourceLocation().latitude, requestFromNeeder.getSourceLocation().longitude);
+                    LatLng latLngDes = new LatLng(requestFromNeeder.getDestinationLocation().latitude, requestFromNeeder.getDestinationLocation().longitude);
                     makeMaker(latLngSource, "Start location");
                     drawroadBetween2Location(latLngSource, latLngDes);
                     makeMaker(latLngDes, "Destination location");
@@ -252,8 +253,8 @@ public class HomeActivity extends AppCompatActivity
             ForGraber.getInstance().getInfoRequestNeeder(mUser.getUid(), new RequestFromGraberCallback() {
                 @Override
                 public void onSuccess(RequestFromGraber requestFromGraber) {
-                    LatLng latLngCurLocation = new LatLng(requestFromGraber.getSourceLocation().getLatitude(), requestFromGraber.getSourceLocation().getLongitude());
-                    LatLng latLngDesLocation = new LatLng(requestFromGraber.getDestinationLocation().getLatitude(), requestFromGraber.getDestinationLocation().getLongitude());
+                    LatLng latLngCurLocation = new LatLng(requestFromGraber.getSourceLocation().latitude, requestFromGraber.getSourceLocation().longitude);
+                    LatLng latLngDesLocation = new LatLng(requestFromGraber.getDestinationLocation().latitude, requestFromGraber.getDestinationLocation().longitude);
 
                     makeMaker(latLngCurLocation, "Location Graber");
                     drawroadBetween2Location(latLngCurLocation, latLngDesLocation);

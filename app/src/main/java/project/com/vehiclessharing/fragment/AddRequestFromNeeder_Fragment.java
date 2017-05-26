@@ -5,8 +5,6 @@ import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.icu.util.Calendar;
-import android.icu.util.TimeZone;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -33,7 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.model.AboutPlace;
-import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.Validation;
 
