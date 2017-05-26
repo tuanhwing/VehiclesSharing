@@ -426,7 +426,7 @@ public class HomeActivity extends AppCompatActivity
         mGoogleMap = googleMap;
         /*btnFindVehicles.setVisibility(View.VISIBLE);
         btnFindPeople.setVisibility(View.VISIBLE);*/
-        BitmapDescriptor bitmapDescriptorFactory;
+        /*BitmapDescriptor bitmapDescriptorFactory;
         try {
             String url = "https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/avatar%2F0ea2kDnvz8VjkbqoBMAIIaChsni2.jpg?alt=media&token=1afa116e-3074-49c7-b0b1-d36a829a7add";
             Bitmap bitmap;
@@ -445,7 +445,7 @@ public class HomeActivity extends AppCompatActivity
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
+*/
 
         mGoogleMap.setOnMarkerClickListener(this);
         if(mGoogleMap!=null)
