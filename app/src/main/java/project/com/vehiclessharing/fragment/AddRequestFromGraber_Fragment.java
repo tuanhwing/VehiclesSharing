@@ -20,16 +20,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
-
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
@@ -38,7 +35,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.model.AboutPlace;

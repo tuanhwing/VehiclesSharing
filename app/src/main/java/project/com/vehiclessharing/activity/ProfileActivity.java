@@ -124,7 +124,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             txtAddress.setText(address.getDistrict() + " " + address.getProvince() + " " + address.getCountry());
             String url = String.valueOf(currentUser.getUser().getImage());//url avatar user
             if(url.equals("null") || url.isEmpty()){
-                 imgProfile.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
+                imgProfile.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
+                progressBar.setVisibility(View.GONE);
             } else {
 
                 if(isOnline()){
@@ -210,9 +211,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(dialogImageFullScreen.isShowing()) dialogImageFullScreen.dismiss();
-        else {
-        }
+        if(dialogImageFullScreen != null)
+            if(dialogImageFullScreen.isShowing()) dialogImageFullScreen.dismiss();
 
     }
 

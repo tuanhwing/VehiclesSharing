@@ -12,12 +12,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -72,9 +74,6 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +81,6 @@ import java.util.concurrent.ExecutionException;
 
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.asynctask.ImageTask;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.custom.CustomMarker;
 import project.com.vehiclessharing.database.RealmDatabase;
@@ -91,18 +89,14 @@ import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.ForGraber;
-import project.com.vehiclessharing.model.ForNeeder;
+import project.com.vehiclessharing.model.RequestDemo;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
-import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
-
 import project.com.vehiclessharing.utils.RequestFromGraberCallback;
-import project.com.vehiclessharing.utils.RequestFromNeederCallback;
 
 import static project.com.vehiclessharing.R.id.map;
-import static project.com.vehiclessharing.R.id.thing_proto;
 import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
 public class HomeActivity extends AppCompatActivity
@@ -178,11 +172,51 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+
+    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
+
+        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+        markerImageView.setImageResource(resId);
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
+    }
+
+
     private void addEvents() {
         btnFindVehicles.setOnClickListener(this);
         btnFindPeople.setOnClickListener(this);
         btnCancelRequest.setOnClickListener(this);
         btnRestartRequest.setOnClickListener(this);
+        //[START]add new
+        requestNeederListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("demo_request",dataSnapshot.getValue().toString());
+                for (DataSnapshot requestSnapshot: dataSnapshot.getChildren()) {
+                    final RequestDemo requestDemo = requestSnapshot.getValue(RequestDemo.class);
+                    mGoogleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(requestDemo.getLocationRequest().getLocationLat(),requestDemo.getLocationRequest().getLocationLong()))
+                            .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        //[END]add new
     }
 
     private void addControls() {
@@ -418,7 +452,11 @@ public class HomeActivity extends AppCompatActivity
                 }
             });
         }
-
+        //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
+        //[START]add new
+        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+        requestNeederRef.addValueEventListener(requestNeederListener);
+        //[END]add new
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
     }
@@ -499,7 +537,7 @@ public class HomeActivity extends AppCompatActivity
         Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(location).icon(bitmapDescriptorFactory));
         marker.setTag(mUser.getUid());
         bitmapDescriptorFactory=BitmapDescriptorFactory.fromResource(R.drawable.ic_pin_drop_red_900_36dp);
-        Marker desMarker=mGoogleMap.addMarker(new MarkerOptions().title("destination").position(destinLocation).snippet("dđ").icon(bitmapDescriptorFactory));
+        Marker desMarker=mGoogleMap.addMarker(new MarkerOptions().title("destination").position(destinLocation).snippet("dd").icon(bitmapDescriptorFactory));
         desMarker.setTag(mUser.getUid());
     }
 
@@ -700,6 +738,7 @@ public class HomeActivity extends AppCompatActivity
 
         if (url.equals("null") || url.isEmpty()) {
             imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
+            progressBar.setVisibility(View.GONE);
         } else {
             if (isOnline()) {
                 progressBar.setVisibility(View.VISIBLE);
