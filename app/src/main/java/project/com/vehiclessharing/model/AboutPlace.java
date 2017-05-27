@@ -26,7 +26,7 @@ public class AboutPlace {
 
     public static AboutPlace getInstance()
     {
-       return instance=new AboutPlace();
+        return instance=new AboutPlace();
     }
     public String getCurrentPlace(Context activity) {
         String fullAddress="";
