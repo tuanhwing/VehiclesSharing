@@ -2,8 +2,6 @@ package project.com.vehiclessharing.model;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.security.Timestamp;
-
 /**
  * Created by Hihihehe on 5/13/2017.
  */

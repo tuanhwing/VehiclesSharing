@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -113,9 +114,14 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 HomeActivity.currentUser.getUser().getAddress().getProvince() + " , " +
                 HomeActivity.currentUser.getUser().getAddress().getCountry());
 
-        String url = HomeActivity.currentUser.getUser().getImage();
-        if(!url.isEmpty() || !url.equals("null")){
-            if(isOnline())
+        String url = String.valueOf(HomeActivity.currentUser.getUser().getImage());
+        Log.d("image_path_AAAA",String.valueOf(url));
+        if(url.equals("null") || url.isEmpty()){
+            avatarUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
+            progressBar.setVisibility(View.GONE);
+        } else {
+            if(isOnline()){
+                progressBar.setVisibility(View.VISIBLE);
                 Picasso.with(EditProfileActivity.this).load(url).into(avatarUser, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -128,11 +134,10 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                         Toast.makeText(EditProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
                     }
                 });
-            else Picasso.with(getApplicationContext())
+            } else Picasso.with(getApplicationContext())
                     .load(url)
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(avatarUser);
-
         }
 
         if(HomeActivity.currentUser.getUser().getSex().equals("Male")) rdMale.setChecked(true);
