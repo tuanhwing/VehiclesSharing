@@ -195,7 +195,7 @@ public class ImageClass {
      */
     public static void getUrlThumbnailImage(final Context context, final ImageView imageView, final ImageCallback callback){
         StorageReference imageRef = storage.getReference();
-        imageRef.child("/avatar/thumb100_" + HomeActivity.mUser.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        imageRef.child("/avatar/thumb100_" + HomeActivity.mUser.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Log.d("getDownloadUrl_success",uri.toString());

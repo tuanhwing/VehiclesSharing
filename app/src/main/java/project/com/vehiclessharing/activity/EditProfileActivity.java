@@ -238,7 +238,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
             // Create a child reference
             // imagesRef now points to "images"
-            StorageReference riversRef = storageRef.child("avatar/"+ HomeActivity.mUser.getUid() + ".jpg");
+            StorageReference riversRef = storageRef.child("avatar/"+ HomeActivity.mUser.getUid());
             UploadTask uploadTask = riversRef.putFile(file);
 
             uploadTask.addOnFailureListener(new OnFailureListener() {

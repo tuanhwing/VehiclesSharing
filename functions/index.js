@@ -291,8 +291,22 @@ exports.generateThumbnail = functions.storage.object().onChange(event => {
         // Uploading the Thumbnail.
         return bucket.upload(tempLocalThumbFile, {
           destination: thumbFilePath
-        }).then(() => {
+        }).then((data) => {
           console.log('Thumbnail uploaded to Storage at', thumbFilePath);
+			let file = data[0]
+	        file.getSignedUrl({
+	          action: 'read',
+	          expires: '03-17-2025'
+	        }, function(err, url) {
+	          if (err) {
+	            console.error(err);
+	            return;
+	          }
+	          // handle url 
+	          admin.database().ref('/thumbnailimage').child((fileName.split('.')).pop()).child("url").set(url);
+	          return;
+
+	        });
         });
       });
     });
