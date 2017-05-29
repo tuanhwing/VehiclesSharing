@@ -557,21 +557,23 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 break;
             }
             case R.id.btn_save:{
-                new AlertDialog.Builder(EditProfileActivity.this)
-                        .setTitle("Confirm edit profile")
-                        .setMessage("Are you sure you want to save profile?")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                uploadProfileData();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                if(isOnline())
+                    new AlertDialog.Builder(EditProfileActivity.this)
+                            .setTitle("Confirm edit profile")
+                            .setMessage("Are you sure you want to save profile?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    uploadProfileData();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // do nothing
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                else Toast.makeText(EditProfileActivity.this,"Internet is disable, can't update!",Toast.LENGTH_SHORT).show();
                 break;
             }
             case R.id.img_user:{

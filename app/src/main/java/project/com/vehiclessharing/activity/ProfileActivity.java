@@ -169,21 +169,33 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 dialogImageFullScreen.setContentView(R.layout.image_full_screen);
                 final ImageView imgFullScreen = (ImageView) dialogImageFullScreen.findViewById(R.id.image_full_screen);
                 final ProgressBar progressLoadImageFull = (ProgressBar) dialogImageFullScreen.findViewById(R.id.progress_load_full);
-                Picasso.with(ProfileActivity.this)
-                        .load(currentUser.getUser().getImage())
-                        .into(imgFullScreen, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                progressLoadImageFull.setVisibility(View.GONE);
-                            }
+                String urlhere = String.valueOf(currentUser.getUser().getImage());
+                Log.d("bug_full_image",urlhere);
+                if(urlhere.equals("null") || urlhere.isEmpty()){
+                    Log.d("bug_full_image","1");
+                    imgFullScreen.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
+                    progressLoadImageFull.setVisibility(View.GONE);
+                    Log.d("bug_full_image","2");
+                } else {
+                    Log.d("bug_full_image","3");
+                    Picasso.with(ProfileActivity.this)
+                            .load(urlhere)
+                            .into(imgFullScreen, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    progressLoadImageFull.setVisibility(View.GONE);
+                                }
 
-                            @Override
-                            public void onError() {
-                                Log.d("download_full_image","failedS");
-                            }
-                        });
+                                @Override
+                                public void onError() {
+                                    Log.d("download_full_image","failedS");
+                                }
+                            });
 
+                }
+                Log.d("bug_full_image","4");
                 dialogImageFullScreen.show();
+                Log.d("bug_full_image","5");
                 break;
             }
         }
