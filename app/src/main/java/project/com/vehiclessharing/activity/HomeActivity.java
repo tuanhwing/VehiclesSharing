@@ -71,6 +71,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.application.ApplicationController;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
@@ -87,6 +88,7 @@ import project.com.vehiclessharing.utils.ImageClass;
 import project.com.vehiclessharing.utils.RequestFromGraberCallback;
 
 import static project.com.vehiclessharing.R.id.map;
+import static project.com.vehiclessharing.constant.Utils.DEVICE_TOKEN;
 import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
 public class HomeActivity extends AppCompatActivity
@@ -134,6 +136,8 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        Log.d("device_id", ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null));
         //  fragmentManager = getSupportFragmentManager();
         //set fragment initially
 //        fragmentManager = getSupportFragmentManager();
@@ -507,7 +511,7 @@ public class HomeActivity extends AppCompatActivity
         //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
         //[START]add new
         requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
-//        requestNeederRef.addValueEventListener(requestNeederListener);
+        requestNeederRef.addValueEventListener(requestNeederListener);
         //[END]add new
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 

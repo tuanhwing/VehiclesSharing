@@ -51,7 +51,6 @@ import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.DatePicker_Fragment;
 import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.Validation;
-import project.com.vehiclessharing.utils.ImageCallback;
 import project.com.vehiclessharing.utils.ImageClass;
 
 public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher{
@@ -254,17 +253,19 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                    ImageClass.getUrlThumbnailImage(EditProfileActivity.this, avatarUser, new ImageCallback() {
-                        @Override
-                        public void onSuccess(String url) {
-                            Log.d("getDownloadUrl_successS",url);
-                        }
+//                    ImageClass.getUrlThumbnailImage(EditProfileActivity.this, avatarUser, new ImageCallback() {
+//                        @Override
+//                        public void onSuccess(String url) {
+//                            Log.d("getDownloadUrl_successS",url);
+//                        }
+//
+//                        @Override
+//                        public void onError(Exception e) {
+//                            Log.d("getDownloadUrl_successE",String.valueOf(e.getMessage()));
+//                        }
+//                    });
 
-                        @Override
-                        public void onError(Exception e) {
-                            Log.d("getDownloadUrl_successE",String.valueOf(e.getMessage()));
-                        }
-                    });
+                    mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("image").setValue(downloadUrl.toString());
 
                     //Update url avatar's user Firebase
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()

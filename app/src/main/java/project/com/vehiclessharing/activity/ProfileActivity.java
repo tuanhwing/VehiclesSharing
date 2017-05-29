@@ -163,13 +163,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             }
             case R.id.img_user: {
+
                 dialogImageFullScreen = new Dialog(ProfileActivity.this,R.style.Theme_AppCompat_NoActionBar);
                 dialogImageFullScreen.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialogImageFullScreen.setContentView(R.layout.image_full_screen);
                 final ImageView imgFullScreen = (ImageView) dialogImageFullScreen.findViewById(R.id.image_full_screen);
                 final ProgressBar progressLoadImageFull = (ProgressBar) dialogImageFullScreen.findViewById(R.id.progress_load_full);
-//                String urlhere = "https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/images%2Fi9ulaadp43dAdFkZfpsgmN3TaXs2.jpg?alt=media&token=62e31c9a-102f-48ab-98fb-0efa33c84119";
-
                 Picasso.with(ProfileActivity.this)
                         .load(currentUser.getUser().getImage())
                         .into(imgFullScreen, new Callback() {
