@@ -6,18 +6,38 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import project.com.vehiclessharing.activity.HomeActivity;
+
 /**
  * Created by Tuan on 15/05/2017.
  */
 
 public class ImageClass {
+
+    private static FirebaseStorage storage = FirebaseStorage.getInstance();
+
+    public ImageClass() {
+    }
 
     /**
      * Resize Image after upload Storage Firebase
@@ -146,6 +166,50 @@ public class ImageClass {
             try{ byteBuffer.close(); } catch (IOException ignored){ /* do nothing */ }
         }
         return bytesResult;
+    }
+
+    public static void loadImage(String url, final Context context, ImageView imageView, final ProgressBar progressBar){
+        progressBar.setVisibility(View.VISIBLE);
+        Picasso.with(context)
+                .load(url)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(context,"Error load image",Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /**
+     *get Url image resized from Storage Firebase
+     * @param context
+     * @param imageView
+     * @param callback
+     */
+    public static void getUrlThumbnailImage(final Context context, final ImageView imageView, final ImageCallback callback){
+        StorageReference imageRef = storage.getReference();
+        imageRef.child("/avatar/thumb100_" + HomeActivity.mUser.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.d("getDownloadUrl_success",uri.toString());
+                if(!HomeActivity.currentUser.getUser().getImage().equals(uri.toString()))
+                    callback.onSuccess(uri.toString());
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("getDownloadUrl_failed",String.valueOf(e.getMessage()));
+                callback.onError(e);
+            }
+        });
     }
 
 }

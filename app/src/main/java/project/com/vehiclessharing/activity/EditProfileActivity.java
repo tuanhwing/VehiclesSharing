@@ -41,11 +41,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 
 import io.realm.Realm;
 import project.com.vehiclessharing.R;
@@ -53,6 +51,7 @@ import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.fragment.DatePicker_Fragment;
 import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.Validation;
+import project.com.vehiclessharing.utils.ImageCallback;
 import project.com.vehiclessharing.utils.ImageClass;
 
 public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher{
@@ -120,24 +119,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             avatarUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
             progressBar.setVisibility(View.GONE);
         } else {
-            if(isOnline()){
-                progressBar.setVisibility(View.VISIBLE);
-                Picasso.with(EditProfileActivity.this).load(url).into(avatarUser, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        progressBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onError() {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(EditProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else Picasso.with(getApplicationContext())
-                    .load(url)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(avatarUser);
+            ImageClass.loadImage(url,EditProfileActivity.this,avatarUser,progressBar);
         }
 
         if(HomeActivity.currentUser.getUser().getSex().equals("Male")) rdMale.setChecked(true);
@@ -245,10 +227,10 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * Update image to Storage Firebase
-     * @param data byte[] from imageView
+     * @param file a local file
      */
-    private void updateImage(byte[] data){
-        if(data != null){
+    private void updateImage(Uri file){
+        if(file != null){
 
             progressBar.setVisibility(View.VISIBLE);
             // Create a storage reference from our app
@@ -256,9 +238,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
             // Create a child reference
             // imagesRef now points to "images"
-            StorageReference imagesRef = storageRef.child("avatar").child(HomeActivity.currentUser.getUserId() + ".jpg");
+            StorageReference riversRef = storageRef.child("avatar/"+ HomeActivity.mUser.getUid() + ".jpg");
+            UploadTask uploadTask = riversRef.putFile(file);
 
-            UploadTask uploadTask = imagesRef.putBytes(data);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -271,6 +253,18 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                    ImageClass.getUrlThumbnailImage(EditProfileActivity.this, avatarUser, new ImageCallback() {
+                        @Override
+                        public void onSuccess(String url) {
+                            Log.d("getDownloadUrl_successS",url);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.d("getDownloadUrl_successE",String.valueOf(e.getMessage()));
+                        }
+                    });
 
                     //Update url avatar's user Firebase
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
@@ -292,7 +286,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                     HomeActivity.currentUser.getUser().setImage(String.valueOf(downloadUrl));
                     realm.commitTransaction();
 
-                    Picasso.with(EditProfileActivity.this).load(String.valueOf(downloadUrl)).into(avatarUser, new Callback() {
+                    Picasso.with(EditProfileActivity.this)
+                            .load(String.valueOf(downloadUrl))
+                            .into(avatarUser, new Callback() {
                         @Override
                         public void onSuccess() {
                             progressBar.setVisibility(View.GONE);
@@ -515,13 +511,13 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         if(resultCode == EditProfileActivity.RESULT_OK){
             Uri targetUri = data.getData();
             try {
-//                ImageClass.uploadAvatarFull(ImageClass.getBytesFromUri(EditProfileActivity.this,targetUri));
-                bmImageUser = ImageClass.decodeUri(EditProfileActivity.this,targetUri,100);
+                updateImage(targetUri);
+//                bmImageUser = ImageClass.decodeUri(EditProfileActivity.this,targetUri,100);
 //                bmImageUser = ImageClass.rotateImage(bmImageUser);//Rotating avatar's user before upload Storage Firebase
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 Log.e(Utils.TAG_ERROR_SELECT_IMAGE,String.valueOf(e.getMessage()));
             }
-            updateImage(getByteFromBitmap());
+//            updateImage(getByteFromBitmap());
         }
     }
 

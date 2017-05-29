@@ -16,16 +16,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.custom.DialogChangePassword;
 import project.com.vehiclessharing.model.AddressOnDevice;
 import project.com.vehiclessharing.model.BirthdayOnDevice;
+import project.com.vehiclessharing.utils.ImageClass;
 
 import static project.com.vehiclessharing.activity.HomeActivity.currentUser;
 import static project.com.vehiclessharing.activity.HomeActivity.loginWith;
@@ -128,24 +127,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 progressBar.setVisibility(View.GONE);
             } else {
 
-                if(isOnline()){
-                    progressBar.setVisibility(View.VISIBLE);
-                    Picasso.with(ProfileActivity.this).load(url).into(imgProfile, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            progressBar.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onError() {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(ProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else Picasso.with(getApplicationContext())
-                        .load(url)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(imgProfile);
+                ImageClass.loadImage(url,ProfileActivity.this,imgProfile,progressBar);
             }
             btnEditProfile.setVisibility(View.VISIBLE);
         } else {

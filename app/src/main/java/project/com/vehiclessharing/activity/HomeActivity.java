@@ -66,9 +66,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,6 +83,7 @@ import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
+import project.com.vehiclessharing.utils.ImageClass;
 import project.com.vehiclessharing.utils.RequestFromGraberCallback;
 
 import static project.com.vehiclessharing.R.id.map;
@@ -509,7 +507,7 @@ public class HomeActivity extends AppCompatActivity
         //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
         //[START]add new
         requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
-        requestNeederRef.addValueEventListener(requestNeederListener);
+//        requestNeederRef.addValueEventListener(requestNeederListener);
         //[END]add new
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
@@ -777,24 +775,7 @@ public class HomeActivity extends AppCompatActivity
             imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
             progressBar.setVisibility(View.GONE);
         } else {
-            if (isOnline()) {
-                progressBar.setVisibility(View.VISIBLE);
-                Picasso.with(HomeActivity.this).load(url).into(imgUser, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        progressBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onError() {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(HomeActivity.this, "Error load image", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else Picasso.with(getApplicationContext())
-                    .load(url)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(imgUser);
+            ImageClass.loadImage(url,HomeActivity.this,imgUser,progressBar);
         }
     }
 
