@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,7 @@ import project.com.vehiclessharing.model.Validation;
 
 public class AddRequestFromGraber_Fragment extends DialogFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
-    private static View view;
+    private View view;
     private TextView txtTitle;
     private EditText txtCurLocation, txtDesLocation;
     private Spinner spVehicleType;
@@ -60,7 +61,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
    // private RecyclerView mRecyclerView;
    // private GooglePlacesAutocompleteAdapter mplacesAutocompleteAdapter;
     private ImageView imgClearTextCur, imgClearTextDes;
-    private PlaceAutocompleteFragment autocompleteFragment, autocompleteCurFragment;
+    private PlaceAutocompleteFragment autocompleteDesFragment, autocompleteCurFragment;
     RequestDataFromGraber requestDataFromGraber;
     private String[] vehicleType = new String[1];
     private Drawable mDrawable;
@@ -92,8 +93,12 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        // return inflater.inflate(R.layout.add_request_from_graber,container,false);
-         view = inflater.inflate(R.layout.add_request_from_graber, container, false);
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+        view = inflater.inflate(R.layout.add_request_from_graber, container, false);
         addControls();
         addEvents();
         return view;
@@ -148,7 +153,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
         });
 
 
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        autocompleteDesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
@@ -253,14 +258,15 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        autocompleteFragment = (PlaceAutocompleteFragment)
+        autocompleteDesFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         autocompleteCurFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_cur_fragment);
 
         AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
                 .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
                 .build();
-        autocompleteFragment.setFilter(typeFilter);
+        autocompleteDesFragment.setFilter(typeFilter);
+        autocompleteCurFragment.setFilter(typeFilter);
         mDrawable = getResources().getDrawable(R.drawable.errorvalid);
         mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
         //autocompleteCurFragment.setFilter(typeFilter);
@@ -307,8 +313,21 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
         mGoogleApiClient.connect();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+          if (autocompleteCurFragment != null) {
+            getFragmentManager().beginTransaction().remove(autocompleteCurFragment).commit();
+        }
+        if(autocompleteDesFragment!=null)
+        {
+            getFragmentManager().beginTransaction().remove(autocompleteDesFragment).commit();
+        }
+    }
+
     public interface RequestDataFromGraber
     {
         public void getRequestFromGraber(RequestFromGraber requestFromGraber);
     }
+
 }

@@ -39,7 +39,7 @@ import project.com.vehiclessharing.model.Validation;
  */
 
 public class AddRequestFromNeeder_Fragment extends DialogFragment implements View.OnClickListener {
-    private static View view;
+    private View view;
     private TextView txtTitle;
     private EditText txtCurLocation, txtDesLocation,txtTimeStart;
     private Button btnOk, btnCancel;
@@ -117,7 +117,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     private void addControls() {
         mContext=getActivity();
         String msg="If you want find a vehicle together you can fill out the form to find it";
-        txtTitle= (TextView) view.findViewById(R.id.txtTitle);
+        txtTitle= (TextView) view.findViewById(R.id.txtNeederDialogTitle);
         txtTitle.setText(msg);
         txtCurLocation= (EditText) view.findViewById(R.id.txtCurLocate);
         txtDesLocation= (EditText) view.findViewById(R.id.txtDesLocate);
@@ -131,10 +131,10 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         txtCurLocation.setText(fullAddress);
         txtTimeStart.setText(sdf1.format(calendar.getTime()));
 
-        autocompleteCurFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_cur_fragment);
+        autocompleteCurFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_curneeder_fragment);
         autocompleteDesFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_destin_fragment);
-        imgClearCurLocation= (ImageView) view.findViewById(R.id.imgClearCurLocation);
-        imgClearDesLocation= (ImageView) view.findViewById(R.id.imgClearDesLocation);
+        imgClearCurLocation= (ImageView) view.findViewById(R.id.imgClearCurNeederLocation);
+        imgClearDesLocation= (ImageView) view.findViewById(R.id.imgClearDesNeederLocation);
         AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
                 .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
                 .build();
@@ -230,6 +230,19 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
      //   getTargetFragment().onActivityResult(getTargetRequestCode(),1);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+         if (autocompleteCurFragment != null ) {
+            getFragmentManager().beginTransaction().remove(autocompleteCurFragment).commit();
+        }
+        if(autocompleteDesFragment!=null)
+        {
+            getFragmentManager().beginTransaction().remove(autocompleteDesFragment).commit();
+        }
+    }
+
     public interface RequestDataFromNeeder{
         public void getRequestFromNeeder(RequestFromNeeder requestFromNeeder);
     }

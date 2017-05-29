@@ -2,6 +2,7 @@ package project.com.vehiclessharing.model;
 
 import android.util.Log;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,23 +32,46 @@ public class ForGraber {
         return instance=new ForGraber();
     }
 
-    public List<RequestFromGraber> getAllFromRequestGraber()
+    public List<RequestFromNeeder> getAllNeederNear(String userId)
     {
-        final List<RequestFromGraber> list=new ArrayList<>();
+        final List<RequestFromNeeder> list=new ArrayList<>();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("theneeder_near_graber").child(userId);
+       /* ChildEventListener childEventListener=new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                RequestFromNeeder requestFromNeeder=dataSnapshot.getValue(RequestFromNeeder.class);
+                list.add(requestFromNeeder);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };*/
         requestNeederListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("DemoLogin", String.valueOf(dataSnapshot.getChildren()));
 
-                for(DataSnapshot temp : dataSnapshot.getChildren()) {
-                    String s=temp.getKey();
-                    Map<String, RequestFromGraber> td = (HashMap<String,RequestFromGraber>) temp.getValue();
+                Map<String, RequestFromNeeder> td = (HashMap<String,RequestFromNeeder>) dataSnapshot.getValue();
 
-                    RequestFromGraber requestFromGraber= (RequestFromGraber) td.values();
-                    list.add(requestFromGraber);
-                }
+                List<RequestFromNeeder> values = new ArrayList<>(td.values());
+
             }
 
             @Override
@@ -56,11 +80,9 @@ public class ForGraber {
             }
         };
         mDatabase.addListenerForSingleValueEvent(requestNeederListener);
-
-
         return list;
     }
-    public void getInfoRequestNeeder(String uId, final RequestFromGraberCallback callback)
+    public void getInfoGraber(String uId, final RequestFromGraberCallback callback)
     {
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber").child(uId);

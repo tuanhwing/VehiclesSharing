@@ -1,6 +1,7 @@
 package project.com.vehiclessharing.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,6 +25,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -76,11 +79,13 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.asynctask.ImageTask;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.custom.CustomMarker;
 import project.com.vehiclessharing.database.RealmDatabase;
@@ -92,11 +97,13 @@ import project.com.vehiclessharing.model.ForGraber;
 import project.com.vehiclessharing.model.RequestDemo;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
+import project.com.vehiclessharing.model.User;
+import project.com.vehiclessharing.model.UserInfomation;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
-import project.com.vehiclessharing.utils.RequestFromGraberCallback;
 
 import static project.com.vehiclessharing.R.id.map;
+import static project.com.vehiclessharing.R.id.multiply;
 import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
 public class HomeActivity extends AppCompatActivity
@@ -129,7 +136,7 @@ public class HomeActivity extends AppCompatActivity
     private static String DIRECTION_KEY_API = "AIzaSyAGjxiNRAHypiFYNCN-qcmUgoejyZPtS9c";
 
     private FloatingActionButton btnFindPeople, btnFindVehicles, btnCancelRequest, btnRestartRequest; // button fab action
-   private DatabaseReference mDatabase;
+    private DatabaseReference mDatabase;
     private int checkOnScreen;
 
 
@@ -172,34 +179,15 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-
-    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
-
-        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
-        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        markerImageView.setImageResource(resId);
-        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
-        customMarkerView.buildDrawingCache();
-        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(returnedBitmap);
-        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        Drawable drawable = customMarkerView.getBackground();
-        if (drawable != null)
-            drawable.draw(canvas);
-        customMarkerView.draw(canvas);
-        return returnedBitmap;
-    }
-
-
     private void addEvents() {
         btnFindVehicles.setOnClickListener(this);
         btnFindPeople.setOnClickListener(this);
         btnCancelRequest.setOnClickListener(this);
         btnRestartRequest.setOnClickListener(this);
+        // mGoogleMap.setOnMarkerClickListener(this);
+
         //[START]add new
-        requestNeederListener = new ValueEventListener() {
+        /*requestNeederListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("demo_request",dataSnapshot.getValue().toString());
@@ -215,7 +203,7 @@ public class HomeActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        };
+        };*/
         //[END]add new
     }
 
@@ -251,8 +239,8 @@ public class HomeActivity extends AppCompatActivity
         progressBar = (ProgressBar) viewHeader.findViewById(R.id.loading_progress_img);
         trackgps = new TrackGPSService(HomeActivity.this);
 
-        btnCancelRequest= (FloatingActionButton) findViewById(R.id.btnCancelRequest);
-        btnRestartRequest= (FloatingActionButton) findViewById(R.id.btnRestartRequest);
+        btnCancelRequest = (FloatingActionButton) findViewById(R.id.btnCancelRequest);
+        btnRestartRequest = (FloatingActionButton) findViewById(R.id.btnRestartRequest);
         checkOnScreen = 0;
 
         //Listener request of vehicle-sharing from database Firebase
@@ -324,7 +312,7 @@ public class HomeActivity extends AppCompatActivity
             case R.id.btnFindVehicle:
                 DialogFragment dialogFragment;
                 dialogTitle[0] = "If you want find a vehicle together, you can fill out the form";
-                dialogFragment = new AddRequestFromNeeder_Fragment();
+                dialogFragment = AddRequestFromNeeder_Fragment.newIstance(dialogTitle[0]);
                 dialogFragment.show(getFragmentManager(), "From Needer");
                 getVehicleNearMe();
                 break;
@@ -355,11 +343,9 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void restartrequest() {
-        if(btnRestartRequest.getVisibility()==View.VISIBLE)
-        {
+        if (btnRestartRequest.getVisibility() == View.VISIBLE) {
             btnRestartRequest.setVisibility(View.GONE);
-            if(btnCancelRequest.getVisibility()==View.GONE)
-            {
+            if (btnCancelRequest.getVisibility() == View.GONE) {
                 btnCancelRequest.setVisibility(View.VISIBLE);
             }
         }
@@ -367,17 +353,14 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void cancelRequest() {
-        if(btnCancelRequest.getVisibility()==View.VISIBLE)
-        {
+        if (btnCancelRequest.getVisibility() == View.VISIBLE) {
             btnCancelRequest.setVisibility(View.GONE);
-            if(btnRestartRequest.getVisibility()==View.GONE)
+            if (btnRestartRequest.getVisibility() == View.GONE)
                 btnRestartRequest.setVisibility(View.VISIBLE);
         }
-        if(checkOnScreen==0 || checkOnScreen==1)
-        {
+        if (checkOnScreen == 0 || checkOnScreen == 1) {
 
-        }
-        else {
+        } else {
 
         }
     }
@@ -404,58 +387,77 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-        /*btnFindVehicles.setVisibility(View.VISIBLE);
-        btnFindPeople.setVisibility(View.VISIBLE);*/
-        /*BitmapDescriptor bitmapDescriptorFactory;
-        try {
-            String url = "https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/avatar%2F0ea2kDnvz8VjkbqoBMAIIaChsni2.jpg?alt=media&token=1afa116e-3074-49c7-b0b1-d36a829a7add";
-            Bitmap bitmap;
-            ImageTask ima=new ImageTask();
-            ima.execute(url);
-            bitmap=ima.get();
-            bitmapDescriptorFactory=BitmapDescriptorFactory.fromBitmap(bitmap);
-
-            LatLng cur=new LatLng(10.8719808, 106.790409);
-            Marker marker = mGoogleMap.addMarker(new MarkerOptions().title("here").position(cur).icon(bitmapDescriptorFactory));
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-*/
-
         mGoogleMap.setOnMarkerClickListener(this);
-        if(mGoogleMap!=null)
-        {
+        if (mGoogleMap != null) {
             mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
-                    View v=getLayoutInflater().inflate(R.layout.info_marker,null);
-                    ImageView imgAvatarUser= (ImageView) v.findViewById(R.id.imgAvataUser);
-                    TextView txtNameUser= (TextView) v.findViewById(R.id.txtUserName);
-                    TextView txtAddressUser= (TextView) v.findViewById(R.id.txtAddressUser);
-                    LatLng latLng=marker.getPosition();
-                    try {
-                        txtAddressUser.setText(AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this,latLng));
-                        String infoUser= (String) marker.getTag();
-                        //From uid of user get avatar and full name of user
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return v;
+                    return null;
                 }
 
                 @Override
                 public View getInfoContents(Marker marker) {
-                    return null;
+                    View v;
+                    User user = new User();
+                    String who = marker.getTitle();
+                    if (who.equals("You're here") || who.equals("Your destination")) {
+                        v=null;
+                        //user = UserInfomation.getInstance().getInfoUserById(String.valueOf(marker.getTag()));
+                       // souceLocation = marker.getPosition();
+                    } else {
+                        v = getLayoutInflater().inflate(R.layout.info_marker, null);
+                        TextView txtFullname, txtSourceLocation, txtDeslocation, txtTime, txtVehicleType;
+
+                        txtFullname = (TextView) v.findViewById(R.id.txtFullNameUser);
+                        txtSourceLocation = (TextView) v.findViewById(R.id.txtSourceLocationUser);
+                        txtDeslocation = (TextView) v.findViewById(R.id.txtDesLocationUser);
+                        txtTime = (TextView) v.findViewById(R.id.txtTimeUser);
+                        txtVehicleType = (TextView) v.findViewById(R.id.txtVehicleTypeUser);
+                        txtVehicleType.setVisibility(View.GONE);
+
+                        String time = "";
+                        LatLng souceLocation = new LatLng(0, 0);
+                        LatLng desLocation = new LatLng(0, 0);
+                        if (checkOnScreen==2) {
+                            RequestFromGraber graber = (RequestFromGraber) marker.getTag();
+                            user = UserInfomation.getInstance().getInfoUserById(graber.getUserId());
+                            souceLocation = graber.getSourceLocation();
+                            desLocation = graber.getDestinationLocation();
+                            time = "now";
+                            txtVehicleType.setVisibility(View.VISIBLE);
+                            txtVehicleType.setText(graber.getVehicleType());
+                        } else if(checkOnScreen==1) {
+                            RequestFromNeeder needer = (RequestFromNeeder) marker.getTag();
+                            user = UserInfomation.getInstance().getInfoUserById(needer.getUserId());
+                            souceLocation = needer.getSourceLocation();
+                            desLocation = needer.getDestinationLocation();
+                            time = needer.getTimeStart();
+                        }
+
+                        txtTime.setText(time);
+
+                       try {
+                            txtDeslocation.setText(AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this,desLocation));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        txtFullname.setText(user.getFullName());
+                        try {
+
+                            txtSourceLocation.setText(AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this,souceLocation));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    return v;
                 }
             });
         }
         //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
         //[START]add new
         requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
-        requestNeederRef.addValueEventListener(requestNeederListener);
+//        requestNeederRef.addValueEventListener(requestNeederListener);
         //[END]add new
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
@@ -520,88 +522,96 @@ public class HomeActivity extends AppCompatActivity
         marker.setTag(mUser.getUid());
     }
 
-    private void makeMarkerForMyself(LatLng location,LatLng destinLocation,String title)
+    private View getCustomMarkerView(String urlAvatar) {
+        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+        //get avatar of user and put it in imageview of custom_marker
+        if (urlAvatar.equals("null") || urlAvatar.isEmpty()) {
+            markerImageView.setImageResource(R.drawable.temp);
+            //progressBar.setVisibility(View.GONE);
+        } else {
+            if (isOnline()) {
+                //progressBar.setVisibility(View.VISIBLE);
+                Picasso.with(this).load(urlAvatar).into(markerImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        //progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        /*progressBar.setVisibility(View.GONE);
+                        Toast.makeText(ProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();*/
+                    }
+                });
+            } else Picasso.with(getApplicationContext())
+                    .load(urlAvatar)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(markerImageView);
+        }
+        return customMarkerView;
+    }
+    private void makeCustomMarkerMyself(LatLng source, LatLng destination)
     {
-        BitmapDescriptor bitmapDescriptorFactory;
-        String url=String.valueOf(mUser.getPhotoUrl());
-
-// modify canvas
-
-        if (url.equals("null") || url.isEmpty()) {
-                bitmapDescriptorFactory =BitmapDescriptorFactory.fromResource(R.drawable.ic_person_pin_circle_red_700_36dp);
-        }
-        else {
-            bitmapDescriptorFactory=BitmapDescriptorFactory.fromPath(url);
-        }
-
-        Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(location).icon(bitmapDescriptorFactory));
-        marker.setTag(mUser.getUid());
-        bitmapDescriptorFactory=BitmapDescriptorFactory.fromResource(R.drawable.ic_pin_drop_red_900_36dp);
-        Marker desMarker=mGoogleMap.addMarker(new MarkerOptions().title("destination").position(destinLocation).snippet("dd").icon(bitmapDescriptorFactory));
-        desMarker.setTag(mUser.getUid());
+        BitmapDescriptor bitmapSource=BitmapDescriptorFactory.fromResource(R.drawable.ic_person_pin_circle_red_700_36dp);
+        BitmapDescriptor bitmapDestination=BitmapDescriptorFactory.fromResource(R.drawable.ic_pin_drop_red_900_36dp);
+        Marker sourceMarker=mGoogleMap.addMarker(new MarkerOptions().position(source).title("You're here").icon(bitmapSource));
+        Marker destinationMarker=mGoogleMap.addMarker(new MarkerOptions().position(destination).title("Your destination").icon(bitmapDestination));
+        sourceMarker.setTag(mUser.getUid());
+        destinationMarker.setTag(mUser.getUid());
+    }
+    private void makeCustomMakerForVehicle(RequestFromGraber graber, String urlAvatar) {
+        Marker customMarker = mGoogleMap.addMarker(new MarkerOptions().position(graber.getSourceLocation()).title("Graber")
+                .icon(BitmapDescriptorFactory.fromBitmap(CustomMarker.getInstance().customMarkerWithAvatar(getCustomMarkerView(urlAvatar)))));
+        customMarker.setTag(graber);
     }
 
-    private void makeCustomMakerForVehicle(RequestFromGraber request, String title){
-        LatLng latLng = request.getSourceLocation();
-     //  photoURL=mUser.getPhotoUrl();
-        BitmapDescriptor bitmapDescriptorFactory=BitmapDescriptorFactory.defaultMarker();
-        switch (request.getVehicleType())
-        {
-            case "Car":
-               bitmapDescriptorFactory =BitmapDescriptorFactory.fromResource(R.drawable.ic_directions_car_light_blue_800_24dp);
-                break;
-            case "Bike":
-                bitmapDescriptorFactory =BitmapDescriptorFactory.fromResource(R.drawable.ic_motorcycle_green_900_24dp);
-                break;
+    private void makeMarkerForPeople(RequestFromNeeder needer, String urlAvatar) {
+        Marker customMarker = mGoogleMap.addMarker(new MarkerOptions().position(needer.getSourceLocation()).title("Needer")
+                .icon(BitmapDescriptorFactory.fromBitmap(CustomMarker.getInstance().customMarkerWithAvatar(getCustomMarkerView(urlAvatar)))));
+        customMarker.setTag(needer);
+    }
+
+    /**
+     * Marker custom style with avatar of user
+     *
+     * @param sourceLocation
+     * @param userID
+     * @param urlAvatar
+     * @param title
+     */
+    private void makecustomMarkerAvatar(LatLng sourceLocation, String userID, String urlAvatar, String title) {
+        /*View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+        //get avatar of user and put it in imageview of custom_marker
+        if (urlAvatar.equals("null") || urlAvatar.isEmpty()) {
+            markerImageView.setImageResource(R.drawable.temp);
+            //progressBar.setVisibility(View.GONE);
+        } else {
+            if (isOnline()) {
+                //progressBar.setVisibility(View.VISIBLE);
+                Picasso.with(this).load(urlAvatar).into(markerImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        //progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        *//*progressBar.setVisibility(View.GONE);
+                        Toast.makeText(ProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();*//*
+                    }
+                });
+            } else Picasso.with(getApplicationContext())
+                    .load(urlAvatar)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(markerImageView);
         }
-        Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng).icon(bitmapDescriptorFactory));
-        marker.setTag(request.getUserId());
+*/
+        Marker customMarker = mGoogleMap.addMarker(new MarkerOptions().position(sourceLocation).title(title)
+                .icon(BitmapDescriptorFactory.fromBitmap(CustomMarker.getInstance().customMarkerWithAvatar(getCustomMarkerView(urlAvatar)))));
+        customMarker.setTag(userID);
     }
-    private void makeMarkerForPeople(RequestFromNeeder request, String title)
-    {
-        LatLng latLng=request.getSourceLocation();
-        BitmapDescriptor bitmapDescriptor=BitmapDescriptorFactory.fromResource(R.drawable.ic_directions_walk_orange_700_36dp);
-        Marker marker=mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng).icon(bitmapDescriptor));
-        marker.setTag(request.getUserId());
-
-    }
-    private void makecustomMarkerAvatar(LatLng sourceLocation,String userID,String urlAvatar, String title)
-    {
-        View marker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
-        ImageView imgAvatar = (ImageView) marker.findViewById(R.id.imgAvatar);
-
-        Bitmap bitmap;
-        ImageTask ima=new ImageTask();
-        ima.execute(urlAvatar);
-
-        try {
-            bitmap=ima.get();
-            imgAvatar.setImageBitmap(bitmap);
-
-            Marker customMarker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(sourceLocation)
-                    .icon(BitmapDescriptorFactory.fromBitmap(CustomMarker.getInstance().customMarkerWithAvatar(this,marker))));
-            marker.setTag(userID);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-    /*private Bitmap createCustomMarkerAvatar(Context context,View view)
-    {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
-        view.buildDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-
-        return bitmap;
-    }*/
 
     /**
      * Check permission Location service
@@ -815,7 +825,7 @@ public class HomeActivity extends AppCompatActivity
                 polyOptions.width(10 + i * 3);
                 polyOptions.addAll(arrayList.get(i).getPoints());
                 polyline = mGoogleMap.addPolyline(polyOptions);
-               // Toast.makeText(getApplicationContext(), "Route " + (i + 1) + ": distance - " + arrayList.get(i).getDistanceValue() + ": duration - " + arrayList.get(i).getDurationValue(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(), "Route " + (i + 1) + ": distance - " + arrayList.get(i).getDistanceValue() + ": duration - " + arrayList.get(i).getDurationValue(), Toast.LENGTH_SHORT).show();
             }
 
         } catch (Exception e) {
@@ -831,69 +841,74 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void getRequestFromGraber(RequestFromGraber requestFromGraber) {
-        LatLng curLocation=requestFromGraber.getSourceLocation();
-        LatLng desLocation=requestFromGraber.getDestinationLocation();
+        LatLng curLocation = requestFromGraber.getSourceLocation();
+        LatLng desLocation = requestFromGraber.getDestinationLocation();
         //makeMarkerForMyself(curLocation,desLocation,"source");
-        User user=getInfoUser(requestFromGraber.getUserId());
-       //String url = "https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/avatar%2F0ea2kDnvz8VjkbqoBMAIIaChsni2.jpg?alt=media&token=1afa116e-3074-49c7-b0b1-d36a829a7add";
-
-        makecustomMarkerAvatar(curLocation,requestFromGraber.getUserId(),user.getImage(),"Source location");
-        makeMaker(desLocation,"Destination Location");
-        drawroadBetween2Location(curLocation,desLocation);
-
+        User user = getInfoUser(requestFromGraber.getUserId());
+        //String url = "https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/avatar%2F0ea2kDnvz8VjkbqoBMAIIaChsni2.jpg?alt=media&token=1afa116e-3074-49c7-b0b1-d36a829a7add";
+       /* makecustomMarkerAvatar(curLocation, requestFromGraber.getUserId(), String.valueOf(mUser.getPhotoUrl()), "You're here");
+        // makecustomMarkerAvatar();
+        makeMaker(desLocation, "Destination Location");*/
+        makeCustomMarkerMyself(curLocation,desLocation);
+        drawroadBetween2Location(curLocation, desLocation);
         hideButtonFindVehicleAndPeople();
-        checkOnScreen=2;
-    }
+        checkOnScreen = 2;
+        List<RequestFromNeeder> listNeederNear=ForGraber.getInstance().getAllNeederNear(mUser.getUid());
+        for(RequestFromNeeder needer:listNeederNear)
+        {
+            User user1=UserInfomation.getInstance().getInfoUserById(mUser.getUid());
+            makeMarkerForPeople(needer,user1.getFullName());
+        }
 
+    }
+    @Override
+    public void getRequestFromNeeder(RequestFromNeeder requestFromNeeder) {
+        LatLng sourceLocation = requestFromNeeder.getSourceLocation();
+        LatLng desLocation = requestFromNeeder.getDestinationLocation();
+
+       /* makecustomMarkerAvatar(sourceLocation, requestFromNeeder.getUserId(), String.valueOf(mUser.getPhotoUrl()), "You're here");
+        makeMaker(desLocation, "Destination");*/
+        makeCustomMarkerMyself(sourceLocation,desLocation);
+        drawroadBetween2Location(sourceLocation, desLocation);
+        hideButtonFindVehicleAndPeople();
+        checkOnScreen = 1;
+
+
+    }
     private User getInfoUser(String userId) {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("User").child(userId);
-        User user=new User();
-        requestNeederListener=new ValueEventListener() {
+        User user = new User();
+        requestNeederListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User user= (User) dataSnapshot.getValue();
+                User user = (User) dataSnapshot.getValue();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("load_data",databaseError.getMessage());
+                Log.d("load_data", databaseError.getMessage());
             }
         };
         mDatabase.addListenerForSingleValueEvent(requestNeederListener);
         return user;
     }
 
-    private void hideButtonFindVehicleAndPeople()
-    {
-        if(btnFindVehicles.getVisibility()==View.VISIBLE && btnFindPeople.getVisibility()==View.VISIBLE)
-        {
+    private void hideButtonFindVehicleAndPeople() {
+        if (btnFindVehicles.getVisibility() == View.VISIBLE && btnFindPeople.getVisibility() == View.VISIBLE) {
             btnFindPeople.setVisibility(View.GONE);
             btnFindVehicles.setVisibility(View.GONE);
-            if(btnCancelRequest.getVisibility()==View.GONE)
-            {
+            if (btnCancelRequest.getVisibility() == View.GONE) {
                 btnCancelRequest.setVisibility(View.VISIBLE);
             }
         }
     }
 
-    @Override
-    public void getRequestFromNeeder(RequestFromNeeder requestFromNeeder) {
-        LatLng sourceLocation=requestFromNeeder.getSourceLocation();
-        LatLng desLocation=requestFromNeeder.getDestinationLocation();
 
-        User user=getInfoUser(requestFromNeeder.getUserId());
-        makecustomMarkerAvatar(sourceLocation,requestFromNeeder.getUserId(),user.getImage(),"I'm here");
-        makeMaker(desLocation,"Destination");
-        //makeMarkerForMyself(sourceLocation,desLocation,"Source location");
-        drawroadBetween2Location(sourceLocation,desLocation);
-        hideButtonFindVehicleAndPeople();
-        checkOnScreen = 1;
-   }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
         // Retrieve the data from the marker.
-        Integer clickCount = (Integer) marker.getTag();
+        /*Integer clickCount = (Integer) marker.getTag();
         if (clickCount != null) {
             clickCount = clickCount + 1;
             marker.setTag(clickCount);
@@ -902,6 +917,9 @@ public class HomeActivity extends AppCompatActivity
                             " has been clicked " + clickCount + " times.",
                     Toast.LENGTH_SHORT).show();
         }
-        return false;
+        return false;*/
+        // Toast.makeText(this, String.valueOf(marker.getTag()), Toast.LENGTH_SHORT).show();
+        marker.showInfoWindow();
+        return true;
     }
 }

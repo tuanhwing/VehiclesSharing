@@ -10,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -76,12 +77,22 @@ public class AboutPlace {
         geocoder=new Geocoder(activity);
         try {
             addresses=geocoder.getFromLocation(latLng.latitude,latLng.longitude,1);
-            String address = addresses.get(0).getAddressLine(0);
-            String area = addresses.get(0).getLocality();
-            String city = addresses.get(0).getAdminArea();
-            String country = addresses.get(0).getCountryName();
-
-            fullAddress = address + ", " + area + ", " + city + ", " + country;
+            String[] listAddress=new String[3];
+            listAddress[0] = addresses.get(0).getAddressLine(0);
+            listAddress[1] = addresses.get(0).getLocality();
+            listAddress[2] = addresses.get(0).getAdminArea();
+           listAddress[3]= addresses.get(0).getCountryName();
+        for (int i=0;i<listAddress.length;i++)
+        {
+            if(listAddress[i]!=null)
+            {
+                fullAddress+=listAddress;
+                if(i!=listAddress.length)
+                {
+                    fullAddress+=", ";
+                }
+            }
+        }
         }catch (IOException e)
         {
             e.printStackTrace();

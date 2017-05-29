@@ -27,7 +27,7 @@ public class FirebaseIDService extends FirebaseInstanceIdService {
 
         // save token into sharedPreferences
         ApplicationController.sharedPreferences.edit().putString(DEVICE_TOKEN,refreshedToken).commit();
-
+//        ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null);
         // TODO: Implement this method to send any registration to your app's servers.
         sendRegistrationToServer(refreshedToken);
 
