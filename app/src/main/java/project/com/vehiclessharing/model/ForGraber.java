@@ -1,7 +1,15 @@
 package project.com.vehiclessharing.model;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
+import android.view.View;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -14,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import project.com.vehiclessharing.activity.HomeActivity;
+import project.com.vehiclessharing.custom.CustomMarker;
 import project.com.vehiclessharing.utils.RequestFromGraberCallback;
 
 /**
@@ -22,26 +32,46 @@ import project.com.vehiclessharing.utils.RequestFromGraberCallback;
 
 public class ForGraber {
     private static ForGraber instance;
-    private static DatabaseReference mDatabase;
+    private static DatabaseReference mDatabase,mDatabseUser;
     private ValueEventListener requestNeederListener;
+    private ChildEventListener requestAddNeeder;
     private RequestFromGraber graber;
+    private static GoogleMap mGoogleMap;
+    private Context mContext;
 
-    public static ForGraber getInstance()
-    {
+    public static ForGraber getInstance() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        return instance=new ForGraber();
+        mGoogleMap = HomeActivity.mGoogleMap;
+        return instance = new ForGraber();
     }
 
-    public List<RequestFromNeeder> getAllNeederNear(String userId)
-    {
-        final List<RequestFromNeeder> list=new ArrayList<>();
+    public void getAllNeederNear(Context context, final String userId) {
+        mContext=context;
+        final List<RequestFromNeeder> list = new ArrayList<>();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("theneeder_near_graber").child(userId);
-       /* ChildEventListener childEventListener=new ChildEventListener() {
+        mDatabase = mDatabase.child("theneeder_near_graber").child(userId);
+       // mDatabase=mDatabase.child("requestfromneeder")
+        mDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                RequestFromNeeder requestFromNeeder=dataSnapshot.getValue(RequestFromNeeder.class);
-                list.add(requestFromNeeder);
+                Log.e("onchildadd",String.valueOf(dataSnapshot.getValue()));
+                RequestFromNeeder needer = dataSnapshot.getValue(RequestFromNeeder.class);
+
+                Log.e("onchildadd_object",String.valueOf(needer.getSourceLocation().getLatidude()));
+
+
+//                LatLngAddress source = LatLngAddress.getLatLongSourceFromFirebase(dataSnapshot);
+//                LatLngAddress des = LatLngAddress.getLatLongDesFromFirebase(dataSnapshot);
+//                needer.setSourceLocation(source);
+//                needer.setDestinationLocation(des);
+
+               /* UserInfomation userInfomation=new UserInfomation();
+                userInfomation.getInfoUserById(needer.getUserId());
+                String urlAvatar=userInfomation.getUrlAvatar();*/
+//                String urlAvatar=FirebaseDatabase.getInstance().getReference().child("users").child(needer.getUserId()).child("image").toString();
+//
+//                makeMarkerForPeople(needer, urlAvatar,mContext);
+               // String urlAvater=user.getImage();
             }
 
             @Override
@@ -63,44 +93,63 @@ public class ForGraber {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        };*/
-        requestNeederListener=new ValueEventListener() {
+        });
+        /*requestNeederListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+              //  Map<String, RequestFromNeeder> td = (HashMap<String, RequestFromNeeder>) dataSnapshot.getValue();
+                // List<RequestFromNeeder> listneeder= (List<RequestFromNeeder>) td.values();
 
-                Map<String, RequestFromNeeder> td = (HashMap<String,RequestFromNeeder>) dataSnapshot.getValue();
-
-                List<RequestFromNeeder> values = new ArrayList<>(td.values());
-
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    RequestFromNeeder needer = snapshot.getValue(RequestFromNeeder.class);
+                    LatLngAddress source = LatLngAddress.getLatLongSourceFromFirebase(snapshot);
+                    LatLngAddress des = LatLngAddress.getLatLongDesFromFirebase(snapshot);
+                    needer.setSourceLocation(source);
+                    needer.setDestinationLocation(des);
+                    UserInfomation userInfomation=new UserInfomation();
+                    userInfomation.getInfoUserById(userId);
+                    User user=userInfomation.getmUser();
+                    String urlAvater=user.getImage();
+//                    Log.e("urlAv",urlAvater);
+//                    makeMarkerForPeople(needer, urlAvater,mContext);
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("load_data",databaseError.getMessage());
+                Log.d("load_data", databaseError.getMessage());
             }
         };
-        mDatabase.addListenerForSingleValueEvent(requestNeederListener);
-        return list;
+        mDatabase.addListenerForSingleValueEvent(requestNeederListener);*/
     }
-    public void getInfoGraber(String uId, final RequestFromGraberCallback callback)
-    {
+
+    public void getInfoGraber(String uId, final RequestFromGraberCallback callback) {
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("requestfromgraber").child(uId);
-        requestNeederListener=new ValueEventListener() {
+        mDatabase.addListenerForSingleValueEvent(requestNeederListener);
+        requestNeederListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
-                graber= dataSnapshot.getValue(RequestFromGraber.class);
+                graber = dataSnapshot.getValue(RequestFromGraber.class);
                 callback.onSuccess(graber);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("load_data",databaseError.getMessage());
+                Log.d("load_data", databaseError.getMessage());
                 callback.onError(databaseError);
             }
         };
-        mDatabase.addListenerForSingleValueEvent(requestNeederListener);
-      //  return graber;
+
+    }
+
+    private void makeMarkerForPeople(RequestFromNeeder needer, String urlAvatar,Context context) {
+        LatLng sourceNeeder = new LatLng(needer.getSourceLocation().getLatidude(), needer.getSourceLocation().getLongtitude());
+        CustomMarker iconAvatar=new CustomMarker(context);
+        Bitmap bitmap=iconAvatar.customMarkerWithAvatar(urlAvatar);
+        Marker customMarker = mGoogleMap.addMarker(new MarkerOptions().position(sourceNeeder).title("Needer")
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+        customMarker.setTag(needer);
     }
 }

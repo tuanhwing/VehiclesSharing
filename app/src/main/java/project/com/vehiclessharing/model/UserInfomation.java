@@ -8,26 +8,56 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Hihihehe on 5/28/2017.
  */
 
 public class UserInfomation {
-    private static UserInfomation instance;
     private static DatabaseReference mDatabase;
     private ValueEventListener requestNeederListener;
-    public static UserInfomation getInstance()
-    {
-        return instance=new UserInfomation();
+    private User mUser=new User();
+    private String urlAvatar;
+
+    public String getUrlAvatar() {
+        return urlAvatar;
     }
-    public User getInfoUserById(String userId)
+
+    public void setUrlAvatar(String urlAvatar) {
+        this.urlAvatar = urlAvatar;
+    }
+
+    public User getmUser() {
+        return mUser;
+    }
+
+    public void setmUser(User mUser) {
+        this.mUser = mUser;
+    }
+
+    public UserInfomation(ValueEventListener requestNeederListener, User mUser) {
+        this.requestNeederListener = requestNeederListener;
+        this.mUser = mUser;
+    }
+
+    public UserInfomation() {
+    }
+
+    /*  public static UserInfomation getInstance()
+            {
+                return instance=new UserInfomation();
+            }*/
+    public void getInfoUserById(String userId)
     {
-        final User[] user = {new User()};
-            mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+            mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
             requestNeederListener=new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    user[0] =dataSnapshot.getValue(User.class);
+                   //mUser=dataSnapshot.getValue(User.class);
+                    urlAvatar=dataSnapshot.child("image").getValue(String.class);
+                    Log.e("dsds",urlAvatar);
                 }
 
                 @Override
@@ -35,9 +65,6 @@ public class UserInfomation {
                     Log.d("load_data",databaseError.getMessage());
                 }
             };
-            mDatabase.addListenerForSingleValueEvent(requestNeederListener);
-            return user[0];
-
-
+        mDatabase.addListenerForSingleValueEvent(requestNeederListener);
     }
 }

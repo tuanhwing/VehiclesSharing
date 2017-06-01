@@ -39,6 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.model.AboutPlace;
+import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.Validation;
 
@@ -232,7 +233,9 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
 
         LatLng latLngCurLocation = AboutPlace.getInstance().getLatLngByName(mContext, txtCurLocation.getText().toString());
         LatLng latLngDesLocation = AboutPlace.getInstance().getLatLngByName(mContext, txtDesLocation.getText().toString());
-        RequestFromGraber requestFromGraber = new RequestFromGraber(userId, latLngCurLocation, latLngDesLocation, vehicleType);
+        LatLngAddress source=new LatLngAddress(latLngCurLocation.latitude,latLngCurLocation.longitude);
+        LatLngAddress destination=new LatLngAddress(latLngDesLocation.latitude,latLngDesLocation.longitude);
+        RequestFromGraber requestFromGraber = new RequestFromGraber(userId, source, destination, vehicleType);
         mDatabase.child("requestfromgraber").child(userId).setValue(requestFromGraber);
         requestDataFromGraber.getRequestFromGraber(requestFromGraber);
     }

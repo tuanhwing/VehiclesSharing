@@ -31,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.model.AboutPlace;
+import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.Validation;
 
@@ -222,10 +223,12 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         LatLng latLngCurLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtCurLocation.getText().toString());
         LatLng latLngDesLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtDesLocation.getText().toString());
 
+        LatLngAddress source=new LatLngAddress(latLngCurLocation.latitude,latLngCurLocation.longitude);
+        LatLngAddress destination=new LatLngAddress(latLngDesLocation.latitude,latLngDesLocation.longitude);
         //Date date=new Date();
         String curDate=sdf2.format(calendar.getTime());
         String timeStart=txtTimeStart.getText().toString();
-        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,latLngCurLocation,latLngDesLocation,timeStart,curDate);
+        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,source,destination,timeStart,curDate);
         mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
         requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
      //   getTargetFragment().onActivityResult(getTargetRequestCode(),1);

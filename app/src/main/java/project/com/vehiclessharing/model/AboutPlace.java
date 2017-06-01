@@ -77,17 +77,17 @@ public class AboutPlace {
         geocoder=new Geocoder(activity);
         try {
             addresses=geocoder.getFromLocation(latLng.latitude,latLng.longitude,1);
-            String[] listAddress=new String[3];
+            String[] listAddress=new String[4];
             listAddress[0] = addresses.get(0).getAddressLine(0);
             listAddress[1] = addresses.get(0).getLocality();
             listAddress[2] = addresses.get(0).getAdminArea();
-           listAddress[3]= addresses.get(0).getCountryName();
+            listAddress[3]= addresses.get(0).getCountryName();
         for (int i=0;i<listAddress.length;i++)
         {
             if(listAddress[i]!=null)
             {
                 fullAddress+=listAddress;
-                if(i!=listAddress.length)
+                if(i == listAddress.length-1)
                 {
                     fullAddress+=", ";
                 }
