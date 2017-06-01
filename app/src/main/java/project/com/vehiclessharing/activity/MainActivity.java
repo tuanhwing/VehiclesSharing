@@ -2,6 +2,7 @@ package project.com.vehiclessharing.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         FacebookSdk.sdkInitialize(this);// This function initializes the Facebook SDK
         setContentView(R.layout.activity_main);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//DO NOT ROTATE the screen even if the user is shaking his phone like mad
+
         fragmentManager = getSupportFragmentManager();
 
         // If savedinstnacestate is null then replace login fragment

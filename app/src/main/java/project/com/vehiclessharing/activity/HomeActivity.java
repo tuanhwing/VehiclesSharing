@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -61,11 +62,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -79,7 +78,6 @@ import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.ForGraber;
-import project.com.vehiclessharing.model.RequestDemo;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.UserOnDevice;
@@ -112,10 +110,13 @@ public class HomeActivity extends AppCompatActivity
     public static Polyline polyline = null;//Instance
     private static TrackGPSService trackgps;
 
-    private ValueEventListener requestNeederListener;
-    private DatabaseReference requestNeederRef;
-    private String mRequestKey;
-    private ArrayList<RequestFromGraber> arrRequest;
+//    private ValueEventListener requestNeederListener;
+//    private ChildEventListener requestChildListener;
+//    private HashMap<String,Marker> markerHashMap = new HashMap<>();//Hashmap store all the marker inside map
+//    public static Activity mactivity;
+//    private DatabaseReference requestNeederRef;
+//    private String mRequestKey;
+//    private ArrayList<RequestFromGraber> arrRequest;
     //private ArrayList<RequestDemo> arrRequestDemo;
 
 
@@ -136,6 +137,8 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//DO NOT ROTATE the screen even if the user is shaking his phone like mad
+
 
         Log.d("device_id", ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null));
         //  fragmentManager = getSupportFragmentManager();
@@ -174,6 +177,7 @@ public class HomeActivity extends AppCompatActivity
 
         addControls();
         addEvents();
+        startService(new Intent(this,TrackGPSService.class));//Enable tracking GPS
 
     }
 
@@ -204,23 +208,66 @@ public class HomeActivity extends AppCompatActivity
         btnCancelRequest.setOnClickListener(this);
         btnRestartRequest.setOnClickListener(this);
         //[START]add new
-        requestNeederListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("demo_request",dataSnapshot.getValue().toString());
-                for (DataSnapshot requestSnapshot: dataSnapshot.getChildren()) {
-                    final RequestDemo requestDemo = requestSnapshot.getValue(RequestDemo.class);
-                    mGoogleMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(requestDemo.getLocationRequest().getLocationLat(),requestDemo.getLocationRequest().getLocationLong()))
-                            .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
+//        requestNeederListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.d("demo_request",String.valueOf(dataSnapshot.getValue()));
+//                if(dataSnapshot != null)
+//                    for (DataSnapshot requestSnapshot: dataSnapshot.getChildren()) {
+//                        final RequestDemo requestDemo = requestSnapshot.getValue(RequestDemo.class);
+//                        mGoogleMap.addMarker(new MarkerOptions()
+//                                .position(new LatLng(requestDemo.getLocationRequest().getLocationLat(),requestDemo.getLocationRequest().getLocationLong()))
+//                                .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
+//                    }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        };
+//
+//        requestChildListener  = new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                Log.d("child_listener_add",String.valueOf(dataSnapshot.getValue()));
+//                Log.d("child_listener_add",String.valueOf(dataSnapshot.getKey()));
+//                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
+//                Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(requestDemo.getLocationRequest().getLocationLat()
+//                                ,requestDemo.getLocationRequest().getLocationLong()))
+//                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
+//                markerHashMap.put(String.valueOf(dataSnapshot.getKey()),marker);
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//                Log.d("child_listener_changed",String.valueOf(dataSnapshot.getValue()));
+//                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
+//                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
+//                marker.setPosition(new LatLng(requestDemo.getLocationRequest().getLocationLat()
+//                        ,requestDemo.getLocationRequest().getLocationLong()));
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                Log.d("child_listener_remove",String.valueOf(dataSnapshot.getValue()));
+//                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
+//                marker.remove();
+//                markerHashMap.remove(String.valueOf(dataSnapshot.getKey()));
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//                Log.d("child_listener_move",String.valueOf(dataSnapshot.getValue()));
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.d("child_listener_cancel",String.valueOf(databaseError.getMessage()));
+//            }
+//        };
         //[END]add new
     }
 
@@ -282,6 +329,8 @@ public class HomeActivity extends AppCompatActivity
 
     private void addControls() {
 
+//        mactivity = HomeActivity.this;
+
         btnFindPeople = (FloatingActionButton) findViewById(R.id.btnFindPeople);
         btnFindVehicles = (FloatingActionButton) findViewById(R.id.btnFindVehicle);
 
@@ -302,7 +351,7 @@ public class HomeActivity extends AppCompatActivity
         //[END]Send verification
         currentUser = RealmDatabase.getCurrentUser(mUser.getUid());
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        arrRequest = new ArrayList<RequestFromGraber>();
+//        arrRequest = new ArrayList<RequestFromGraber>();
         //arrRequestDemo = new ArrayList<RequestDemo>();
 
         viewHeader = navigationView.getHeaderView(0);
@@ -310,7 +359,7 @@ public class HomeActivity extends AppCompatActivity
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
         progressBar = (ProgressBar) viewHeader.findViewById(R.id.loading_progress_img);
-        trackgps = new TrackGPSService(HomeActivity.this);
+//        trackgps = new TrackGPSService(HomeActivity.this);
 
         btnCancelRequest= (FloatingActionButton) findViewById(R.id.btnCancelRequest);
         btnRestartRequest= (FloatingActionButton) findViewById(R.id.btnRestartRequest);
@@ -510,8 +559,9 @@ public class HomeActivity extends AppCompatActivity
         }
         //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
         //[START]add new
-        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
-        requestNeederRef.addValueEventListener(requestNeederListener);
+//        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+//        requestNeederRef.addValueEventListener(requestNeederListener);
+//        requestNeederRef.addChildEventListener(requestChildListener);
         //[END]add new
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 

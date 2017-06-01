@@ -52,9 +52,36 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
 
     final private static int REQ_PERMISSION = 20;// Value permission locaiton
 
+    public TrackGPSService(){
+
+    }
+
     public TrackGPSService(Context context){
-        mContext = context;
-        buildGoogleApiClient();
+//        mContext = context;
+//        buildGoogleApiClient();
+    }
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("service_aaaaaaa","create");
+        mContext = getApplicationContext();
+        Log.d("service_aaaaaaa","startcommand1");
+        if(mGoogleApiClient == null){
+            buildGoogleApiClient();
+            Log.d("service_aaaaaaa","startcommand2");
+        } else {
+            if(!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("service_aaaaaaa","startcommand");
+        if(checkPermission() && mGoogleMap != null) mGoogleMap.setMyLocationEnabled(true);
+        return START_STICKY;
+
     }
 
     public synchronized void buildGoogleApiClient() {
@@ -134,6 +161,7 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
         } catch (Exception e){
             callback.onError(e);
         }
+
     }
 
     /**
@@ -145,7 +173,7 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         if(value == CONTROLL_ON) {//register the listener to listen location change
             if(checkLocationPermission()){
-                mGoogleMap.setMyLocationEnabled(true);
+                if(mGoogleMap != null) mGoogleMap.setMyLocationEnabled(true);
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             }
 
@@ -160,6 +188,7 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.d("service_aaaaaaa","connect");
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000); //5 seconds
         mLocationRequest.setFastestInterval(3000); //3 seconds
@@ -185,7 +214,7 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
      */
     @Override
     public void onLocationChanged(Location location) {
-        if(zoomOneTime){//Just zoom 1 time
+        if(zoomOneTime && mGoogleMap != null){//Just zoom 1 time
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),11));
             zoomOneTime =false;
         }

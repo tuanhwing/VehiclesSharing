@@ -1,13 +1,20 @@
 package project.com.vehiclessharing.service;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.List;
+import java.util.Map;
+
+import project.com.vehiclessharing.R;
 
 /**
  * Created by Tuan on 13/03/2017.
@@ -26,24 +33,66 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         Log.d(TAG, "Notification Message Body: " + remoteMessage.getNotification().getBody());
 
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
-        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
-
-        String currentPackageName = componentInfo.getClassName();
-
-//        ActivityManager am =(ActivityManager)context.getSystemService(ACTIVITY_SERVICE);
-//        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
-//        ActivityManager.RunningTaskInfo task = tasks.get(0); // current task
-//        ComponentName rootActivity = task.baseActivity;
+//        sendNotification(null);
+//        Log.d(TAG,"11111");
+//        BitmapDrawable bitmapdraw;
+//        bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.temp);
+//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        Log.d(TAG,"22222");
+//        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+//                .setSmallIcon(R.drawable.user)
+//                .setLargeIcon(bitmapdraw.getBitmap())
+//                .addAction(R.drawable.accept, "Accept", null)
+//                .addAction(R.drawable.cancel, "Cancel", null)
+//                .setOngoing(true)
+//                .setContentTitle("Title demo")
+//                .setContentText(remoteMessage.getNotification().getBody())
+//                .setAutoCancel(false)
+//                .setSound(defaultSoundUri)
+//                //.setContentIntent(pendingIntent)
+//                .setPriority(Notification.PRIORITY_HIGH);
 //
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+//        Log.d(TAG,"end");
+
+
+    }
+
+    public void sendNotification(Map<String, String> dataMap){
+//        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+//        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
+//        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
 //
-//        String currentPackageName = rootActivity.getPackageName();
-        if(currentPackageName.equals("project.com.vehiclessharing.activity.HomeActivity")) {
-            //Do whatever here
-            Log.d("FCM ServiceAAAAA","AAAAAAAAAA ne");
-        }
+//        String currentPackageName = componentInfo.getClassName();
+//        if(currentPackageName.equals("project.com.vehiclessharing.activity.HomeActivity")) {
+//            //Do whatever here
+//            Log.d("FCM ServiceAAAAA","AAAAAAAAAA ne");
+//        }
+//        else {
+        Log.d(TAG,"1");
+            BitmapDrawable bitmapdraw;
+            bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.temp);
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Log.d(TAG,"2");
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.user)
+                    .setLargeIcon(bitmapdraw.getBitmap())
+                    .addAction(R.drawable.accept, "Accept", null)
+                    .addAction(R.drawable.cancel, "Cancel", null)
+                    .setOngoing(true)
+                    .setContentTitle("Title demo")
+                    .setContentText("Demo Notification")
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    //.setContentIntent(pendingIntent)
+                    .setPriority(Notification.PRIORITY_HIGH);
 
-
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        Log.d(TAG,"end");
+//        }
     }
 }
