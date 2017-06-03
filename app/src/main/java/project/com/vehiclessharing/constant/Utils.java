@@ -58,5 +58,6 @@ public class Utils {
     public static final String TAG_UPDATE_PROFILE = "update_profile";
     public static final String TAG_ERROR_ROUTING = "error_routing";
     public static final String TAG_ERROR_SELECT_IMAGE = "error_select_iamge";
+    public static final String TAG_ERROR_LOCATION = "error_location";
 
 }

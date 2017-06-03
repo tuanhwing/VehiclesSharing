@@ -32,7 +32,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
                 <fragment
@@ -44,7 +44,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
+                    android:layout_weight="1"
                     android:hint="Current location"
                     android:id="@+id/txtCurLocate"
                     android:textColorHint="@color/black" />
@@ -59,7 +59,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
                 <fragment
@@ -72,7 +72,7 @@
                     android:id="@+id/txtDesLocate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
+                    android:layout_weight="1"
                     android:hint="Destination location"
                     android:textColorHint="@color/black" />
                 <ImageView
@@ -86,7 +86,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <EditText
@@ -109,7 +109,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <Button

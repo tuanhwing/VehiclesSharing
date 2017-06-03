@@ -59,6 +59,28 @@ exports.addMessage = functions.https.onRequest((req, res) => {
   });
 });
 
+
+exports.sendNotification = functions.https.onRequest((req, res) => {
+const tokenId = "dnZaTX5N1uw:APA91bERTCDMI6K0ws52xMfhwhowAQqzdU80tYULGWF9MZ5Fzb98kE08l1uwCq9yCOmgRp34H71NYF1VN7DHZ-er39728WtqD7-dtcwyIqCWkE8h8BTBD96KUmDLGSiQ5cU-ieLWxF0f";
+
+    const payload = {
+                notification: {
+                    title: "Demo notification",
+                    body: "uppercase",
+                }
+            };
+
+             admin.messaging().sendToDevice(tokenId, payload)
+                .then(function (response) {
+                    console.log("Successfully sent message:", response);
+                    res.status(200).json({error: false, message: "OK"});
+                })
+                .catch(function (error) {
+                    console.log("Error sending message:", error);
+                    res.status(400).json({error: true, message: "ERROR"});
+                });
+});
+
 exports.getinfo_user = functions.https.onRequest((req,res) => {
 	if(req.method != 'GET') res.status(400);
 	var userId = req.query.userId;
@@ -114,7 +136,7 @@ exports.makeUppercase = functions.database.ref('/messages/{pushId}/original')
       console.log('Uppercasing', event.params.pushId, original);
       const uppercase = original.toUpperCase();
 
-       const tokenId = "ejXJ8krZE50:APA91bF5h-eWMynEki3rXxwTeyN0aAYHmMh7YGvGWsNQuqVQDS11aIwRZIy8G-rEE8XbqyW79LZaCwE68AALXzDkmewj8lqWE503jxsW5TOJnFBjKY4u8ia42v8-7Ts1oUX9dBNMYn26";
+      const tokenId = "ejXJ8krZE50:APA91bF5h-eWMynEki3rXxwTeyN0aAYHmMh7YGvGWsNQuqVQDS11aIwRZIy8G-rEE8XbqyW79LZaCwE68AALXzDkmewj8lqWE503jxsW5TOJnFBjKY4u8ia42v8-7Ts1oUX9dBNMYn26";
 
       const payload = {
                 notification: {
@@ -209,6 +231,7 @@ exports.nearlyrequestneeder = functions.database.ref('/requestfromneeder/{pushId
 		var pushId = event.params.pushId;
 		const value = event.data.val();
 		var requestsNeederRef = admin.database().ref('requestfromgraber');
+		console.log("nearly_graber", value);
 		requestsNeederRef.once('value', function(snapshot) {
 		// console.log(snapshot.val());
 			var i = 0;
@@ -229,6 +252,7 @@ exports.nearlyrequestgraber = functions.database.ref('/requestfromgraber/{pushId
 	event => {
 		var pushId = event.params.pushId;
 		const value = event.data.val();
+		console.log("nearly_graber", value);
 		var requestsNeederRef = admin.database().ref('requestfromneeder');
 		requestsNeederRef.once('value', function(snapshot) {
 		// console.log(snapshot.val());

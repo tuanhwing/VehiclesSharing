@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.activity.HomeActivity;
 
 /**
@@ -168,7 +168,14 @@ public class ImageClass {
         return bytesResult;
     }
 
-    public static void loadImage(String url, final Context context, ImageView imageView, final ProgressBar progressBar){
+    /**
+     * Load image offline (image cached)
+     * @param url
+     * @param context
+     * @param imageView
+     * @param progressBar
+     */
+    public static void loadImageOffline(String url, final Context context, final ImageView imageView, final ProgressBar progressBar){
         progressBar.setVisibility(View.VISIBLE);
         Picasso.with(context)
                 .load(url)
@@ -182,10 +189,36 @@ public class ImageClass {
                     @Override
                     public void onError() {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(context,"Error load image",Toast.LENGTH_SHORT).show();
+                        imageView.setImageResource(R.drawable.temp);
                     }
                 });
     }
+
+    /**
+     * Load image online (image not cached)
+     * @param url
+     * @param context
+     * @param imageView
+     * @param progressBar
+     */
+    public static void loadImageOnline(String url, final Context context, final ImageView imageView, final ProgressBar progressBar){
+        progressBar.setVisibility(View.VISIBLE);
+        Picasso.with(context)
+                .load(url)
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                        imageView.setImageResource(R.drawable.temp);
+                    }
+                });
+    }
+
 
     /**
      *get Url image resized from Storage Firebase

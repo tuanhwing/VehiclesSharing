@@ -41,8 +41,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 
@@ -120,7 +118,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             avatarUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
             progressBar.setVisibility(View.GONE);
         } else {
-            ImageClass.loadImage(url,EditProfileActivity.this,avatarUser,progressBar);
+            if(!isOnline()) ImageClass.loadImageOffline(url,EditProfileActivity.this,avatarUser,progressBar);
+            else ImageClass.loadImageOnline(url,EditProfileActivity.this,avatarUser,progressBar);
         }
 
         if(HomeActivity.currentUser.getUser().getSex().equals("Male")) rdMale.setChecked(true);
@@ -289,20 +288,21 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                     HomeActivity.currentUser.getUser().setImage(String.valueOf(downloadUrl));
                     realm.commitTransaction();
 
-                    Picasso.with(EditProfileActivity.this)
-                            .load(String.valueOf(downloadUrl))
-                            .into(avatarUser, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            progressBar.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onError() {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(EditProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+//                    Picasso.with(EditProfileActivity.this)
+//                            .load(String.valueOf(downloadUrl))
+//                            .into(avatarUser, new Callback() {
+//                        @Override
+//                        public void onSuccess() {
+//                            progressBar.setVisibility(View.GONE);
+//                        }
+//
+//                        @Override
+//                        public void onError() {
+//                            progressBar.setVisibility(View.GONE);
+//                            Toast.makeText(EditProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+                    ImageClass.loadImageOnline(String.valueOf(downloadUrl),EditProfileActivity.this,avatarUser,progressBar);
 
                 }
             });

@@ -129,7 +129,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 progressBar.setVisibility(View.GONE);
             } else {
 
-                ImageClass.loadImage(url,ProfileActivity.this,imgProfile,progressBar);
+                if(!isOnline()) ImageClass.loadImageOffline(url,ProfileActivity.this,imgProfile,progressBar);
+                else ImageClass.loadImageOnline(url,ProfileActivity.this,imgProfile,progressBar);
             }
             btnEditProfile.setVisibility(View.VISIBLE);
         } else {

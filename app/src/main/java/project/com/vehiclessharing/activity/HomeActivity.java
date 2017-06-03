@@ -62,12 +62,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.application.ApplicationController;
@@ -77,7 +80,9 @@ import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
 import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.AboutPlace;
+import project.com.vehiclessharing.model.CheckerGPS;
 import project.com.vehiclessharing.model.ForGraber;
+import project.com.vehiclessharing.model.RequestDemo;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.UserOnDevice;
@@ -108,13 +113,13 @@ public class HomeActivity extends AppCompatActivity
 
     public static GoogleMap mGoogleMap = null;//Instance google map API
     public static Polyline polyline = null;//Instance
-    private static TrackGPSService trackgps;
+    private static CheckerGPS checkerGPS;
 
 //    private ValueEventListener requestNeederListener;
-//    private ChildEventListener requestChildListener;
-//    private HashMap<String,Marker> markerHashMap = new HashMap<>();//Hashmap store all the marker inside map
+    private ChildEventListener requestChildListener;
+    private HashMap<String,Marker> markerHashMap = new HashMap<>();//Hashmap store all the marker inside map
 //    public static Activity mactivity;
-//    private DatabaseReference requestNeederRef;
+    private DatabaseReference requestNeederRef;
 //    private String mRequestKey;
 //    private ArrayList<RequestFromGraber> arrRequest;
     //private ArrayList<RequestDemo> arrRequestDemo;
@@ -177,7 +182,7 @@ public class HomeActivity extends AppCompatActivity
 
         addControls();
         addEvents();
-        startService(new Intent(this,TrackGPSService.class));//Enable tracking GPS
+//        startService(new Intent(this,TrackGPSService.class));//Enable tracking GPS
 
     }
 
@@ -227,47 +232,47 @@ public class HomeActivity extends AppCompatActivity
 //            }
 //        };
 //
-//        requestChildListener  = new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                Log.d("child_listener_add",String.valueOf(dataSnapshot.getValue()));
-//                Log.d("child_listener_add",String.valueOf(dataSnapshot.getKey()));
-//                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
-//                Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-//                        .position(new LatLng(requestDemo.getLocationRequest().getLocationLat()
-//                                ,requestDemo.getLocationRequest().getLocationLong()))
-//                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
-//                markerHashMap.put(String.valueOf(dataSnapshot.getKey()),marker);
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//                Log.d("child_listener_changed",String.valueOf(dataSnapshot.getValue()));
-//                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
-//                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
-//                marker.setPosition(new LatLng(requestDemo.getLocationRequest().getLocationLat()
-//                        ,requestDemo.getLocationRequest().getLocationLong()));
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//                Log.d("child_listener_remove",String.valueOf(dataSnapshot.getValue()));
-//                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
-//                marker.remove();
-//                markerHashMap.remove(String.valueOf(dataSnapshot.getKey()));
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//                Log.d("child_listener_move",String.valueOf(dataSnapshot.getValue()));
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Log.d("child_listener_cancel",String.valueOf(databaseError.getMessage()));
-//            }
-//        };
+        requestChildListener  = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d("child_listener_add",String.valueOf(dataSnapshot.getValue()));
+                Log.d("child_listener_add",String.valueOf(dataSnapshot.getKey()));
+                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
+                Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(requestDemo.getLocationRequest().getLocationLat()
+                                ,requestDemo.getLocationRequest().getLocationLong()))
+                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
+                markerHashMap.put(String.valueOf(dataSnapshot.getKey()),marker);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.d("child_listener_changed",String.valueOf(dataSnapshot.getValue()));
+                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
+                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
+                marker.setPosition(new LatLng(requestDemo.getLocationRequest().getLocationLat()
+                        ,requestDemo.getLocationRequest().getLocationLong()));
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d("child_listener_remove",String.valueOf(dataSnapshot.getValue()));
+                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
+                marker.remove();
+                markerHashMap.remove(String.valueOf(dataSnapshot.getKey()));
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.d("child_listener_move",String.valueOf(dataSnapshot.getValue()));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("child_listener_cancel",String.valueOf(databaseError.getMessage()));
+            }
+        };
         //[END]add new
     }
 
@@ -359,7 +364,7 @@ public class HomeActivity extends AppCompatActivity
         txtFullName = (TextView) viewHeader.findViewById(R.id.txtFullName);
         imgUser = (ImageView) viewHeader.findViewById(R.id.imgUser);
         progressBar = (ProgressBar) viewHeader.findViewById(R.id.loading_progress_img);
-//        trackgps = new TrackGPSService(HomeActivity.this);
+        checkerGPS = new CheckerGPS(HomeActivity.this);
 
         btnCancelRequest= (FloatingActionButton) findViewById(R.id.btnCancelRequest);
         btnRestartRequest= (FloatingActionButton) findViewById(R.id.btnRestartRequest);
@@ -533,6 +538,8 @@ public class HomeActivity extends AppCompatActivity
         mGoogleMap.setOnMarkerClickListener(this);
         if(mGoogleMap!=null)
         {
+            if(checkerGPS.checkPermission()) mGoogleMap.setMyLocationEnabled(true);//Enable mylocation
+
             mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
@@ -559,9 +566,9 @@ public class HomeActivity extends AppCompatActivity
         }
         //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
         //[START]add new
-//        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
 //        requestNeederRef.addValueEventListener(requestNeederListener);
-//        requestNeederRef.addChildEventListener(requestChildListener);
+        requestNeederRef.addChildEventListener(requestChildListener);
         //[END]add new
 //       makeMaker(new LatLng(10.8719808, 106.790409), "Nong Lam University");
 
@@ -721,7 +728,7 @@ public class HomeActivity extends AppCompatActivity
                     if (ActivityCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         mGoogleMap.setMyLocationEnabled(true);
-                        trackgps.controllonLocationChanged(CONTROLL_ON);
+                        if(!TrackGPSService.isRunning) startService(new Intent(this,TrackGPSService.class));
 
                     }
                 } else {
@@ -769,18 +776,8 @@ public class HomeActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         updateUIHeader(loginWith);//Update information user into header layout
-//        trackgps.getCurrentLocation(new LocationCallback() {
-//            @Override
-//            public void onSuccess() {
-//                drawroadBetween2Location(new LatLng(TrackGPSService.mLocation.getLatitude(),
-//                        TrackGPSService.mLocation.getLongitude()),new LatLng(10.8719808,106.790409));
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                Log.e(TAG_ERROR_ROUTING, e.getMessage());
-//            }
-//        });
+        if(checkerGPS.checkLocationPermission() && !TrackGPSService.isRunning)
+            startService(new Intent(this, TrackGPSService.class));//Enable tracking GPS
     }
 
     @Override
@@ -829,7 +826,8 @@ public class HomeActivity extends AppCompatActivity
             imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
             progressBar.setVisibility(View.GONE);
         } else {
-            ImageClass.loadImage(url,HomeActivity.this,imgUser,progressBar);
+            if(!isOnline()) ImageClass.loadImageOffline(url,HomeActivity.this,imgUser,progressBar);
+            else ImageClass.loadImageOnline(url,HomeActivity.this,imgUser,progressBar);
         }
     }
 

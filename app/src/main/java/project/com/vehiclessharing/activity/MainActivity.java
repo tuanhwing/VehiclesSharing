@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //set up notitle
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        if(FirebaseAuth.getInstance().getCurrentUser() != null)
+            switchActivity();
 //        //set up full screen
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -239,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Switch to Home Activity when login succeed
      */
     private void switchActivity(){
-        mProgress.dismiss();
+        if(mProgress != null) mProgress.dismiss();
         startActivity(new Intent(MainActivity.this,HomeActivity.class));
         finish();
     }
