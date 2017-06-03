@@ -38,11 +38,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.application.ApplicationController;
+import project.com.vehiclessharing.custom.CustomMarker;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.Validation;
-
+import static project.com.vehiclessharing.constant.Utils.DEVICE_TOKEN;
 /**
  * Created by Hihihehe on 5/15/2017.
  */
@@ -235,9 +237,16 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
         LatLng latLngDesLocation = AboutPlace.getInstance().getLatLngByName(mContext, txtDesLocation.getText().toString());
         LatLngAddress source=new LatLngAddress(latLngCurLocation.latitude,latLngCurLocation.longitude);
         LatLngAddress destination=new LatLngAddress(latLngDesLocation.latitude,latLngDesLocation.longitude);
-        RequestFromGraber requestFromGraber = new RequestFromGraber(userId, source, destination, vehicleType);
-        mDatabase.child("requestfromgraber").child(userId).setValue(requestFromGraber);
-        requestDataFromGraber.getRequestFromGraber(requestFromGraber);
+        String deviceId=ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null);;
+        Log.e("deviceID",deviceId);
+        RequestFromGraber requestFromGraber = new RequestFromGraber(userId, source, destination, vehicleType,deviceId);
+        if(CustomMarker.isOnline(mContext)) {
+            mDatabase.child("requestfromgraber").child(userId).setValue(requestFromGraber);
+            requestDataFromGraber.getRequestFromGraber(requestFromGraber);
+        }
+        else {
+            Toast.makeText(mContext, "Internet disable", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addControls() {

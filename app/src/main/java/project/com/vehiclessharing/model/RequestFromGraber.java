@@ -16,12 +16,18 @@ public class RequestFromGraber {
     private LatLngAddress sourceLocation;
     private LatLngAddress destinationLocation;
     private String vehicleType;
+    private String deviceId;
 
-    public RequestFromGraber(String userId, LatLngAddress sourceLocation, LatLngAddress destinationLocation, String vehicleType) {
+    public RequestFromGraber() {
+
+    }
+
+    public RequestFromGraber(String userId, LatLngAddress sourceLocation, LatLngAddress destinationLocation, String vehicleType, String deviceId) {
         this.userId = userId;
         this.sourceLocation = sourceLocation;
         this.destinationLocation = destinationLocation;
         this.vehicleType = vehicleType;
+        this.deviceId = deviceId;
 
     }
 
@@ -57,4 +63,11 @@ public class RequestFromGraber {
         this.vehicleType = vehicleType;
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +31,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.application.ApplicationController;
+import project.com.vehiclessharing.custom.CustomMarker;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.Validation;
+import static project.com.vehiclessharing.constant.Utils.DEVICE_TOKEN;
 
 /**
  * Created by Hihihehe on 5/15/2017.
@@ -216,7 +220,6 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         return checkNull;
     }
     private void addRequestIntoDB() {
-        // Toast.makeText(mActivity, "add DB", Toast.LENGTH_SHORT).show();
         mUser= FirebaseAuth.getInstance().getCurrentUser();
         String userId=mUser.getUid();
 
@@ -228,10 +231,15 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         //Date date=new Date();
         String curDate=sdf2.format(calendar.getTime());
         String timeStart=txtTimeStart.getText().toString();
-        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,source,destination,timeStart,curDate);
-        mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
-        requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
-     //   getTargetFragment().onActivityResult(getTargetRequestCode(),1);
+        String deviceId=ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null);
+        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,source,destination,timeStart,curDate,deviceId);
+        if(CustomMarker.isOnline(mContext)) {
+            mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
+            requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
+        }
+        else {
+            Toast.makeText(mContext, "Internet disable", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

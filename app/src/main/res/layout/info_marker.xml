@@ -9,14 +9,21 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_margin="10dp">
-        <TextView
+        <!--TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Full name:"
+            /-->
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_account_circle_blue_grey_600_24dp"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_span="50"
+            android:layout_weight="1"
             android:id="@+id/txtFullNameUser"
             />
     </TableRow>
@@ -24,14 +31,15 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_margin="10dp">
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Source location:"
+            android:src="@drawable/ic_place_blue_grey_600_24dp"
             />
         <TextView
             android:layout_width="match_parent"
             android:id="@+id/txtSourceLocationUser"
+            android:layout_weight="1"
             android:layout_height="wrap_content" />
     </TableRow>
     <TableRow
@@ -39,30 +47,33 @@
         android:layout_height="fill_parent"
         android:layout_margin="10dp">
 
-        <TextView
+        <ImageView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Destination location:" />
+            android:src="@drawable/ic_directions_blue_grey_600_24dp"
+            />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/txtDesLocationUser"
+            android:layout_weight="1"
         />
     </TableRow>
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_margin="10dp">
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time start:"
+            android:src="@drawable/ic_alarm_blue_grey_600_24dp"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:id="@+id/txtTimeUser"
         />
     </TableRow>
@@ -70,15 +81,12 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_margin="10dp">
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vehicle type"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtVehicleTypeUser"
+            android:id="@+id/imgVehicleTypeUser"
+            android:src="@drawable/ic_directions_car_indigo_a700_24dp"
+            android:visibility="gone"
         />
     </TableRow>
 </TableLayout>

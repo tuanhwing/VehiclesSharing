@@ -11,6 +11,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import project.com.vehiclessharing.utils.UserCallback;
+
 /**
  * Created by Hihihehe on 5/28/2017.
  */
@@ -49,7 +51,7 @@ public class UserInfomation {
             {
                 return instance=new UserInfomation();
             }*/
-    public void getInfoUserById(String userId)
+    public void getInfoUserById(String userId, final UserCallback userCallback)
     {
             mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
             requestNeederListener=new ValueEventListener() {
@@ -57,7 +59,11 @@ public class UserInfomation {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                    //mUser=dataSnapshot.getValue(User.class);
                     urlAvatar=dataSnapshot.child("image").getValue(String.class);
-                    Log.e("dsds",urlAvatar);
+                    //Log.e("dsds",urlAvatar);
+                    User user = dataSnapshot.getValue(User.class);
+                    // userNeeder.add(user);
+                    Log.e("imagemarker",user.getImage());
+                    userCallback.onSuccess(user);
                 }
 
                 @Override
@@ -66,5 +72,6 @@ public class UserInfomation {
                 }
             };
         mDatabase.addListenerForSingleValueEvent(requestNeederListener);
+
     }
 }

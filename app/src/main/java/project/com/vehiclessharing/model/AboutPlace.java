@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -25,17 +26,16 @@ public class AboutPlace {
     private static Geocoder geocoder;
     private static List<Address> addresses;
 
-    public static AboutPlace getInstance()
-    {
-        return instance=new AboutPlace();
+    public static AboutPlace getInstance() {
+        return instance = new AboutPlace();
     }
+
     public String getCurrentPlace(Context activity) {
-        String fullAddress="";
-        GoogleMap mMap= HomeActivity.mGoogleMap;
-        Location myLocation  =mMap.getMyLocation() ;
-        geocoder=new Geocoder(activity, Locale.getDefault());
-        if(myLocation!=null)
-        {
+        String fullAddress = "";
+        GoogleMap mMap = HomeActivity.mGoogleMap;
+        Location myLocation = mMap.getMyLocation();
+        geocoder = new Geocoder(activity, Locale.getDefault());
+        if (myLocation != null) {
             double dLatitude = myLocation.getLatitude();
             double dLongitude = myLocation.getLongitude();
             try {
@@ -47,98 +47,51 @@ public class AboutPlace {
 
                 fullAddress = address + ", " + area + ", " + city + ", " + country;
 
-            }catch (IOException e)
-            {
+            } catch (IOException e) {
                 Toast.makeText(activity, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        }
-        else
-        {
+        } else {
             Toast.makeText(activity, "Unable to fetch the current location", Toast.LENGTH_SHORT).show();
         }
         return fullAddress;
     }
 
-    public LatLng getLatLngByName(Context activity,String location)
-    {
-        geocoder=new Geocoder(activity);
-        try{
-            addresses=geocoder.getFromLocationName(location,1);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        LatLng latLng=new LatLng(addresses.get(0).getLatitude(),addresses.get(0).getLongitude());
-        return latLng;
-    }
-    public String getAddressByLatLng(Context activity,LatLng latLng) throws IOException {
-        String fullAddress="";
-        geocoder=new Geocoder(activity);
+    public LatLng getLatLngByName(Context activity, String location) {
+        geocoder = new Geocoder(activity);
         try {
-            addresses=geocoder.getFromLocation(latLng.latitude,latLng.longitude,1);
-            String[] listAddress=new String[4];
-            listAddress[0] = addresses.get(0).getAddressLine(0);
-            listAddress[1] = addresses.get(0).getLocality();
-            listAddress[2] = addresses.get(0).getAdminArea();
-            listAddress[3]= addresses.get(0).getCountryName();
-        for (int i=0;i<listAddress.length;i++)
-        {
-            if(listAddress[i]!=null)
-            {
-                fullAddress+=listAddress;
-                if(i == listAddress.length-1)
-                {
-                    fullAddress+=", ";
-                }
-            }
-        }
-        }catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return fullAddress;
-
-
-
-       // String[] geo=address.split(",");
-       /* String uri = "http://maps.google.com/maps/api/geocode/json?address=" +
-                youraddress + "&sensor=false"
-        HttpGet httpGet = new HttpGet(uri);
-        HttpClient client = new DefaultHttpClient();
-        HttpResponse response;
-        StringBuilder stringBuilder = new StringBuilder();
-
-        try {
-            response = client.execute(httpGet);
-            HttpEntity entity = response.getEntity();
-            InputStream stream = entity.getContent();
-            int b;
-            while ((b = stream.read()) != -1) {
-                stringBuilder.append((char) b);
-            }
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            addresses = geocoder.getFromLocationName(location, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        LatLng latLng = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+        return latLng;
+    }
 
-        JSONObject jsonObject = new JSONObject();
+    public String getAddressByLatLng(Context activity, LatLng latLng) throws IOException {
+        String fullAddress = "";
+        geocoder = new Geocoder(activity);
         try {
-            jsonObject = new JSONObject(stringBuilder.toString());
+            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            String[] listAddress = new String[4];
+            listAddress[0] = addresses.get(0).getAddressLine(0);
+            listAddress[1] = addresses.get(0).getLocality();
+            listAddress[2] = addresses.get(0).getAdminArea();
+            listAddress[3] = addresses.get(0).getCountryName();
 
-            lng = ((JSONArray)jsonObject.get("results")).getJSONObject(0)
-                    .getJSONObject("geometry").getJSONObject("location")
-                    .getDouble("lng");
-
-            lat = ((JSONArray)jsonObject.get("results")).getJSONObject(0)
-                    .getJSONObject("geometry").getJSONObject("location")
-                    .getDouble("lat");
-
-            Log.d("latitude", lat);
-            Log.d("longitude", lng);
-        } catch (JSONException e) {
+            String fullAd = listAddress[0] + ", " + listAddress[1] + ", " + listAddress[2] + ", " + listAddress[3];
+            Log.e("fullAddress", fullAd);
+            for (int i = 0; i < listAddress.length; i++) {
+                if (listAddress[i]!=null && !listAddress[i].isEmpty()) {
+                    fullAddress = fullAddress.concat(listAddress[i]);
+                    //fullAddress += listAddress;
+                    if (i != listAddress.length - 1) {
+                        fullAddress = fullAddress.concat(", ");
+                    }
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
+        return fullAddress;
     }
 }

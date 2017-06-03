@@ -1,4 +1,4 @@
-package project.com.vehiclessharing.custom;
+package project.com.vehiclessharing.asynctask;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,24 +21,26 @@ import java.net.URL;
 import project.com.vehiclessharing.R;
 
 /**
- * Created by Hihihehe on 5/27/2017
- * Make marker have avatar on marker
+ * Created by Hihihehe on 6/3/2017.
  */
 
-public class CustomMarker {
-    private static Context mContext;
+public class IconMarkerAsync extends AsyncTask<String, Void, Bitmap> {
+    private Context mContext;
 
-    public CustomMarker(Context mContext) {
+    public IconMarkerAsync(Context mContext) {
         this.mContext = mContext;
     }
+
     /**
-     * Use canvas to custom marker have marker icon and avatar above
-     * @param
+     * custom icon with image from url
+     *
+     * @param params
      * @return
      */
-    public Bitmap customMarkerWithAvatar(final String url)
-    {
-        View customMarkerView=getCustomMarkerView(url);
+    @Override
+    protected Bitmap doInBackground(String... params) {
+
+        View customMarkerView = getCustomMarkerView(params[0]);
         //final View customMarkerView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
         customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
@@ -52,22 +55,36 @@ public class CustomMarker {
         customMarkerView.draw(canvas);
         return returnedBitmap;
     }
-    private View getCustomMarkerView(final String urlAvatar) {
+
+    /**
+     * Get image from url and put into View
+     *
+     * @param urlImage
+     * @return view have icon get from url or default icon
+     */
+    private View getCustomMarkerView(String urlImage) {
+        Bitmap bitmap = null;
         View customMarkerView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
         ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        Bitmap bitmap=null;
-        try{
-            bitmap = BitmapFactory.decodeStream((InputStream) new URL(urlAvatar).getContent());
-            markerImageView.setImageBitmap(bitmap);
+        if (urlImage == null || urlImage.isEmpty()) {
+            markerImageView.setImageResource(R.drawable.temp);
+        } else {
+            try {
+                bitmap = BitmapFactory.decodeStream((InputStream) new URL(urlImage).getContent());
+                markerImageView.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                Log.e("Loi", e.toString());
+            }
         }
-        catch (Exception e)
-        {
-            Log.e("Loi",e.toString());
-        }
-
-
         return customMarkerView;
     }
+
+    /**
+     * Check have internet?
+     *
+     * @param context
+     * @return true if access internet
+     */
     public static boolean isOnline(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

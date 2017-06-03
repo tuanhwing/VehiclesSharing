@@ -16,16 +16,26 @@ public class RequestFromNeeder {
     private LatLngAddress destinationLocation;
     private String timeStart;
     private String dateStart;
+    private String deviceId;
 
     public RequestFromNeeder() {
     }
 
-    public RequestFromNeeder(String userId, LatLngAddress sourceLocation, LatLngAddress destinationLocation, String timeStart, String dateStart) {
+    public RequestFromNeeder(String userId, LatLngAddress sourceLocation, LatLngAddress destinationLocation, String timeStart, String dateStart, String deviceId) {
         this.userId = userId;
         this.sourceLocation = sourceLocation;
         this.destinationLocation = destinationLocation;
         this.timeStart = timeStart;
         this.dateStart = dateStart;
+        this.deviceId=deviceId;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getUserId() {

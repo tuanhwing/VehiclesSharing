@@ -95,6 +95,7 @@ import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.ForGraber;
+import project.com.vehiclessharing.model.ForNeeder;
 import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestDemo;
 import project.com.vehiclessharing.model.RequestFromGraber;
@@ -103,6 +104,7 @@ import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserInfomation;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
+import project.com.vehiclessharing.utils.UserCallback;
 
 import static project.com.vehiclessharing.R.id.map;
 import static project.com.vehiclessharing.R.id.multiply;
@@ -317,7 +319,7 @@ public class HomeActivity extends AppCompatActivity
                 dialogTitle[0] = "If you want find a vehicle together, you can fill out the form";
                 dialogFragment = AddRequestFromNeeder_Fragment.newIstance(dialogTitle[0]);
                 dialogFragment.show(getFragmentManager(), "From Needer");
-                getVehicleNearMe();
+                //getVehicleNearMe();
                 break;
             case R.id.btnFindPeople:
                 //checkOnScreen = 2;
@@ -325,7 +327,7 @@ public class HomeActivity extends AppCompatActivity
                 dialogTitle[0] = "If you have a vehicle and you want find a people together you can fill out the form to find it";
                 dialogFindPeopleFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
                 dialogFindPeopleFragment.show(getFragmentManager(), "From Grabber");
-                getNeederNearMe();
+                //getNeederNearMe();
                 break;
             case R.id.btnCancelRequest:
                 cancelRequest();
@@ -336,15 +338,6 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    private void getVehicleNearMe() {
-
-
-    }
-
-    private void getNeederNearMe() {
-
-    }
-
     private void restartrequest() {
         if (btnRestartRequest.getVisibility() == View.VISIBLE) {
             btnRestartRequest.setVisibility(View.GONE);
@@ -352,20 +345,18 @@ public class HomeActivity extends AppCompatActivity
                 btnCancelRequest.setVisibility(View.VISIBLE);
             }
         }
-
     }
 
     private void cancelRequest() {
-        if (btnCancelRequest.getVisibility() == View.VISIBLE) {
-            btnCancelRequest.setVisibility(View.GONE);
-            if (btnRestartRequest.getVisibility() == View.GONE)
-                btnRestartRequest.setVisibility(View.VISIBLE);
-        }
+        visibleButtonFindVehicleAndPeople();
         if (checkOnScreen == 0 || checkOnScreen == 1) {
-
+           // mDatabase.removeEventListener(ForNeeder.childEventListenerForGraber);
+            Log.d("remove event","remove");
         } else {
-
+            //mDatabase.removeEventListener(ForGraber.requestAddNeeder);
+            Log.d("remove event","remove");
         }
+        mGoogleMap.clear();
     }
 
 
@@ -408,72 +399,8 @@ public class HomeActivity extends AppCompatActivity
                         //user = UserInfomation.getInstance().getInfoUserById(String.valueOf(marker.getTag()));
                         // souceLocation = marker.getPosition();
                     } else {
-                        v = getLayoutInflater().inflate(R.layout.info_marker, null);
-                        TextView txtFullname, txtSourceLocation, txtDeslocation, txtTime, txtVehicleType;
+                        v = displayInfoMarkerClick(marker);
 
-                        txtFullname = (TextView) v.findViewById(R.id.txtFullNameUser);
-                        txtSourceLocation = (TextView) v.findViewById(R.id.txtSourceLocationUser);
-                        txtDeslocation = (TextView) v.findViewById(R.id.txtDesLocationUser);
-                        txtTime = (TextView) v.findViewById(R.id.txtTimeUser);
-                        txtVehicleType = (TextView) v.findViewById(R.id.txtVehicleTypeUser);
-                        txtVehicleType.setVisibility(View.GONE);
-                        String time = "";
-                        LatLng souceLocation=null;
-                        LatLngAddress desLocation = null;
-                        String idUser="";
-                        Boolean checkNullObject=false;
-                        if (checkOnScreen == 1) {
-                            RequestFromGraber graber = (RequestFromGraber) marker.getTag();
-
-                            //user = UserInfomation.getInstance().getInfoUserById(graber.getUserId());
-                            if(graber!=null) {
-                                souceLocation = marker.getPosition();
-                                desLocation = graber.getDestinationLocation();
-                                time = "now";
-                                txtVehicleType.setVisibility(View.VISIBLE);
-                                txtVehicleType.setText(graber.getVehicleType());
-                                checkNullObject=true;
-                                idUser=graber.getUserId();
-
-                            }
-
-                        } else if (checkOnScreen == 2) {
-                            RequestFromNeeder needer = (RequestFromNeeder) marker.getTag();
-                            if(needer!=null)
-                            {
-                                 souceLocation=marker.getPosition();
-                                desLocation=needer.getDestinationLocation();
-                                time = needer.getTimeStart();
-                                idUser=needer.getUserId();
-                                checkNullObject=true;
-                            }
-                        }
-                        if(checkNullObject) {
-                            txtTime.setText(time);
-                            try {
-                                txtSourceLocation.setText(AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this,souceLocation));
-                                LatLng des=new LatLng(desLocation.getLatidude(),desLocation.getLongtitude());
-                                txtDeslocation.setText(AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this,des));
-                                String fullName = FirebaseDatabase.getInstance().getReference().child("users").child(idUser).child("fullName").toString();
-                                txtFullname.setText(fullName);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                      /* try {
-
-                           txtDeslocation.setText(AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this, desLocation));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        txtFullname.setText(user.getFullName());
-                        try {
-
-                          //  txtSourceLocation.setText(AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this, souceLocation));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }*/
                     }
 
                     return v;
@@ -482,11 +409,91 @@ public class HomeActivity extends AppCompatActivity
         }
         //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
         //[START]add new
-        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+        //requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
 //        requestNeederRef.addValueEventListener(requestNeederListener);
         //[END]add new
 //      makecustomMarkerAvatar(new LatLng(10.8719808, 106.790409),mUser.getUid(), "Nong Lam University");
 
+    }
+
+    private View displayInfoMarkerClick(Marker marker) {
+        View v = getLayoutInflater().inflate(R.layout.info_marker, null);
+        final TextView txtFullname, txtSourceLocation, txtDeslocation, txtTime;
+        final ImageView imgVehicleType;
+
+        txtFullname = (TextView) v.findViewById(R.id.txtFullNameUser);
+        txtSourceLocation = (TextView) v.findViewById(R.id.txtSourceLocationUser);
+        txtDeslocation = (TextView) v.findViewById(R.id.txtDesLocationUser);
+        txtTime = (TextView) v.findViewById(R.id.txtTimeUser);
+        imgVehicleType = (ImageView) v.findViewById(R.id.imgVehicleTypeUser);
+        //txtVehicleType.setVisibility(View.GONE);
+        String time = "";
+        LatLng souceLocation = null;
+        LatLngAddress desLocation = null;
+        String idUser = "";
+        final String[] fullName = new String[1];
+        Boolean checkNullObject = true;
+        if (checkOnScreen == 1) {
+            RequestFromGraber graber = (RequestFromGraber) marker.getTag();
+            //user = UserInfomation.getInstance().getInfoUserById(graber.getUserId());
+            if (graber != null) {
+                souceLocation = marker.getPosition();
+                desLocation = graber.getDestinationLocation();
+                time = "now";
+                imgVehicleType.setVisibility(View.VISIBLE);
+                // txtVehicleType.setText(graber.getVehicleType());
+                if (graber.getVehicleType().equals("Bike")) {
+                    imgVehicleType.setImageResource(R.drawable.ic_motorcycle_green_900_24dp);
+                }
+                checkNullObject = false;
+                idUser = graber.getUserId();
+            }
+
+        } else if (checkOnScreen == 2) {
+            RequestFromNeeder needer = (RequestFromNeeder) marker.getTag();
+            if (needer != null) {
+                souceLocation = marker.getPosition();
+                desLocation = needer.getDestinationLocation();
+                time = needer.getTimeStart();
+                idUser = needer.getUserId();
+                checkNullObject = false;
+            }
+        }
+        if (!checkNullObject) {
+            txtTime.setText(time);
+            try {
+                String sourceAddress = AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this, souceLocation);
+                LatLng des = new LatLng(desLocation.getLatidude(), desLocation.getLongtitude());
+                String destinationAddress = AboutPlace.getInstance().getAddressByLatLng(HomeActivity.this, des);
+
+                txtSourceLocation.setText(sourceAddress);
+                txtDeslocation.setText(destinationAddress);
+                txtFullname.setText(marker.getTitle());
+
+                /*UserCallback userCallback = new UserCallback() {
+                    @Override
+                    public void onSuccess(User user) {
+                        // Toast.makeText(HomeActivity.this,String.valueOf(user.getImage()), Toast.LENGTH_SHORT).show();
+                        Log.e("fullname", user.getFullName());
+                        if(txtFullname == null) Log.e("fullname","null");
+                        txtFullname.setText("sdsdsdsd");
+                    }
+
+                    @Override
+                    public void onError(DatabaseError e) {
+
+                    }
+                };
+                UserInfomation userInfomation = new UserInfomation();
+                userInfomation.getInfoUserById(idUser, userCallback);*/
+                //String fullName = FirebaseDatabase.getInstance().getReference().child("users").child(idUser).child("fullName").toString();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //txtFullname.setText("hihihehehe");
+        return v;
     }
 
     /**
@@ -613,50 +620,7 @@ public class HomeActivity extends AppCompatActivity
         customMarkerView.draw(canvas);
         return returnedBitmap;
     }*/
-    /**
-     * Marker custom style with avatar of user
-     *
-     * @param sourceLocation
-     * @param userID
-     * @param
-     * @param title
-     */
 
-    /*private void makecustomMarkerAvatar(LatLng sourceLocation, String userID, String title) {
-        String url="https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/avatar%2F0ea2kDnvz8VjkbqoBMAIIaChsni2.jpg?alt=media&token=1afa116e-3074-49c7-b0b1-d36a829a7add";
-      //String urlAvatar="";
-        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
-        ImageView imgProfile = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        //get avatar of user and put it in imageview of custom_marker
-        if(url.equals("null") || url.isEmpty()){
-            imgProfile.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
-           // progressBar.setVisibility(View.GONE);
-        } else {
-
-            if(isOnline()){
-                //progressBar.setVisibility(View.VISIBLE);
-                Picasso.with(this).load(url).into(imgProfile, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        //progressBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onError() {
-                        //progressBar.setVisibility(View.GONE);
-                        Toast.makeText(HomeActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else Picasso.with(getApplicationContext())
-                    .load(url)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(imgProfile);
-        }
-        Marker customMarker = mGoogleMap.addMarker(new MarkerOptions().position(sourceLocation).title(title)
-                .icon(BitmapDescriptorFactory.fromBitmap(customMarkerView(customMarkerView))));
-        customMarker.setTag(userID);
-    }
-*/
     /**
      * Check permission Location service
      *
@@ -884,20 +848,24 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void getRequestFromGraber(RequestFromGraber requestFromGraber) {
-        LatLng curLocation = new LatLng(requestFromGraber.getSourceLocation().getLatidude(),requestFromGraber.getSourceLocation().getLongtitude());
-        LatLng desLocation = new LatLng(requestFromGraber.getDestinationLocation().getLatidude(),requestFromGraber.getDestinationLocation().getLongtitude());
+        LatLng curLocation = new LatLng(requestFromGraber.getSourceLocation().getLatidude(), requestFromGraber.getSourceLocation().getLongtitude());
+        LatLng desLocation = new LatLng(requestFromGraber.getDestinationLocation().getLatidude(), requestFromGraber.getDestinationLocation().getLongtitude());
 
         makeCustomMarkerMyself(curLocation, desLocation);
         drawroadBetween2Location(curLocation, desLocation);
         hideButtonFindVehicleAndPeople();
         checkOnScreen = 2;
-        ForGraber.getInstance().getAllNeederNear(this,mUser.getUid());
+        ForGraber.getInstance().getAllNeederNear(this, mUser.getUid());
     }
 
+    /**
+     * when request is added firebase success. get all Graber near this User
+     * @param requestFromNeeder
+     */
     @Override
     public void getRequestFromNeeder(RequestFromNeeder requestFromNeeder) {
-        LatLng sourceLocation = new LatLng(requestFromNeeder.getSourceLocation().getLatidude(),requestFromNeeder.getSourceLocation().getLongtitude());
-        LatLng desLocation = new LatLng(requestFromNeeder.getDestinationLocation().getLatidude(),requestFromNeeder.getDestinationLocation().getLongtitude());
+        LatLng sourceLocation = new LatLng(requestFromNeeder.getSourceLocation().getLatidude(), requestFromNeeder.getSourceLocation().getLongtitude());
+        LatLng desLocation = new LatLng(requestFromNeeder.getDestinationLocation().getLatidude(), requestFromNeeder.getDestinationLocation().getLongtitude());
 
        /* makecustomMarkerAvatar(sourceLocation, requestFromNeeder.getUserId(), String.valueOf(mUser.getPhotoUrl()), "You're here");
         makeMaker(desLocation, "Destination");*/
@@ -905,7 +873,7 @@ public class HomeActivity extends AppCompatActivity
         drawroadBetween2Location(sourceLocation, desLocation);
         hideButtonFindVehicleAndPeople();
         checkOnScreen = 1;
-
+        ForNeeder.getInstance().getAllGraberNear(this, mUser.getUid());
 
     }
    /* private User getInfoUser(String userId) {
@@ -926,12 +894,25 @@ public class HomeActivity extends AppCompatActivity
         return user;
     }*/
 
+    /**
+     * Hide two button vehicle and people when new request is added
+     */
     private void hideButtonFindVehicleAndPeople() {
         if (btnFindVehicles.getVisibility() == View.VISIBLE && btnFindPeople.getVisibility() == View.VISIBLE) {
             btnFindPeople.setVisibility(View.GONE);
             btnFindVehicles.setVisibility(View.GONE);
             if (btnCancelRequest.getVisibility() == View.GONE) {
                 btnCancelRequest.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+    private void visibleButtonFindVehicleAndPeople()
+    {
+        if (btnFindVehicles.getVisibility() == View.GONE && btnFindPeople.getVisibility() == View.GONE) {
+            btnFindPeople.setVisibility(View.VISIBLE);
+            btnFindVehicles.setVisibility(View.VISIBLE);
+            if (btnCancelRequest.getVisibility() == View.VISIBLE) {
+                btnCancelRequest.setVisibility(View.GONE);
             }
         }
     }
