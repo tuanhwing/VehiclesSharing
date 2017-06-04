@@ -3,21 +3,21 @@
 
     <item
         is-multidex="true"
-        jar="F:\VehiclesSharing\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="9e640e6407b034fc5088dd1eff8e9ad9492591df">
-        <dex dex="F:\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_b5610e03f636d58226572ccff75c2f6068bc6412\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\VehiclesSharing\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
         sha1="510aa6efc159983dfbffa676a0dae37568c0a46f">
-        <dex dex="F:\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_12a6d89bf070cc9073353be7e82a9934fcb1ffaf\classes.dex" />
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_6f9ead19336d0f88a6ac7d10bc6b969a015d21ae\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="5f84194e02eb3e5f9b1b793ba8a225e1b8691569">
+        <dex dex="F:\DemoAppAndroid\VehiclesSharing\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_976e3f5cadb0191df51a8a0a3c7ce478ba8c8d7c\classes.dex" />
     </item>
 
 </items>
