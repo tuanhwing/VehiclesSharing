@@ -27,9 +27,9 @@ import project.com.vehiclessharing.model.AddressOnDevice;
 import project.com.vehiclessharing.model.BirthdayOnDevice;
 import project.com.vehiclessharing.utils.ImageClass;
 
-import static project.com.vehiclessharing.activity.HomeActivity.currentUser;
-import static project.com.vehiclessharing.activity.HomeActivity.loginWith;
-import static project.com.vehiclessharing.activity.HomeActivity.mUser;
+import static project.com.vehiclessharing.activity.MainActivity.currentUser;
+import static project.com.vehiclessharing.activity.MainActivity.loginWith;
+import static project.com.vehiclessharing.activity.MainActivity.mUser;
 
 /**
  * Created by Tuan on 03/04/2017.

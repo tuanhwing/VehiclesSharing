@@ -21,11 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import project.com.vehiclessharing.activity.HomeActivity;
+import project.com.vehiclessharing.activity.MainActivity;
 import project.com.vehiclessharing.asynctask.IconMarkerAsync;
-import project.com.vehiclessharing.custom.CustomMarker;
-import project.com.vehiclessharing.utils.RequestFromGraberCallback;
-import project.com.vehiclessharing.utils.RequestFromNeederCallback;
 import project.com.vehiclessharing.utils.UserCallback;
 
 /**
@@ -44,7 +41,7 @@ public class ForNeeder {
     public static ForNeeder getInstance() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabseUser = FirebaseDatabase.getInstance().getReference();
-        mGoogleMap = HomeActivity.mGoogleMap;
+        mGoogleMap = MainActivity.mGoogleMap;
         if (instance == null) {
             instance = new ForNeeder();
         }

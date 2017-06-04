@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.activity.HomeActivity;
+import project.com.vehiclessharing.activity.MainActivity;
 
 /**
  * Created by Tuan on 15/05/2017.
@@ -228,11 +228,11 @@ public class ImageClass {
      */
     public static void getUrlThumbnailImage(final Context context, final ImageView imageView, final ImageCallback callback){
         StorageReference imageRef = storage.getReference();
-        imageRef.child("/avatar/thumb100_" + HomeActivity.mUser.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        imageRef.child("/avatar/thumb100_" + MainActivity.mUser.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Log.d("getDownloadUrl_success",uri.toString());
-                if(!HomeActivity.currentUser.getUser().getImage().equals(uri.toString()))
+                if(!MainActivity.currentUser.getUser().getImage().equals(uri.toString()))
                     callback.onSuccess(uri.toString());
 
             }

@@ -11,11 +11,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import project.com.vehiclessharing.activity.HomeActivity;
+import project.com.vehiclessharing.activity.MainActivity;
 
 /**
  * Created by Hihihehe on 5/16/2017.
@@ -32,7 +31,7 @@ public class AboutPlace {
 
     public String getCurrentPlace(Context activity) {
         String fullAddress = "";
-        GoogleMap mMap = HomeActivity.mGoogleMap;
+        GoogleMap mMap = MainActivity.mGoogleMap;
         Location myLocation = mMap.getMyLocation();
         geocoder = new Geocoder(activity, Locale.getDefault());
         if (myLocation != null) {

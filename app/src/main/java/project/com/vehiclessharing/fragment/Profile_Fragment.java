@@ -38,7 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.activity.HomeActivity;
+import project.com.vehiclessharing.activity.MainActivity;
 
 import static com.facebook.GraphRequest.TAG;
 
@@ -105,7 +105,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
     }
 
     private void addEvents() {
-        imgUser.setImageBitmap(HomeActivity.bmImgUser);
+        imgUser.setImageBitmap(MainActivity.bmImgUser);
         btnChangeImgSD.setOnClickListener(this);
         prgImgUser.setVisibility(View.INVISIBLE);
 //       downloadImageUser();
@@ -137,7 +137,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
         imgUser = (ImageView) view.findViewById(R.id.imgUser);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 //        btnChangeImgSD = (Button) view.findViewById(R.id.btnChangeImgSD);
-        if(HomeActivity.loginWith != 0){
+        if(MainActivity.loginWith != 0){
             btnChangeImgSD.setVisibility(View.GONE);
         }
 //
@@ -173,12 +173,12 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
 //                Log.d("PICK IMGGGGGG",targetUri.toString());
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
-                    HomeActivity.bmImgUser = decodeUri(getActivity(),targetUri,100);
-//                    HomeActivity.bmImgUser = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(targetUri));
+                    MainActivity.bmImgUser = decodeUri(getActivity(),targetUri,100);
+//                    MainActivity.bmImgUser = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(targetUri));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                HomeActivity.bmImgUser.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                MainActivity.bmImgUser.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] data1 = baos.toByteArray();
                 StorageReference fileRef =  FirebaseStorage.getInstance().getReference().child("avatar").child(mUser.getUid()+".jpg");
                 UploadTask uploadTask = fileRef.putBytes(data1);
@@ -203,8 +203,8 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
-                                            imgUser.setImageBitmap(HomeActivity.bmImgUser);
-                                            HomeActivity.imgUser.setImageBitmap(HomeActivity.bmImgUser);
+                                            imgUser.setImageBitmap(MainActivity.bmImgUser);
+                                            MainActivity.imgUser.setImageBitmap(MainActivity.bmImgUser);
                                             Log.d("UPLOADDDDAAAAA", "User URL updated.");
                                         }
                                     }
@@ -218,7 +218,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
                 });
 //                storageImg(decodeUri(getActivity(),targetUri,100));
 //                try {
-//                    HomeActivity.bmImgUser = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(targetUri));
+//                    MainActivity.bmImgUser = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(targetUri));
 //                } catch (FileNotFoundException e) {
 //                    // TODO Auto-generated catch block
 //                    e.printStackTrace();
@@ -242,8 +242,8 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener{
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    imgUser.setImageBitmap(HomeActivity.bmImgUser);
-                                    HomeActivity.imgUser.setImageBitmap(HomeActivity.bmImgUser);
+                                    imgUser.setImageBitmap(MainActivity.bmImgUser);
+                                    MainActivity.imgUser.setImageBitmap(MainActivity.bmImgUser);
                                     Log.d("UPLOADDDDAAAAA", "User URL updated.");
                                 }
                             }

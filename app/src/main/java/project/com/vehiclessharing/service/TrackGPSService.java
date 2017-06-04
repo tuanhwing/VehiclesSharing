@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import project.com.vehiclessharing.constant.Utils;
 
-import static project.com.vehiclessharing.activity.HomeActivity.mGoogleMap;
+import static project.com.vehiclessharing.activity.MainActivity.mGoogleMap;
 import static project.com.vehiclessharing.model.CheckerGPS.mContext;
 
 /**
@@ -195,7 +195,7 @@ public class TrackGPSService extends Service implements GoogleApiClient.Connecti
      */
     @Override
     public void onLocationChanged(Location location) {
-        if(zoomOneTime && mGoogleMap != null){//Just zoom 1 time
+        if(zoomOneTime && mGoogleMap != null && mGoogleMap.getCameraPosition().zoom == 2.0){//Just zoom 1 time
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),11));
             zoomOneTime =false;
         }

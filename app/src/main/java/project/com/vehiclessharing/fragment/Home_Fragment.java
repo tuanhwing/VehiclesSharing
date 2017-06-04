@@ -53,7 +53,7 @@ public class Home_Fragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.home_layout, container, false);
+        view = inflater.inflate(R.layout.main_layout, container, false);
         addControls();
         addEvents();
         return view;

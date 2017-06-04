@@ -28,7 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.activity.MainActivity;
+import project.com.vehiclessharing.activity.SigninActivity;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.custom.CustomToast;
 import project.com.vehiclessharing.model.BirthDay;
@@ -224,7 +224,7 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
             case R.id.already_user:
 
                 // Replace login fragment
-                new MainActivity().replaceLoginFragment();
+                new SigninActivity().replaceLoginFragment();
                 break;
             case R.id.rdFemale:
                 rdMale.setChecked(false);

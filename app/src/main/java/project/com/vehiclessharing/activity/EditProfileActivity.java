@@ -103,16 +103,16 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
      * Set content to all fields
      */
     private void setContentUI() {
-        edFullName.setText(HomeActivity.currentUser.getUser().getFullName());
-        edPhoneNumber.setText(HomeActivity.currentUser.getUser().getPhoneNumber());
-        txtBirthday.setText(HomeActivity.currentUser.getUser().getBirthDay().getDay() + "/" +
-                HomeActivity.currentUser.getUser().getBirthDay().getMonth() + "/" +
-                HomeActivity.currentUser.getUser().getBirthDay().getYear());
-        edAddress.setText(HomeActivity.currentUser.getUser().getAddress().getDistrict() + " , " +
-                HomeActivity.currentUser.getUser().getAddress().getProvince() + " , " +
-                HomeActivity.currentUser.getUser().getAddress().getCountry());
+        edFullName.setText(MainActivity.currentUser.getUser().getFullName());
+        edPhoneNumber.setText(MainActivity.currentUser.getUser().getPhoneNumber());
+        txtBirthday.setText(MainActivity.currentUser.getUser().getBirthDay().getDay() + "/" +
+                MainActivity.currentUser.getUser().getBirthDay().getMonth() + "/" +
+                MainActivity.currentUser.getUser().getBirthDay().getYear());
+        edAddress.setText(MainActivity.currentUser.getUser().getAddress().getDistrict() + " , " +
+                MainActivity.currentUser.getUser().getAddress().getProvince() + " , " +
+                MainActivity.currentUser.getUser().getAddress().getCountry());
 
-        String url = String.valueOf(HomeActivity.currentUser.getUser().getImage());
+        String url = String.valueOf(MainActivity.currentUser.getUser().getImage());
         Log.d("image_path_AAAA",String.valueOf(url));
         if(url.equals("null") || url.isEmpty()){
             avatarUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
@@ -122,7 +122,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             else ImageClass.loadImageOnline(url,EditProfileActivity.this,avatarUser,progressBar);
         }
 
-        if(HomeActivity.currentUser.getUser().getSex().equals("Male")) rdMale.setChecked(true);
+        if(MainActivity.currentUser.getUser().getSex().equals("Male")) rdMale.setChecked(true);
         else rdFemale.setChecked(true);
     }
 
@@ -238,7 +238,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
             // Create a child reference
             // imagesRef now points to "images"
-            StorageReference riversRef = storageRef.child("avatar/"+ HomeActivity.mUser.getUid());
+            StorageReference riversRef = storageRef.child("avatar/"+ MainActivity.mUser.getUid());
             UploadTask uploadTask = riversRef.putFile(file);
 
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -266,13 +266,13 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 //                        }
 //                    });
 
-                    mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("image").setValue(downloadUrl.toString());
+                    mDatabase.child("users").child(MainActivity.currentUser.getUserId()).child("image").setValue(downloadUrl.toString());
 
                     //Update url avatar's user Firebase
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                             .setPhotoUri(downloadUrl)
                             .build();
-                    HomeActivity.mUser.updateProfile(profileUpdates)
+                    MainActivity.mUser.updateProfile(profileUpdates)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -285,7 +285,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
                     //Update url avatar's user data on device
                     realm.beginTransaction();
-                    HomeActivity.currentUser.getUser().setImage(String.valueOf(downloadUrl));
+                    MainActivity.currentUser.getUser().setImage(String.valueOf(downloadUrl));
                     realm.commitTransaction();
 
 //                    Picasso.with(EditProfileActivity.this)
@@ -334,13 +334,13 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private void updateFullName(String fullname){
         try {
             //Update data Firebase
-            mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("fullName").setValue(fullname);
+            mDatabase.child("users").child(MainActivity.currentUser.getUserId()).child("fullName").setValue(fullname);
 
             //Update Display name user Firebase
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                     .setDisplayName(fullname)
                     .build();
-            HomeActivity.mUser.updateProfile(profileUpdates)
+            MainActivity.mUser.updateProfile(profileUpdates)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -353,7 +353,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
             //Update on divice
             realm.beginTransaction();
-            HomeActivity.currentUser.getUser().setFullName(fullname);
+            MainActivity.currentUser.getUser().setFullName(fullname);
             realm.commitTransaction();
 
         } catch (Exception e){
@@ -369,11 +369,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private void updatePhoneNumber(String phonenumber){
         try {
             //Update data Firebase
-            mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("phoneNumber").setValue(phonenumber);
+            mDatabase.child("users").child(MainActivity.currentUser.getUserId()).child("phoneNumber").setValue(phonenumber);
 
             //Update on divice
             realm.beginTransaction();
-            HomeActivity.currentUser.getUser().setPhoneNumber(phonenumber);
+            MainActivity.currentUser.getUser().setPhoneNumber(phonenumber);
             realm.commitTransaction();
 
         } catch (Exception e){
@@ -393,11 +393,11 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
 
             //Update data Firebase
-            mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("sex").setValue(sex);
+            mDatabase.child("users").child(MainActivity.currentUser.getUserId()).child("sex").setValue(sex);
 
             //Update on divice
             realm.beginTransaction();
-            HomeActivity.currentUser.getUser().setSex(sex);
+            MainActivity.currentUser.getUser().setSex(sex);
             realm.commitTransaction();
 
         } catch (Exception e){
@@ -412,9 +412,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
      * @param year
      */
     public static void handleDatePick(int day,int month,int year){
-        BirthDay birthDay = new BirthDay(HomeActivity.currentUser.getUser().getBirthDay().getDay(),
-                HomeActivity.currentUser.getUser().getBirthDay().getMonth(),
-                HomeActivity.currentUser.getUser().getBirthDay().getYear());
+        BirthDay birthDay = new BirthDay(MainActivity.currentUser.getUser().getBirthDay().getDay(),
+                MainActivity.currentUser.getUser().getBirthDay().getMonth(),
+                MainActivity.currentUser.getUser().getBirthDay().getYear());
         Validation validation = Validation.checkValidBirthDay(new BirthDay(day,month,year));
         if(!birthDay.compareBirhtday(new BirthDay(day,month,year))) {
             if(validation.getIsValid()){
@@ -444,15 +444,15 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             int month = birthDayTemp.getMonth() + 1;
             int year = birthDayTemp.getYear();
             //Update data Firebase
-            mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("birthDay").child("day").setValue(day);
-            mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("birthDay").child("month").setValue(month);
-            mDatabase.child("users").child(HomeActivity.currentUser.getUserId()).child("birthDay").child("year").setValue(year);
+            mDatabase.child("users").child(MainActivity.currentUser.getUserId()).child("birthDay").child("day").setValue(day);
+            mDatabase.child("users").child(MainActivity.currentUser.getUserId()).child("birthDay").child("month").setValue(month);
+            mDatabase.child("users").child(MainActivity.currentUser.getUserId()).child("birthDay").child("year").setValue(year);
 
             //Update on divice
             realm.beginTransaction();
-            HomeActivity.currentUser.getUser().getBirthDay().setDay(day);
-            HomeActivity.currentUser.getUser().getBirthDay().setMonth(month);
-            HomeActivity.currentUser.getUser().getBirthDay().setYear(year);
+            MainActivity.currentUser.getUser().getBirthDay().setDay(day);
+            MainActivity.currentUser.getUser().getBirthDay().setMonth(month);
+            MainActivity.currentUser.getUser().getBirthDay().setYear(year);
             realm.commitTransaction();
 
         } catch (Exception e){
@@ -539,7 +539,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.rd_male:{
-                if(HomeActivity.currentUser.getUser().getSex().equals("Female"))
+                if(MainActivity.currentUser.getUser().getSex().equals("Female"))
                     isSexChanged = true;
                 else
                     isSexChanged = false;
@@ -549,7 +549,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 break;
             }
             case R.id.rd_female: {
-                if(HomeActivity.currentUser.getUser().getSex().equals("Male"))
+                if(MainActivity.currentUser.getUser().getSex().equals("Male"))
                     isSexChanged = true;
                 else
                     isSexChanged = false;
@@ -602,7 +602,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             if(fullname.isEmpty())
                 edFullName.setError("Fullname is required", mDrawable);
             else {
-                if(!fullname.equals(HomeActivity.currentUser.getUser().getFullName()))
+                if(!fullname.equals(MainActivity.currentUser.getUser().getFullName()))
                     isFullNameChanged = true;
                 else isFullNameChanged = false;
             }
@@ -615,7 +615,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 if(!validation.getIsValid())
                     edPhoneNumber.setError(validation.getMessageValid(),mDrawable);
                 else {
-                    if(phonenumber.equals(HomeActivity.currentUser.getUser().getPhoneNumber()))
+                    if(phonenumber.equals(MainActivity.currentUser.getUser().getPhoneNumber()))
                         isPhoneNumberChanged = false;
                     else isPhoneNumberChanged = true;
                 }

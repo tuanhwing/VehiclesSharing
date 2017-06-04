@@ -15,7 +15,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.activity.HomeActivity;
+import project.com.vehiclessharing.activity.MainActivity;
 
 /**
  * Created by Tuan on 13/03/2017.
@@ -43,13 +43,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
+//    @Override
+//    public void handleIntent(Intent intent) {
+//        super.handleIntent(intent);
+//
+//        Bundle extras = intent.getExtras();
+//        String body = extras.getString("body");
+//        sendNotification("1123123",body);
+//    }
+
     public void sendNotification(String from, String body){
 //        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 //        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
 //        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
 //
 //        String currentPackageName = componentInfo.getClassName();
-//        if(currentPackageName.equals("project.com.vehiclessharing.activity.HomeActivity")) {
+//        if(currentPackageName.equals("project.com.vehiclessharing.activity.MainActivity")) {
 //            //Do whatever here
 //            Log.d("FCM ServiceAAAAA","AAAAAAAAAA ne");
 //        }
@@ -58,8 +67,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         BitmapDrawable bitmapdraw;
         bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.temp);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Intent intent = new Intent(this, HomeActivity.class);
-        Intent cancelIntent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
+        Intent cancelIntent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, MY_REQUEST_CODE_NOTIFIATION_ACCEPT/* Request code */, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -71,8 +80,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.user)
                     .setLargeIcon(bitmapdraw.getBitmap())
-                    .addAction(R.drawable.accept, "Accept", pendingIntent)
-                    .addAction(R.drawable.cancel, "Cancel", cancel)
+//                    .addAction(R.drawable.accept, "Accept", pendingIntent)
+//                    .addAction(R.drawable.cancel, "Cancel", cancel)
                     .setOngoing(true)
                     .setContentTitle(from)
                     .setContentText(body)
