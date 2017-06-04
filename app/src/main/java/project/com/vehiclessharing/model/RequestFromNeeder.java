@@ -2,26 +2,40 @@ package project.com.vehiclessharing.model;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.HashMap;
+
 /**
  * Created by Hihihehe on 5/13/2017.
  */
 
 public class RequestFromNeeder {
     private String userId;
-    private LatLng sourceLocation;
-    private LatLng destinationLocation;
+    /*private LatLng sourceLocation;
+    private LatLng destinationLocation;*/
+    private LatLngAddress sourceLocation;
+    private LatLngAddress destinationLocation;
     private String timeStart;
     private String dateStart;
+    private String deviceId;
 
     public RequestFromNeeder() {
     }
 
-    public RequestFromNeeder(String userId, LatLng sourceLocation, LatLng destinationLocation, String timeStart, String dateStart) {
+    public RequestFromNeeder(String userId, LatLngAddress sourceLocation, LatLngAddress destinationLocation, String timeStart, String dateStart, String deviceId) {
         this.userId = userId;
         this.sourceLocation = sourceLocation;
         this.destinationLocation = destinationLocation;
         this.timeStart = timeStart;
         this.dateStart = dateStart;
+        this.deviceId=deviceId;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getUserId() {
@@ -32,19 +46,19 @@ public class RequestFromNeeder {
         this.userId = userId;
     }
 
-    public LatLng getSourceLocation() {
+    public LatLngAddress getSourceLocation() {
         return sourceLocation;
     }
 
-    public void setSourceLocation(LatLng sourceLocation) {
+    public void setSourceLocation(LatLngAddress sourceLocation) {
         this.sourceLocation = sourceLocation;
     }
 
-    public LatLng getDestinationLocation() {
+    public LatLngAddress getDestinationLocation() {
         return destinationLocation;
     }
 
-    public void setDestinationLocation(LatLng destinationLocation) {
+    public void setDestinationLocation(LatLngAddress destinationLocation) {
         this.destinationLocation = destinationLocation;
     }
 
@@ -63,4 +77,14 @@ public class RequestFromNeeder {
     public void setDateStart(String dateStart) {
         this.dateStart = dateStart;
     }
+
+//    public HashMap<String, Object> toMap() {
+//        HashMap<String, Object> result = new HashMap<>();
+//        result.put("userId",userId);
+//        result.put("sourceLocation",sourceLocation);
+//        result.put("destinationLocation",destinationLocation);
+//        result.put("timeStart",timeStart);
+//        result.put("dateStart",dateStart);
+//        return result;
+//    }
 }

@@ -13,17 +13,21 @@ import java.util.HashMap;
 
 public class RequestFromGraber {
     private String userId;
-    private LatLng sourceLocation;
-    private LatLng destinationLocation;
+    private LatLngAddress sourceLocation;
+    private LatLngAddress destinationLocation;
     private String vehicleType;
+    private String deviceId;
 
+    public RequestFromGraber() {
 
+    }
 
-    public RequestFromGraber(String userId, LatLng sourceLocation, LatLng destinationLocation, String vehicleType) {
+    public RequestFromGraber(String userId, LatLngAddress sourceLocation, LatLngAddress destinationLocation, String vehicleType, String deviceId) {
         this.userId = userId;
         this.sourceLocation = sourceLocation;
         this.destinationLocation = destinationLocation;
         this.vehicleType = vehicleType;
+        this.deviceId = deviceId;
 
     }
 
@@ -35,19 +39,19 @@ public class RequestFromGraber {
         this.userId = userId;
     }
 
-    public LatLng getSourceLocation() {
+    public LatLngAddress getSourceLocation() {
         return sourceLocation;
     }
 
-    public void setSourceLocation(LatLng sourceLocation) {
+    public void setSourceLocation(LatLngAddress sourceLocation) {
         this.sourceLocation = sourceLocation;
     }
 
-    public LatLng getDestinationLocation() {
+    public LatLngAddress getDestinationLocation() {
         return destinationLocation;
     }
 
-    public void setDestinationLocation(LatLng destinationLocation) {
+    public void setDestinationLocation(LatLngAddress destinationLocation) {
         this.destinationLocation = destinationLocation;
     }
 
@@ -59,4 +63,11 @@ public class RequestFromGraber {
         this.vehicleType = vehicleType;
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 }

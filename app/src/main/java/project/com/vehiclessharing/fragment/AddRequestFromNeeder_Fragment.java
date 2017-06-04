@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,16 +31,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
+import project.com.vehiclessharing.application.ApplicationController;
+import project.com.vehiclessharing.custom.CustomMarker;
 import project.com.vehiclessharing.model.AboutPlace;
+import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.Validation;
+import static project.com.vehiclessharing.constant.Utils.DEVICE_TOKEN;
 
 /**
  * Created by Hihihehe on 5/15/2017.
  */
 
 public class AddRequestFromNeeder_Fragment extends DialogFragment implements View.OnClickListener {
-    private static View view;
+    private View view;
     private TextView txtTitle;
     private EditText txtCurLocation, txtDesLocation,txtTimeStart;
     private Button btnOk, btnCancel;
@@ -117,7 +122,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
     private void addControls() {
         mContext=getActivity();
         String msg="If you want find a vehicle together you can fill out the form to find it";
-        txtTitle= (TextView) view.findViewById(R.id.txtTitle);
+        txtTitle= (TextView) view.findViewById(R.id.txtNeederDialogTitle);
         txtTitle.setText(msg);
         txtCurLocation= (EditText) view.findViewById(R.id.txtCurLocate);
         txtDesLocation= (EditText) view.findViewById(R.id.txtDesLocate);
@@ -131,10 +136,10 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         txtCurLocation.setText(fullAddress);
         txtTimeStart.setText(sdf1.format(calendar.getTime()));
 
-        autocompleteCurFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_cur_fragment);
+        autocompleteCurFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_curneeder_fragment);
         autocompleteDesFragment= (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_destin_fragment);
-        imgClearCurLocation= (ImageView) view.findViewById(R.id.imgClearCurLocation);
-        imgClearDesLocation= (ImageView) view.findViewById(R.id.imgClearDesLocation);
+        imgClearCurLocation= (ImageView) view.findViewById(R.id.imgClearCurNeederLocation);
+        imgClearDesLocation= (ImageView) view.findViewById(R.id.imgClearDesNeederLocation);
         AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
                 .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
                 .build();
@@ -215,21 +220,40 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         return checkNull;
     }
     private void addRequestIntoDB() {
-        // Toast.makeText(mActivity, "add DB", Toast.LENGTH_SHORT).show();
         mUser= FirebaseAuth.getInstance().getCurrentUser();
         String userId=mUser.getUid();
 
         LatLng latLngCurLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtCurLocation.getText().toString());
         LatLng latLngDesLocation=AboutPlace.getInstance().getLatLngByName(mContext,txtDesLocation.getText().toString());
 
+        LatLngAddress source=new LatLngAddress(latLngCurLocation.latitude,latLngCurLocation.longitude);
+        LatLngAddress destination=new LatLngAddress(latLngDesLocation.latitude,latLngDesLocation.longitude);
         //Date date=new Date();
         String curDate=sdf2.format(calendar.getTime());
         String timeStart=txtTimeStart.getText().toString();
-        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,latLngCurLocation,latLngDesLocation,timeStart,curDate);
-        mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
-        requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
-     //   getTargetFragment().onActivityResult(getTargetRequestCode(),1);
+        String deviceId=ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null);
+        RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,source,destination,timeStart,curDate,deviceId);
+        if(CustomMarker.isOnline(mContext)) {
+            mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
+            requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
+        }
+        else {
+            Toast.makeText(mContext, "Internet disable", Toast.LENGTH_SHORT).show();
+        }
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+         if (autocompleteCurFragment != null ) {
+            getFragmentManager().beginTransaction().remove(autocompleteCurFragment).commit();
+        }
+        if(autocompleteDesFragment!=null)
+        {
+            getFragmentManager().beginTransaction().remove(autocompleteDesFragment).commit();
+        }
+    }
+
     public interface RequestDataFromNeeder{
         public void getRequestFromNeeder(RequestFromNeeder requestFromNeeder);
     }

@@ -11,10 +11,12 @@ public class UserAddress {
     private String district;//user's district
     private String province;//user's province
 
-    public UserAddress() {
-        this.country = "";
+
+    public UserAddress()
+    {
+        /*this.country = "";
         this.district = "";
-        this.province = "";
+        this.province = "";*/
     }
 
     public UserAddress(String country, String district, String province) {
@@ -52,7 +54,6 @@ public class UserAddress {
         result.put("country",country);
         result.put("district",district);
         result.put("province",province);
-
         return result;
     }
 }
