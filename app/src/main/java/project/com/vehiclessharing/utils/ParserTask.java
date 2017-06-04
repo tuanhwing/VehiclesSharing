@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static project.com.vehiclessharing.activity.HomeActivity.mGoogleMap;
+import static project.com.vehiclessharing.activity.MainActivity.mGoogleMap;
 
 /**
  * Created by Tuan on 10/04/2017.

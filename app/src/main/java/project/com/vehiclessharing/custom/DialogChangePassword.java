@@ -18,7 +18,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 
 import project.com.vehiclessharing.R;
-import project.com.vehiclessharing.activity.HomeActivity;
+import project.com.vehiclessharing.activity.MainActivity;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.model.Validation;
 
@@ -119,18 +119,18 @@ public class DialogChangePassword extends Dialog implements View.OnClickListener
                     // email and password credentials but there are multiple possible providers,
                     // such as GoogleAuthProvider or FacebookAuthProvider.
                     AuthCredential credential = EmailAuthProvider
-                            .getCredential(HomeActivity.mUser.getEmail(), String.valueOf(edCurrentPW.getText().toString()));
+                            .getCredential(MainActivity.mUser.getEmail(), String.valueOf(edCurrentPW.getText().toString()));
 
                     Log.d("authcre_aaaaaa",String.valueOf(credential));
 
                     // Prompt the user to re-provide their sign-in credentials
-                    HomeActivity.mUser.reauthenticate(credential)
+                    MainActivity.mUser.reauthenticate(credential)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful()) {
 
-                                        HomeActivity.mUser.updatePassword(edComfirmPW.getText().toString())
+                                        MainActivity.mUser.updatePassword(edComfirmPW.getText().toString())
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {

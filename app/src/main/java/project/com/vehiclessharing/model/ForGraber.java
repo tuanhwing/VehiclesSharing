@@ -2,9 +2,7 @@ package project.com.vehiclessharing.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -17,20 +15,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import project.com.vehiclessharing.activity.HomeActivity;
+import project.com.vehiclessharing.activity.MainActivity;
 import project.com.vehiclessharing.asynctask.IconMarkerAsync;
 import project.com.vehiclessharing.custom.CustomMarker;
-import project.com.vehiclessharing.utils.MarKerBitmapCallBack;
-import project.com.vehiclessharing.utils.RequestFromGraberCallback;
 import project.com.vehiclessharing.utils.UserCallback;
 
 /**
@@ -50,7 +43,7 @@ public class ForGraber {
     public static ForGraber getInstance() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabseUser = FirebaseDatabase.getInstance().getReference();
-        mGoogleMap = HomeActivity.mGoogleMap;
+        mGoogleMap = MainActivity.mGoogleMap;
         if (instance == null) {
             instance = new ForGraber();
         }

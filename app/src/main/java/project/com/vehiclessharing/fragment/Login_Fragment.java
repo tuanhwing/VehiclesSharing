@@ -51,7 +51,7 @@ import project.com.vehiclessharing.model.UserSessionManager;
 import project.com.vehiclessharing.model.Validation;
 
 import static com.google.android.gms.internal.zzt.TAG;
-import static project.com.vehiclessharing.activity.MainActivity.mProgress;
+import static project.com.vehiclessharing.activity.SigninActivity.mProgress;
 import static project.com.vehiclessharing.constant.Utils.SignUp_Fragment;
 
 

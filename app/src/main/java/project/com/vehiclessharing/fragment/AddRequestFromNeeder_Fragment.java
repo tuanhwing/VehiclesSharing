@@ -45,8 +45,8 @@ import static project.com.vehiclessharing.constant.Utils.DEVICE_TOKEN;
 
 public class AddRequestFromNeeder_Fragment extends DialogFragment implements View.OnClickListener {
     private View view;
-    private TextView txtTitle;
-    private EditText txtCurLocation, txtDesLocation,txtTimeStart;
+    private TextView txtTitle,txtTimeStart;
+    private EditText txtCurLocation, txtDesLocation;
     private Button btnOk, btnCancel;
     private FirebaseUser mUser;
     private Context mContext;
@@ -126,7 +126,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         txtTitle.setText(msg);
         txtCurLocation= (EditText) view.findViewById(R.id.txtCurLocate);
         txtDesLocation= (EditText) view.findViewById(R.id.txtDesLocate);
-        txtTimeStart= (EditText) view.findViewById(R.id.txtTimeStart);
+        txtTimeStart= (TextView) view.findViewById(R.id.txtTimeStart);
         btnOk= (Button) view.findViewById(R.id.btnNeederAddOK);
         btnCancel= (Button) view.findViewById(R.id.btnAddNeederCancel);
 

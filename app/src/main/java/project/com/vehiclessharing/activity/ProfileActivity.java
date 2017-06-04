@@ -3,6 +3,7 @@ package project.com.vehiclessharing.activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,20 +17,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.custom.DialogChangePassword;
 import project.com.vehiclessharing.model.AddressOnDevice;
 import project.com.vehiclessharing.model.BirthdayOnDevice;
+import project.com.vehiclessharing.utils.ImageClass;
 
-import static project.com.vehiclessharing.activity.HomeActivity.currentUser;
-import static project.com.vehiclessharing.activity.HomeActivity.loginWith;
-import static project.com.vehiclessharing.activity.HomeActivity.mUser;
+import static project.com.vehiclessharing.activity.MainActivity.currentUser;
+import static project.com.vehiclessharing.activity.MainActivity.loginWith;
+import static project.com.vehiclessharing.activity.MainActivity.mUser;
 
 /**
  * Created by Tuan on 03/04/2017.
@@ -56,6 +56,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//DO NOT ROTATE the screen even if the user is shaking his phone like mad
 //        getSupportActionBar().hide();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -128,24 +129,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 progressBar.setVisibility(View.GONE);
             } else {
 
-                if(isOnline()){
-                    progressBar.setVisibility(View.VISIBLE);
-                    Picasso.with(ProfileActivity.this).load(url).into(imgProfile, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            progressBar.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onError() {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(ProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else Picasso.with(getApplicationContext())
-                        .load(url)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(imgProfile);
+                if(!isOnline()) ImageClass.loadImageOffline(url,ProfileActivity.this,imgProfile,progressBar);
+                else ImageClass.loadImageOnline(url,ProfileActivity.this,imgProfile,progressBar);
             }
             btnEditProfile.setVisibility(View.VISIBLE);
         } else {
@@ -181,28 +166,39 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             }
             case R.id.img_user: {
+
                 dialogImageFullScreen = new Dialog(ProfileActivity.this,R.style.Theme_AppCompat_NoActionBar);
                 dialogImageFullScreen.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialogImageFullScreen.setContentView(R.layout.image_full_screen);
                 final ImageView imgFullScreen = (ImageView) dialogImageFullScreen.findViewById(R.id.image_full_screen);
                 final ProgressBar progressLoadImageFull = (ProgressBar) dialogImageFullScreen.findViewById(R.id.progress_load_full);
-//                String urlhere = "https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/images%2Fi9ulaadp43dAdFkZfpsgmN3TaXs2.jpg?alt=media&token=62e31c9a-102f-48ab-98fb-0efa33c84119";
+                String urlhere = String.valueOf(currentUser.getUser().getImage());
+                Log.d("bug_full_image",urlhere);
+                if(urlhere.equals("null") || urlhere.isEmpty()){
+                    Log.d("bug_full_image","1");
+                    imgFullScreen.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
+                    progressLoadImageFull.setVisibility(View.GONE);
+                    Log.d("bug_full_image","2");
+                } else {
+                    Log.d("bug_full_image","3");
+                    Picasso.with(ProfileActivity.this)
+                            .load(urlhere)
+                            .into(imgFullScreen, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    progressLoadImageFull.setVisibility(View.GONE);
+                                }
 
-                Picasso.with(ProfileActivity.this)
-                        .load(currentUser.getUser().getImage())
-                        .into(imgFullScreen, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                progressLoadImageFull.setVisibility(View.GONE);
-                            }
+                                @Override
+                                public void onError() {
+                                    Log.d("download_full_image","failedS");
+                                }
+                            });
 
-                            @Override
-                            public void onError() {
-                                Log.d("download_full_image","failedS");
-                            }
-                        });
-
+                }
+                Log.d("bug_full_image","4");
                 dialogImageFullScreen.show();
+                Log.d("bug_full_image","5");
                 break;
             }
         }

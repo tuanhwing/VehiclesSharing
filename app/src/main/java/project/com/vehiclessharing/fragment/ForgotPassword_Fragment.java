@@ -15,10 +15,10 @@ import android.widget.Toast;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import project.com.vehiclessharing.activity.SigninActivity;
 import project.com.vehiclessharing.custom.CustomToast;
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.constant.Utils;
-import project.com.vehiclessharing.activity.MainActivity;
 
 public class ForgotPassword_Fragment extends Fragment implements
         OnClickListener {
@@ -74,7 +74,7 @@ public class ForgotPassword_Fragment extends Fragment implements
             case R.id.txtBack:
 
                 // Replace Login Fragment on Back Presses
-                new MainActivity().replaceLoginFragment();
+                new SigninActivity().replaceLoginFragment();
                 break;
 
             case R.id.txtForgot:
