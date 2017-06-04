@@ -100,9 +100,12 @@ public class ForNeeder {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
-                marker.remove();
-                markerHashMap.remove(String.valueOf(dataSnapshot.getKey()));
+                final RequestFromGraber graber = dataSnapshot.getValue(RequestFromGraber.class);
+                if (!graber.getUserId().equals(userId)) {
+                    Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
+                    marker.remove();
+                    markerHashMap.remove(String.valueOf(dataSnapshot.getKey()));
+                }
             }
 
             @Override

@@ -54,6 +54,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.drive.query.Query;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -349,12 +350,19 @@ public class HomeActivity extends AppCompatActivity
 
     private void cancelRequest() {
         visibleButtonFindVehicleAndPeople();
+        Log.d("checkonscreen",String.valueOf(checkOnScreen));
         if (checkOnScreen == 0 || checkOnScreen == 1) {
-           // mDatabase.removeEventListener(ForNeeder.childEventListenerForGraber);
-            Log.d("remove event","remove");
+
+            Log.d("removeevent","remove");
+            mDatabase.child("requestfromneeder").child(mUser.getUid()).removeValue();
+            mDatabase.removeEventListener(ForNeeder.childEventListenerForGraber);
         } else {
-            //mDatabase.removeEventListener(ForGraber.requestAddNeeder);
-            Log.d("remove event","remove");
+
+            Log.d("removefirebase","remove");
+            //mDatabase=mDatabase.child("requestfromgraber").child(mUser.getUid());
+            mDatabase.child("requestfromgraber").child(mUser.getUid()).removeValue();
+
+            mDatabase.removeEventListener(ForGraber.requestAddNeeder);
         }
         mGoogleMap.clear();
     }
@@ -469,30 +477,10 @@ public class HomeActivity extends AppCompatActivity
                 txtSourceLocation.setText(sourceAddress);
                 txtDeslocation.setText(destinationAddress);
                 txtFullname.setText(marker.getTitle());
-
-                /*UserCallback userCallback = new UserCallback() {
-                    @Override
-                    public void onSuccess(User user) {
-                        // Toast.makeText(HomeActivity.this,String.valueOf(user.getImage()), Toast.LENGTH_SHORT).show();
-                        Log.e("fullname", user.getFullName());
-                        if(txtFullname == null) Log.e("fullname","null");
-                        txtFullname.setText("sdsdsdsd");
-                    }
-
-                    @Override
-                    public void onError(DatabaseError e) {
-
-                    }
-                };
-                UserInfomation userInfomation = new UserInfomation();
-                userInfomation.getInfoUserById(idUser, userCallback);*/
-                //String fullName = FirebaseDatabase.getInstance().getReference().child("users").child(idUser).child("fullName").toString();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        //txtFullname.setText("hihihehehe");
         return v;
     }
 
@@ -542,46 +530,6 @@ public class HomeActivity extends AppCompatActivity
         return url;
 
     }
-
-
-   /* private void makeMaker(LatLng location, String title) {
-        LatLng latLng = new LatLng(location.latitude, location.longitude);
-        String url="https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/avatar%2F0ea2kDnvz8VjkbqoBMAIIaChsni2.jpg?alt=media&token=1afa116e-3074-49c7-b0b1-d36a829a7add";
-
-        Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng)
-                .icon(BitmapDescriptorFactory.fromBitmap(CustomMarker.getInstance(this).customMarkerWithAvatar(url))));
-        marker.setTag(mUser.getUid());
-    }
-
-    private View getCustomMarkerView(String urlAvatar) {
-        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
-        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        //get avatar of user and put it in imageview of custom_marker
-        if (urlAvatar.equals("null") || urlAvatar.isEmpty()) {
-            markerImageView.setImageResource(R.drawable.temp);
-            //progressBar.setVisibility(View.GONE);
-        } else {
-            if (isOnline()) {
-                //progressBar.setVisibility(View.VISIBLE);
-                Picasso.with(this).load(urlAvatar).into(markerImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        //progressBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onError() {
-                        *//*progressBar.setVisibility(View.GONE);
-                        Toast.makeText(ProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();*//*
-                    }
-                });
-            } else Picasso.with(getApplicationContext())
-                    .load(urlAvatar)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(markerImageView);
-        }
-        return customMarkerView;
-    }*/
 
     private void makeCustomMarkerMyself(LatLng source, LatLng destination) {
         BitmapDescriptor bitmapSource = BitmapDescriptorFactory.fromResource(R.drawable.ic_person_pin_circle_red_700_36dp);
