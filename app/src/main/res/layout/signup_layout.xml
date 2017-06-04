@@ -188,5 +188,4 @@
         android:textColor="@color/white_greyish"
         android:textSize="15sp" />
 
-
 </LinearLayout>

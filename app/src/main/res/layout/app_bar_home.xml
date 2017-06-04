@@ -21,7 +21,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!--<include layout="@layout/content_home" />-->
+    <include layout="@layout/content_home" />
 
 
     <FrameLayout
@@ -33,11 +33,38 @@
     </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/btnFindVehicle"
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        android:visibility="visible"
+        app:srcCompat="@drawable/ic_directions_car_white_24dp" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnCancelRequest"
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_clear_red_a700_24dp"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnRestartRequest"
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_reply_green_600_24dp"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnFindPeople"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:visibility="visible"
+        app:srcCompat="@drawable/ic_directions_run_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>
