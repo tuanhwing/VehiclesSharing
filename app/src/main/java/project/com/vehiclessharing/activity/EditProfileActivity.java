@@ -157,7 +157,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mDrawable = getResources().getDrawable(R.drawable.errorvalid);
+        mDrawable = getResources().getDrawable(R.drawable.ic_warning_red_600_24dp);
         mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
 
     }

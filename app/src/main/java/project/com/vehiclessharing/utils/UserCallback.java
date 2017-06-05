@@ -2,6 +2,8 @@ package project.com.vehiclessharing.utils;
 
 import com.google.firebase.database.DatabaseError;
 
+import java.util.concurrent.ExecutionException;
+
 import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.User;
 
@@ -10,6 +12,6 @@ import project.com.vehiclessharing.model.User;
  */
 
 public interface UserCallback {
-    void onSuccess(User user);
+    void onSuccess(User user) throws ExecutionException, InterruptedException;
     void onError(DatabaseError e);
 }

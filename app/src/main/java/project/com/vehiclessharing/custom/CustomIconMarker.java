@@ -24,10 +24,10 @@ import project.com.vehiclessharing.R;
  * Make marker have avatar on marker
  */
 
-public class CustomMarker {
+public class CustomIconMarker {
     private static Context mContext;
 
-    public CustomMarker(Context mContext) {
+    public CustomIconMarker(Context mContext) {
         this.mContext = mContext;
     }
     /**
@@ -35,7 +35,35 @@ public class CustomMarker {
      * @param
      * @return
      */
-    public Bitmap customMarkerWithAvatar(final String url)
+    public static Bitmap getCustomMarkerView(Bitmap bitmap) {
+        View customMarkerView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+
+        if (bitmap==null) {
+            markerImageView.setImageResource(R.drawable.temp);
+        } else {
+            try {
+                markerImageView.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                Log.e("Loi", e.toString());
+            }
+        }
+        //final View customMarkerView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
+    }
+
+   /* public Bitmap customMarkerWithAvatar(final String url)
     {
         View customMarkerView=getCustomMarkerView(url);
         //final View customMarkerView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
@@ -67,7 +95,7 @@ public class CustomMarker {
 
 
         return customMarkerView;
-    }
+    }*/
     public static boolean isOnline(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

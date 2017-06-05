@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -73,6 +74,7 @@ import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
 import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
+import project.com.vehiclessharing.listener.InfoWindowTouchListener;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.CheckerGPS;
 import project.com.vehiclessharing.model.ForGraber;
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton btnFindPeople, btnFindVehicles, btnCancelRequest, btnRestartRequest; // button fab action
     private DatabaseReference mDatabase;
     private int checkOnScreen;
-
+    private InfoWindowTouchListener infoButtonListener;
 
     //    private static FragmentManager fragmentManager;
     @Override
@@ -210,50 +212,7 @@ public class MainActivity extends AppCompatActivity
 //        };
 //
 
-        /* requestChildListener  = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("child_listener_add",String.valueOf(dataSnapshot.getValue()));
-                Log.d("child_listener_add",String.valueOf(dataSnapshot.getKey()));
-                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
-                Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(requestDemo.getLocationRequest().getLocationLat()
-                                ,requestDemo.getLocationRequest().getLocationLong()))
-                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
-                markerHashMap.put(String.valueOf(dataSnapshot.getKey()),marker);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.d("child_listener_changed",String.valueOf(dataSnapshot.getValue()));
-                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
-                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
-                marker.setPosition(new LatLng(requestDemo.getLocationRequest().getLocationLat()
-                        ,requestDemo.getLocationRequest().getLocationLong()));
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d("child_listener_remove",String.valueOf(dataSnapshot.getValue()));
-                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
-                marker.remove();
-                markerHashMap.remove(String.valueOf(dataSnapshot.getKey()));
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                Log.d("child_listener_move",String.valueOf(dataSnapshot.getValue()));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("child_listener_cancel",String.valueOf(databaseError.getMessage()));
-            }
-        };*/
-        //[END]add new
     }
-
     private void addControls() {
 
 //        mactivity = MainActivity.this;
@@ -458,6 +417,12 @@ public class MainActivity extends AppCompatActivity
                     return v;
                 }
             });
+           /* mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    Toast.makeText(MainActivity.this, "Info window click", Toast.LENGTH_SHORT).show();
+                }
+            });*/
         }
         //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
         //[START]add new
@@ -528,6 +493,14 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         }
+        Button btnSend= (Button) v.findViewById(R.id.btnSendRequest);
+        infoButtonListener=new InfoWindowTouchListener(btnSend) {
+            @Override
+            protected void onClickConfirmed(View v, Marker marker) {
+                Toast.makeText(MainActivity.this, "btnSend clicked", Toast.LENGTH_SHORT).show();
+            }
+        };
+        btnSend.setOnTouchListener(infoButtonListener);
         //txtFullname.setText("hihihehehe");
         return v;
     }

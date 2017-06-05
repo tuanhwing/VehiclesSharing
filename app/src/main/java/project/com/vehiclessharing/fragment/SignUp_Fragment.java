@@ -107,7 +107,7 @@ public class SignUp_Fragment extends Fragment implements View.OnClickListener {
         btnSignup = (Button) view.findViewById(R.id.btnSignup);
         login = (TextView) view.findViewById(R.id.already_user);
         terms_conditions = (CheckBox) view.findViewById(R.id.terms_conditions);
-        mDrawable = getResources().getDrawable(R.drawable.errorvalid);
+        mDrawable = getResources().getDrawable(R.drawable.ic_warning_red_600_24dp);
         mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
 
         // Setting text selector over textviews

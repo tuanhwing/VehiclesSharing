@@ -7,7 +7,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.application.ApplicationController;
-import project.com.vehiclessharing.custom.CustomMarker;
+import project.com.vehiclessharing.custom.CustomIconMarker;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromNeeder;
@@ -145,7 +144,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
                 .build();
         autocompleteDesFragment.setFilter(typeFilter);
         autocompleteDesFragment.setFilter(typeFilter);
-        mDrawable = getResources().getDrawable(R.drawable.errorvalid);
+        mDrawable = getResources().getDrawable(R.drawable.ic_warning_red_600_24dp);
         mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
     }
 
@@ -233,7 +232,7 @@ public class AddRequestFromNeeder_Fragment extends DialogFragment implements Vie
         String timeStart=txtTimeStart.getText().toString();
         String deviceId=ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null);
         RequestFromNeeder requestFromNeeder=new RequestFromNeeder(userId,source,destination,timeStart,curDate,deviceId);
-        if(CustomMarker.isOnline(mContext)) {
+        if(CustomIconMarker.isOnline(mContext)) {
             mDatabase.child("requestfromneeder").child(userId).setValue(requestFromNeeder);
             requestDataFromNeeder.getRequestFromNeeder(requestFromNeeder);
         }
