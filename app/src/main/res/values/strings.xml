@@ -37,11 +37,12 @@
     <string name="back">BACK</string>
     <string name="facebook_app_id">236272210112206</string>
     <string name="title_activity_main2">Main2Activity</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="default_web_client_id1">1093380309543-o85979qbsnp54ppfi91m1pdaceb4p86o.apps.googleusercontent.com</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string-array name="sexs_array">
         <item>Male</item>

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -14,6 +15,7 @@ import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -23,12 +25,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -73,6 +78,7 @@ import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
 import project.com.vehiclessharing.fragment.AddRequestFromNeeder_Fragment;
 import project.com.vehiclessharing.fragment.Login_Fragment;
+import project.com.vehiclessharing.listener.InfoWindowTouchListener;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.CheckerGPS;
 import project.com.vehiclessharing.model.ForGraber;
@@ -83,15 +89,18 @@ import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
 import project.com.vehiclessharing.service.TrackGPSService;
+import project.com.vehiclessharing.utils.DrawRoute;
 import project.com.vehiclessharing.utils.ImageClass;
 
+
 import static project.com.vehiclessharing.R.id.map;
+import static project.com.vehiclessharing.R.id.thing_proto;
 import static project.com.vehiclessharing.constant.Utils.DEVICE_TOKEN;
 import static project.com.vehiclessharing.constant.Utils.TAG_ERROR_ROUTING;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener,
-        OnMapReadyCallback, RoutingListener, GoogleMap.OnMarkerClickListener,
+        OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         AddRequestFromNeeder_Fragment.RequestDataFromNeeder, AddRequestFromGraber_Fragment.RequestDataFromGraber {
 
     private NavigationView navigationView = null;
@@ -124,7 +133,7 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton btnFindPeople, btnFindVehicles, btnCancelRequest, btnRestartRequest; // button fab action
     private DatabaseReference mDatabase;
     private int checkOnScreen;
-
+    private InfoWindowTouchListener infoButtonListener;
 
     //    private static FragmentManager fragmentManager;
     @Override
@@ -186,73 +195,8 @@ public class MainActivity extends AppCompatActivity
         btnFindPeople.setOnClickListener(this);
         btnCancelRequest.setOnClickListener(this);
         btnRestartRequest.setOnClickListener(this);
-        // mGoogleMap.setOnMarkerClickListener(this);
 
-        //[START]add new
-//        requestNeederListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Log.d("demo_request",String.valueOf(dataSnapshot.getValue()));
-//                if(dataSnapshot != null)
-//                    for (DataSnapshot requestSnapshot: dataSnapshot.getChildren()) {
-//                        final RequestDemo requestDemo = requestSnapshot.getValue(RequestDemo.class);
-//                        mGoogleMap.addMarker(new MarkerOptions()
-//                                .position(new LatLng(requestDemo.getLocationRequest().getLocationLat(),requestDemo.getLocationRequest().getLocationLong()))
-//                                .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
-//                    }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        };
-//
-
-        /* requestChildListener  = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("child_listener_add",String.valueOf(dataSnapshot.getValue()));
-                Log.d("child_listener_add",String.valueOf(dataSnapshot.getKey()));
-                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
-                Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(requestDemo.getLocationRequest().getLocationLat()
-                                ,requestDemo.getLocationRequest().getLocationLong()))
-                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.temp))));
-                markerHashMap.put(String.valueOf(dataSnapshot.getKey()),marker);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.d("child_listener_changed",String.valueOf(dataSnapshot.getValue()));
-                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
-                final RequestDemo requestDemo = dataSnapshot.getValue(RequestDemo.class);
-                marker.setPosition(new LatLng(requestDemo.getLocationRequest().getLocationLat()
-                        ,requestDemo.getLocationRequest().getLocationLong()));
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d("child_listener_remove",String.valueOf(dataSnapshot.getValue()));
-                Marker marker = markerHashMap.get(String.valueOf(dataSnapshot.getKey()));
-                marker.remove();
-                markerHashMap.remove(String.valueOf(dataSnapshot.getKey()));
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                Log.d("child_listener_move",String.valueOf(dataSnapshot.getValue()));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("child_listener_cancel",String.valueOf(databaseError.getMessage()));
-            }
-        };*/
-        //[END]add new
     }
-
     private void addControls() {
 
 //        mactivity = MainActivity.this;
@@ -363,7 +307,6 @@ public class MainActivity extends AppCompatActivity
                 dialogTitle[0] = "If you want find a vehicle together, you can fill out the form";
                 dialogFragment = AddRequestFromNeeder_Fragment.newIstance(dialogTitle[0]);
                 dialogFragment.show(getFragmentManager(), "From Needer");
-                //getVehicleNearMe();
                 break;
             case R.id.btnFindPeople:
                 //checkOnScreen = 2;
@@ -371,34 +314,31 @@ public class MainActivity extends AppCompatActivity
                 dialogTitle[0] = "If you have a vehicle and you want find a people together you can fill out the form to find it";
                 dialogFindPeopleFragment = AddRequestFromGraber_Fragment.newIstance(dialogTitle[0]);
                 dialogFindPeopleFragment.show(getFragmentManager(), "From Grabber");
-                //getNeederNearMe();
                 break;
             case R.id.btnCancelRequest:
                 cancelRequest();
                 break;
-            case R.id.btnRestartRequest:
-                restartrequest();
-                break;
         }
     }
 
-    private void restartrequest() {
-        if (btnRestartRequest.getVisibility() == View.VISIBLE) {
-            btnRestartRequest.setVisibility(View.GONE);
-            if (btnCancelRequest.getVisibility() == View.GONE) {
-                btnCancelRequest.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
+    /**
+     * Some action when button cancel request be clicked
+     */
     private void cancelRequest() {
         visibleButtonFindVehicleAndPeople();
+        Log.d("checkonscreen",String.valueOf(checkOnScreen));
         if (checkOnScreen == 0 || checkOnScreen == 1) {
-           // mDatabase.removeEventListener(ForNeeder.childEventListenerForGraber);
-            Log.d("remove event","remove");
+
+            Log.d("removeevent","remove");
+            mDatabase.child("requestfromneeder").child(mUser.getUid()).removeValue();
+            mDatabase.removeEventListener(ForNeeder.childEventListenerForGraber);
         } else {
-            //mDatabase.removeEventListener(ForGraber.requestAddNeeder);
-            Log.d("remove event","remove");
+
+            Log.d("removefirebase","remove");
+            //mDatabase=mDatabase.child("requestfromgraber").child(mUser.getUid());
+            mDatabase.child("requestfromgraber").child(mUser.getUid()).removeValue();
+
+            mDatabase.removeEventListener(ForGraber.requestAddNeeder);
         }
         mGoogleMap.clear();
     }
@@ -428,6 +368,7 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.setOnMarkerClickListener(this);
         if (mGoogleMap != null) {
             if(checkerGPS.checkPermission()) mGoogleMap.setMyLocationEnabled(true);//Enable mylocation
+            //show info window when touch marker
             mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
@@ -445,23 +386,49 @@ public class MainActivity extends AppCompatActivity
                         // souceLocation = marker.getPosition();
                     } else {
                         v = displayInfoMarkerClick(marker);
-
                     }
 
                     return v;
                 }
             });
+            /**
+             * When user want sent to request to another user in map. They can click in infowindow
+             * setOnInfoWindowClickListener contain dialog confirm send request to this user
+             */
+            mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(MainActivity.this);
+                    }
+                    builder.setTitle("Send request")
+                            .setMessage("Are you sure you want to send this request?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue with delete
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // do nothing
+                                }
+                            })
+                            .setIcon(R.drawable.ic_warning_red_600_24dp)
+                            .show();
+                }
+            });
         }
-        //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
-        //[START]add new
-//        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
-//        requestNeederRef.addValueEventListener(requestNeederListener);
-//        requestNeederRef.addChildEventListener(requestChildListener);
-        //[END]add new
-//      makecustomMarkerAvatar(new LatLng(10.8719808, 106.790409),mUser.getUid(), "Nong Lam University");
-
     }
 
+    /**
+     * if user not current user custom info of marker. Info marker have info about fullname, source location, destination location
+     * Time start
+     * @param marker
+     * @return
+     */
     private View displayInfoMarkerClick(Marker marker) {
         View v = getLayoutInflater().inflate(R.layout.info_marker, null);
         final TextView txtFullname, txtSourceLocation, txtDeslocation, txtTime;
@@ -486,8 +453,9 @@ public class MainActivity extends AppCompatActivity
                 souceLocation = marker.getPosition();
                 desLocation = graber.getDestinationLocation();
                 time = "now";
-                imgVehicleType.setVisibility(View.VISIBLE);
-                // txtVehicleType.setText(graber.getVehicleType());
+                if (imgVehicleType.getVisibility()==View.INVISIBLE) {
+                    imgVehicleType.setVisibility(View.VISIBLE);
+                }// txtVehicleType.setText(graber.getVehicleType());
                 if (graber.getVehicleType().equals("Bike")) {
                     imgVehicleType.setImageResource(R.drawable.ic_motorcycle_green_900_24dp);
                 }
@@ -506,38 +474,31 @@ public class MainActivity extends AppCompatActivity
             }
         }
         if (!checkNullObject) {
-            txtTime.setText(time);
+
             try {
                 String sourceAddress = AboutPlace.getInstance().getAddressByLatLng(MainActivity.this, souceLocation);
                 LatLng des = new LatLng(desLocation.getLatidude(), desLocation.getLongtitude());
                 String destinationAddress = AboutPlace.getInstance().getAddressByLatLng(MainActivity.this, des);
 
+                txtFullname.setText(marker.getTitle());
                 txtSourceLocation.setText(sourceAddress);
                 txtDeslocation.setText(destinationAddress);
-                txtFullname.setText(marker.getTitle());
-
-                /*UserCallback userCallback = new UserCallback() {
+                txtTime.setText(time);
+                DrawRoute draw=new DrawRoute(this);
+                draw.drawroadBetween2Location(souceLocation,des,1);
+                //Button btnSend= (Button) v.findViewById(R.id.btnSendRequest);
+                /*btnSend.setOnTouchListener(new View.OnTouchListener() {
                     @Override
-                    public void onSuccess(User user) {
-                        // Toast.makeText(MainActivity.this,String.valueOf(user.getImage()), Toast.LENGTH_SHORT).show();
-                        Log.e("fullname", user.getFullName());
-                        if(txtFullname == null) Log.e("fullname","null");
-                        txtFullname.setText("sdsdsdsd");
+                    public boolean onTouch(View v, MotionEvent event) {
+                        Toast.makeText(MainActivity.this, "btnsend click", Toast.LENGTH_SHORT).show();
+                        return false;
                     }
-
-                    @Override
-                    public void onError(DatabaseError e) {
-
-                    }
-                };
-                UserInfomation userInfomation = new UserInfomation();
-                userInfomation.getInfoUserById(idUser, userCallback);*/
-                //String fullName = FirebaseDatabase.getInstance().getReference().child("users").child(idUser).child("fullName").toString();
-
+                });*/
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
         //txtFullname.setText("hihihehehe");
         return v;
     }
@@ -589,46 +550,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
-   /* private void makeMaker(LatLng location, String title) {
-        LatLng latLng = new LatLng(location.latitude, location.longitude);
-        String url="https://firebasestorage.googleapis.com/v0/b/vehiclessharing-74957.appspot.com/o/avatar%2F0ea2kDnvz8VjkbqoBMAIIaChsni2.jpg?alt=media&token=1afa116e-3074-49c7-b0b1-d36a829a7add";
-
-        Marker marker = mGoogleMap.addMarker(new MarkerOptions().title(title).position(latLng)
-                .icon(BitmapDescriptorFactory.fromBitmap(CustomMarker.getInstance(this).customMarkerWithAvatar(url))));
-        marker.setTag(mUser.getUid());
-    }
-
-    private View getCustomMarkerView(String urlAvatar) {
-        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
-        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        //get avatar of user and put it in imageview of custom_marker
-        if (urlAvatar.equals("null") || urlAvatar.isEmpty()) {
-            markerImageView.setImageResource(R.drawable.temp);
-            //progressBar.setVisibility(View.GONE);
-        } else {
-            if (isOnline()) {
-                //progressBar.setVisibility(View.VISIBLE);
-                Picasso.with(this).load(urlAvatar).into(markerImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        //progressBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onError() {
-                        *//*progressBar.setVisibility(View.GONE);
-                        Toast.makeText(ProfileActivity.this,"Error load image",Toast.LENGTH_SHORT).show();*//*
-                    }
-                });
-            } else Picasso.with(getApplicationContext())
-                    .load(urlAvatar)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(markerImageView);
-        }
-        return customMarkerView;
-    }*/
-
+    /**
+     * make marker for source and destination location of current user
+     * @param source
+     * @param destination
+     */
     private void makeCustomMarkerMyself(LatLng source, LatLng destination) {
         BitmapDescriptor bitmapSource = BitmapDescriptorFactory.fromResource(R.drawable.ic_person_pin_circle_red_700_36dp);
         BitmapDescriptor bitmapDestination = BitmapDescriptorFactory.fromResource(R.drawable.ic_pin_drop_red_900_36dp);
@@ -637,35 +563,6 @@ public class MainActivity extends AppCompatActivity
         sourceMarker.setTag(mUser.getUid());
         destinationMarker.setTag(mUser.getUid());
     }
-
-    /*private void makeCustomMakerForVehicle(RequestFromGraber graber, String urlAvatar) {
-        LatLng source=new LatLng(graber.getSourceLocation().getLatidude(),graber.getSourceLocation().getLongtitude());
-        Marker customMarker = mGoogleMap.addMarker(new MarkerOptions().position(source).title("Graber")
-                .icon(BitmapDescriptorFactory.fromBitmap(CustomMarker.getInstance(this).customMarkerWithAvatar(String.valueOf(mUser.getPhotoUrl())))));
-        customMarker.setTag(graber);
-    }
-
-    private void makeMarkerForPeople(RequestFromNeeder needer, String urlAvatar) {
-        LatLng sourceLocation=new LatLng(needer.getSourceLocation().getLatidude(),needer.getSourceLocation().getLongtitude());
-        Marker customMarker = mGoogleMap.addMarker(new MarkerOptions().position(sourceLocation).title("Needer")
-                .icon(BitmapDescriptorFactory.fromBitmap(CustomMarker.getInstance(this).customMarkerWithAvatar(urlAvatar))));
-        customMarker.setTag(needer);
-    }*/
-    /*public Bitmap customMarkerView(View customMarkerView)
-    {
-        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
-        customMarkerView.buildDrawingCache();
-        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(returnedBitmap);
-        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        Drawable drawable = customMarkerView.getBackground();
-        if (drawable != null)
-            drawable.draw(canvas);
-        customMarkerView.draw(canvas);
-        return returnedBitmap;
-    }*/
 
     /**
      * Check permission Location service
@@ -818,60 +715,6 @@ public class MainActivity extends AppCompatActivity
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    /**
-     * Draw road between 2 location in google map
-     */
-    private void drawroadBetween2Location(LatLng latLng1, LatLng latLng2) {
-        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (!isOnline() || !checkLocationPermission() ||
-                !lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) return;
-        Routing routing = new Routing.Builder()
-                .travelMode(Routing.TravelMode.DRIVING)
-                .withListener(this)
-                .waypoints(latLng1, latLng2)
-                .build();
-        routing.execute();
-    }
-
-    @Override
-    public void onRoutingFailure(RouteException e) {
-
-    }
-
-    @Override
-    public void onRoutingStart() {
-
-    }
-
-    @Override
-    public void onRoutingSuccess(ArrayList<Route> arrayList, int shortestRouteIndex) {
-        try {
-            if (polyline != null) polyline.remove();
-            PolylineOptions polyoptions = new PolylineOptions();
-            polyoptions.color(Color.BLUE);
-            polyoptions.width(10);
-            for (int i = 0; i < arrayList.size(); i++) {
-
-                //In case of more than 5 alternative routes
-                PolylineOptions polyOptions = new PolylineOptions();
-                polyOptions.color(getResources().getColor(R.color.black));
-                polyOptions.width(10 + i * 3);
-                polyOptions.addAll(arrayList.get(i).getPoints());
-                polyline = mGoogleMap.addPolyline(polyOptions);
-                // Toast.makeText(getApplicationContext(), "Route " + (i + 1) + ": distance - " + arrayList.get(i).getDistanceValue() + ": duration - " + arrayList.get(i).getDurationValue(), Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (Exception e) {
-            Log.e(TAG_ERROR_ROUTING, e.getMessage());
-        }
-    }
-
-    @Override
-    public void onRoutingCancelled() {
-
-    }
-
 
     @Override
     public void getRequestFromGraber(RequestFromGraber requestFromGraber) {
@@ -879,7 +722,9 @@ public class MainActivity extends AppCompatActivity
         LatLng desLocation = new LatLng(requestFromGraber.getDestinationLocation().getLatidude(), requestFromGraber.getDestinationLocation().getLongtitude());
 
         makeCustomMarkerMyself(curLocation, desLocation);
-        drawroadBetween2Location(curLocation, desLocation);
+        DrawRoute drawRoute=new DrawRoute(this);
+        drawRoute.drawroadBetween2Location(curLocation,desLocation,0);
+        //drawroadBetween2Location(curLocation, desLocation);
         hideButtonFindVehicleAndPeople();
         checkOnScreen = 2;
         ForGraber.getInstance().getAllNeederNear(this, mUser.getUid());
@@ -897,29 +742,14 @@ public class MainActivity extends AppCompatActivity
        /* makecustomMarkerAvatar(sourceLocation, requestFromNeeder.getUserId(), String.valueOf(mUser.getPhotoUrl()), "You're here");
         makeMaker(desLocation, "Destination");*/
         makeCustomMarkerMyself(sourceLocation, desLocation);
-        drawroadBetween2Location(sourceLocation, desLocation);
+        DrawRoute draw=new DrawRoute(this);
+        draw.drawroadBetween2Location(sourceLocation,desLocation,0);
+        //drawroadBetween2Location(sourceLocation, desLocation);
         hideButtonFindVehicleAndPeople();
         checkOnScreen = 1;
         ForNeeder.getInstance().getAllGraberNear(this, mUser.getUid());
 
     }
-   /* private User getInfoUser(String userId) {
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("User").child(userId);
-        User user = new User();
-        requestNeederListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = (User) dataSnapshot.getValue();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("load_data", databaseError.getMessage());
-            }
-        };
-        mDatabase.addListenerForSingleValueEvent(requestNeederListener);
-        return user;
-    }*/
 
     /**
      * Hide two button vehicle and people when new request is added
@@ -947,18 +777,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        // Retrieve the data from the marker.
-        /*Integer clickCount = (Integer) marker.getTag();
-        if (clickCount != null) {
-            clickCount = clickCount + 1;
-            marker.setTag(clickCount);
-            Toast.makeText(this,
-                    marker.getTitle() +
-                            " has been clicked " + clickCount + " times.",
-                    Toast.LENGTH_SHORT).show();
-        }
-        return false;*/
-        // Toast.makeText(this, String.valueOf(marker.getTag()), Toast.LENGTH_SHORT).show();
         marker.showInfoWindow();
         return true;
     }

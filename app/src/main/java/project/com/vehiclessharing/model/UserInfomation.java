@@ -10,6 +10,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import project.com.vehiclessharing.utils.UserCallback;
 
@@ -63,7 +64,13 @@ public class UserInfomation {
                     User user = dataSnapshot.getValue(User.class);
                     // userNeeder.add(user);
                     Log.e("imagemarker",user.getImage());
-                    userCallback.onSuccess(user);
+                    try {
+                        userCallback.onSuccess(user);
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override

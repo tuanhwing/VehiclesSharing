@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.application.ApplicationController;
-import project.com.vehiclessharing.custom.CustomMarker;
+import project.com.vehiclessharing.custom.CustomIconMarker;
 import project.com.vehiclessharing.model.AboutPlace;
 import project.com.vehiclessharing.model.LatLngAddress;
 import project.com.vehiclessharing.model.RequestFromGraber;
@@ -240,7 +239,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
         String deviceId=ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null);;
         Log.e("deviceID",deviceId);
         RequestFromGraber requestFromGraber = new RequestFromGraber(userId, source, destination, vehicleType,deviceId);
-        if(CustomMarker.isOnline(mContext)) {
+        if(CustomIconMarker.isOnline(mContext)) {
             mDatabase.child("requestfromgraber").child(userId).setValue(requestFromGraber);
             requestDataFromGraber.getRequestFromGraber(requestFromGraber);
         }
@@ -279,7 +278,7 @@ public class AddRequestFromGraber_Fragment extends DialogFragment implements Goo
                 .build();
         autocompleteDesFragment.setFilter(typeFilter);
         autocompleteCurFragment.setFilter(typeFilter);
-        mDrawable = getResources().getDrawable(R.drawable.errorvalid);
+        mDrawable = getResources().getDrawable(R.drawable.ic_warning_red_600_24dp);
         mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
         //autocompleteCurFragment.setFilter(typeFilter);
 
