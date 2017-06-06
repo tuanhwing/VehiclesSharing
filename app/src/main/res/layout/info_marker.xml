@@ -61,7 +61,7 @@
                 android:layout_weight="1"
                 />
         </TableRow>
-        <TableRow
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_margin="10dp">
@@ -71,32 +71,47 @@
                 android:src="@drawable/ic_alarm_blue_grey_600_24dp"
                 />
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+android:text="now"
                 android:id="@+id/txtTimeUser"
+                android:layout_gravity="center"
                 />
-        </TableRow>
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_margin="10dp">
+            <TextView
+                android:paddingLeft="50dp"
+                android:paddingRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="By:"
+                android:layout_gravity="center"
+                />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imgVehicleTypeUser"
+
                 android:src="@drawable/ic_directions_car_indigo_a700_24dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 />
-        </TableRow>
+        </LinearLayout>
     </TableLayout>
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="2"
+        android:layout_gravity="center_horizontal"
         >
-        <Button
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/background_color"
+            android:gravity="center"
+            android:text="You touch here
+If you want to go together this people"
+            android:textColor="@color/white" />
+        <!--Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/btnSendRequest"
@@ -109,7 +124,7 @@
             android:id="@+id/btnCancelSendRequest"
             android:text="Cancel"
             android:layout_weight="1"
-            />
+            /-->
 
     </LinearLayout>
 </LinearLayout>
