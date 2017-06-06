@@ -130,12 +130,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
-            startActivity(new Intent(MainActivity.this,SigninActivity.class));
-            finish();
-            return;
-        }
-
+//        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+//            startActivity(new Intent(MainActivity.this,SigninActivity.class));
+//            finish();
+//            return;
+//        }
+        Log.d("FCM ServiceAAAAA","onCreate");
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//DO NOT ROTATE the screen even if the user is shaking his phone like mad
 
@@ -301,7 +301,8 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+//            super.onBackPressed();
+            moveTaskToBack(true);
         }
     }
 
@@ -742,13 +743,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-
+        Log.d("FCM ServiceAAAAA","onStart");
         updateUIHeader(loginWith);//Update information user into header layout
-        Intent intent = getIntent();
-        if(intent != null){
-            Log.d("notification_aaaa",String.valueOf(intent.getStringExtra("notification")));
-            Log.d("notification_aaaa",String.valueOf(intent.getStringExtra("body")));
-
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                String value = getIntent().getExtras().getString(key);
+                Log.d("notification_aaaaa", "Key: " + key + " Value: " + value);
+            }
         }
         if(checkerGPS.checkLocationPermission() && !TrackGPSService.isRunning)
             startService(new Intent(this, TrackGPSService.class));//Enable tracking GPS

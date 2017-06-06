@@ -23,7 +23,7 @@ const THUMB_PREFIX_50 = 'thumb50_';
 
 const admin = require('firebase-admin');
 const distance = require('./distance');
-const thumbnailimage = require('./thumbnailimage');
+// const thumbnailimage = require('./thumbnailimage');
 // const express = require('express');
 // const app = express();
 admin.initializeApp(functions.config().firebase);
@@ -61,22 +61,28 @@ exports.addMessage = functions.https.onRequest((req, res) => {
 
 
 exports.sendNotification = functions.https.onRequest((req, res) => {
-const tokenId = "dnZaTX5N1uw:APA91bERTCDMI6K0ws52xMfhwhowAQqzdU80tYULGWF9MZ5Fzb98kE08l1uwCq9yCOmgRp34H71NYF1VN7DHZ-er39728WtqD7-dtcwyIqCWkE8h8BTBD96KUmDLGSiQ5cU-ieLWxF0f";
+const tokenId = req.query.deviceId;
+var lat = 10.423551;
+var long = 105.4221214;
 
     const payload = {
-                notification: {
-                    title: "Demo notification",
-                    body: "uppercase",
+                data: {
+                  name: "LOL",
+                  image: "sssssssss",
+                  sourceLocationLat: lat.toString(),
+                  sourceLocationLong: long.toString(),
+                  destinationLocationLat: lat.toString(),
+                  destinationLocationLong: long.toString()
                 }
             };
 
              admin.messaging().sendToDevice(tokenId, payload)
                 .then(function (response) {
-                    console.log("Successfully sent message:", response);
+                    console.log("Successfully sent message1:", response);
                     res.status(200).json({error: false, message: "OK"});
                 })
                 .catch(function (error) {
-                    console.log("Error sending message:", error);
+                    console.log("Error sending message1:", error);
                     res.status(400).json({error: true, message: "ERROR"});
                 });
 });

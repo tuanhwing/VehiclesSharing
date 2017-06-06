@@ -29,13 +29,13 @@
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity android:name=".activity.SigninActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".activity.SigninActivity">
         </activity>
         <activity android:name=".activity.ProfileActivity" />
 
@@ -74,6 +74,13 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".activity.EditProfileActivity" />
+
+        <receiver android:name=".service.NotificationReciver">
+            <intent-filter>
+                <action android:name="ACCEPT_ACTION"/>
+                <action android:name="CANCEL_ACTION"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -60,4 +60,7 @@ public class Utils {
     public static final String TAG_ERROR_SELECT_IMAGE = "error_select_iamge";
     public static final String TAG_ERROR_LOCATION = "error_location";
 
+    //ACTION NOTIFICATION
+    public static final String ACCEPT_ACTION = "ACCEPT_ACTION";
+    public static final String CANCEL_ACTION = "CANCEL_ACTION";
 }

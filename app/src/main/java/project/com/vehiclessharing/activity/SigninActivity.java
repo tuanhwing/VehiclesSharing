@@ -31,9 +31,11 @@ import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.Login_Fragment;
 import project.com.vehiclessharing.model.AddressOnDevice;
+import project.com.vehiclessharing.model.BirthDay;
 import project.com.vehiclessharing.model.BirthdayOnDevice;
 import project.com.vehiclessharing.model.InformationUserOnDivce;
 import project.com.vehiclessharing.model.User;
+import project.com.vehiclessharing.model.UserAddress;
 import project.com.vehiclessharing.model.UserOnDevice;
 
 public class SigninActivity extends AppCompatActivity implements View.OnClickListener{
@@ -55,8 +57,8 @@ public class SigninActivity extends AppCompatActivity implements View.OnClickLis
         //set up notitle
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
-//        if(FirebaseAuth.getInstance().getCurrentUser() != null)
-//            switchActivity();
+        if(FirebaseAuth.getInstance().getCurrentUser() != null)
+            switchActivity();
 //        //set up full screen
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -222,6 +224,8 @@ public class SigninActivity extends AppCompatActivity implements View.OnClickLis
                 // Get Post object and use the values to update the UI
                 Log.d("DemoLogin", String.valueOf(dataSnapshot.getValue()));
                 User user = dataSnapshot.getValue(User.class);
+                user.setBirthDay(new BirthDay(0,0,0));
+                user.setAddress(new UserAddress("","",""));
                 storageProfileOnDevice(user,userId);//Save profile user on realm
                 // ...
                 switchActivity();//go to the Home Activity
@@ -243,6 +247,7 @@ public class SigninActivity extends AppCompatActivity implements View.OnClickLis
     private void switchActivity(){
         if(mProgress != null) mProgress.dismiss();
         startActivity(new Intent(SigninActivity.this,MainActivity.class));
+        overridePendingTransition(0, 0);
         finish();
     }
 
