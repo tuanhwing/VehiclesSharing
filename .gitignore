@@ -32,6 +32,5 @@ local.properties
 /build
 
 .idea/inspectionProfiles/Project_Default.xml
-/build
 /.idea
 /.gradle

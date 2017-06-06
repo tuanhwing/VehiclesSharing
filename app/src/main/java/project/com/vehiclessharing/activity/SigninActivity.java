@@ -57,13 +57,14 @@ public class SigninActivity extends AppCompatActivity implements View.OnClickLis
         //set up notitle
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        FacebookSdk.sdkInitialize(this);// This function initializes the Facebook SDK
+
         if(FirebaseAuth.getInstance().getCurrentUser() != null)
             switchActivity();
 //        //set up full screen
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        FacebookSdk.sdkInitialize(this);// This function initializes the Facebook SDK
         setContentView(R.layout.activity_signin);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//DO NOT ROTATE the screen even if the user is shaking his phone like mad
 
