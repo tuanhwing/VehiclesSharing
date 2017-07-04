@@ -75,7 +75,8 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".activity.EditProfileActivity" />
         <activity android:name=".activity.HistoryActivity" />
-        <activity android:name=".activity.AboutActivity"></activity>
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.RatingActivity"></activity>
     </application>
 
 </manifest>
