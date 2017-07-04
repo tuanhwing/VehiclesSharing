@@ -39,12 +39,23 @@ public class AboutPlace {
             double dLongitude = myLocation.getLongitude();
             try {
                 addresses = geocoder.getFromLocation(dLatitude, dLongitude, 1);
-                String address = addresses.get(0).getAddressLine(0);
-                String area = addresses.get(0).getLocality();
-                String city = addresses.get(0).getAdminArea();
-                String country = addresses.get(0).getCountryName();
+                String listAddress[]=new String[4];
+                listAddress[0] = addresses.get(0).getAddressLine(0);
+                listAddress[1] = addresses.get(0).getLocality();
+                listAddress[2] = addresses.get(0).getAdminArea();
+                listAddress[3] = addresses.get(0).getCountryName();
 
-                fullAddress = address + ", " + area + ", " + city + ", " + country;
+                for(int i=0;i<listAddress.length;i++)
+                {
+                    if(listAddress[i]!=null)
+                    {
+                        fullAddress = fullAddress.concat(listAddress[i]);
+                        //fullAddress += listAddress;
+                        if (i != listAddress.length - 1) {
+                            fullAddress = fullAddress.concat(", ");
+                        }
+                    }
+                }
 
             } catch (IOException e) {
                 Toast.makeText(activity, e.getMessage(), Toast.LENGTH_SHORT).show();

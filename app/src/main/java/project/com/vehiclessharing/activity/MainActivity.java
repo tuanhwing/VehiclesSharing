@@ -119,10 +119,10 @@ public class MainActivity extends AppCompatActivity
     public static Polyline polyline = null;//Instance
     private static CheckerGPS checkerGPS;
 
-//    private ValueEventListener requestNeederListener;
+    //    private ValueEventListener requestNeederListener;
     private ChildEventListener requestChildListener;
-    private HashMap<String,Marker> markerHashMap = new HashMap<>();//Hashmap store all the marker inside map
-//    public static Activity mactivity;
+    private HashMap<String, Marker> markerHashMap = new HashMap<>();//Hashmap store all the marker inside map
+    //    public static Activity mactivity;
     private DatabaseReference requestNeederRef;
     private String mRequestKey;
     private ArrayList<RequestFromGraber> arrRequest;
@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
-            startActivity(new Intent(MainActivity.this,SigninActivity.class));
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivity(new Intent(MainActivity.this, SigninActivity.class));
             finish();
             return;
         }
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//DO NOT ROTATE the screen even if the user is shaking his phone like mad
 
 
-        Log.d("device_id", ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null));
+        Log.d("device_id", ApplicationController.sharedPreferences.getString(DEVICE_TOKEN, null));
         //  fragmentManager = getSupportFragmentManager();
         //set fragment initially
 //        fragmentManager = getSupportFragmentManager();
@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity
         btnRestartRequest.setOnClickListener(this);
 
     }
+
     private void addControls() {
 
 //        mactivity = MainActivity.this;
@@ -286,6 +287,7 @@ public class MainActivity extends AppCompatActivity
             //  fragmentManager.beginTransaction().replace(R.id.frameContainer, new Profile_Fragment(), Utils.Profile_Fragment).commit();
         } else if (id == R.id.nav_history) {
 
+            startActivity(new Intent(MainActivity.this, HistoryActivity.class));
         } else if (id == R.id.nav_about) {
             // fab.callOnClick();
         } else if (id == R.id.nav_logout) {
@@ -325,18 +327,15 @@ public class MainActivity extends AppCompatActivity
      */
     private void cancelRequest() {
         visibleButtonFindVehicleAndPeople();
-        Log.d("checkonscreen",String.valueOf(checkOnScreen));
+        Log.d("checkonscreen", String.valueOf(checkOnScreen));
         if (checkOnScreen == 0 || checkOnScreen == 1) {
-
-            Log.d("removeevent","remove");
+            Log.d("removeevent", "remove");
             mDatabase.child("requestfromneeder").child(mUser.getUid()).removeValue();
             mDatabase.removeEventListener(ForNeeder.childEventListenerForGraber);
         } else {
-
-            Log.d("removefirebase","remove");
+            Log.d("removefirebase", "remove");
             //mDatabase=mDatabase.child("requestfromgraber").child(mUser.getUid());
             mDatabase.child("requestfromgraber").child(mUser.getUid()).removeValue();
-
             mDatabase.removeEventListener(ForGraber.requestAddNeeder);
         }
         mGoogleMap.clear();
@@ -366,7 +365,8 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap = googleMap;
         mGoogleMap.setOnMarkerClickListener(this);
         if (mGoogleMap != null) {
-            if(checkerGPS.checkPermission()) mGoogleMap.setMyLocationEnabled(true);//Enable mylocation
+            if (checkerGPS.checkPermission())
+                mGoogleMap.setMyLocationEnabled(true);//Enable mylocation
             //show info window when touch marker
             mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
@@ -376,6 +376,7 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public View getInfoContents(Marker marker) {
+                    //Polyline polyline=mGoogleMap.get
                     View v;
                     User user = new User();
                     String who = marker.getTitle();
@@ -420,11 +421,20 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
+        //makeCustomMaker(new LatLng(mGoogleMap.getMyLocation().getLatitude(),mGoogleMap.getMyLocation().getLongitude()),"I'm in here");
+        //[START]add new
+//        requestNeederRef = FirebaseDatabase.getInstance().getReference().child("requests_needer");
+//        requestNeederRef.addValueEventListener(requestNeederListener);
+//        requestNeederRef.addChildEventListener(requestChildListener);
+        //[END]add new
+//      makecustomMarkerAvatar(new LatLng(10.8719808, 106.790409),mUser.getUid(), "Nong Lam University");
+
     }
 
     /**
      * if user not current user custom info of marker. Info marker have info about fullname, source location, destination location
      * Time start
+     *
      * @param marker
      * @return
      */
@@ -452,7 +462,7 @@ public class MainActivity extends AppCompatActivity
                 souceLocation = marker.getPosition();
                 desLocation = graber.getDestinationLocation();
                 time = "now";
-                if (imgVehicleType.getVisibility()==View.INVISIBLE) {
+                if (imgVehicleType.getVisibility() == View.INVISIBLE) {
                     imgVehicleType.setVisibility(View.VISIBLE);
                 }// txtVehicleType.setText(graber.getVehicleType());
                 if (graber.getVehicleType().equals("Bike")) {
@@ -470,6 +480,13 @@ public class MainActivity extends AppCompatActivity
                 time = needer.getTimeStart();
                 idUser = needer.getUserId();
                 checkNullObject = false;
+                TextView txtBy = (TextView) v.findViewById(R.id.txtBy);
+                if (txtBy.getVisibility() == View.VISIBLE) {
+                    txtBy.setVisibility(View.INVISIBLE);
+                }
+                if (imgVehicleType.getVisibility() == View.VISIBLE) {
+                    imgVehicleType.setVisibility(View.INVISIBLE);
+                }
             }
         }
         if (!checkNullObject) {
@@ -483,8 +500,11 @@ public class MainActivity extends AppCompatActivity
                 txtSourceLocation.setText(sourceAddress);
                 txtDeslocation.setText(destinationAddress);
                 txtTime.setText(time);
-                DrawRoute draw=new DrawRoute(this);
-                draw.drawroadBetween2Location(souceLocation,des,1);
+                if (DrawRoute.polylineNotCurUser != null) {
+                   DrawRoute.polylineNotCurUser.remove();
+                }
+                DrawRoute draw = new DrawRoute(this);
+                draw.drawroadBetween2Location(souceLocation, des, 1);
                 //Button btnSend= (Button) v.findViewById(R.id.btnSendRequest);
                 /*btnSend.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -551,6 +571,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * make marker for source and destination location of current user
+     *
      * @param source
      * @param destination
      */
@@ -592,7 +613,8 @@ public class MainActivity extends AppCompatActivity
                     if (ActivityCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         mGoogleMap.setMyLocationEnabled(true);
-                        if(!TrackGPSService.isRunning) startService(new Intent(this,TrackGPSService.class));
+                        if (!TrackGPSService.isRunning)
+                            startService(new Intent(this, TrackGPSService.class));
 
                     }
                 } else {
@@ -642,12 +664,12 @@ public class MainActivity extends AppCompatActivity
 
         updateUIHeader(loginWith);//Update information user into header layout
         Intent intent = getIntent();
-        if(intent != null){
-            Log.d("notification_aaaa",String.valueOf(intent.getStringExtra("notification")));
-            Log.d("notification_aaaa",String.valueOf(intent.getStringExtra("body")));
+        if (intent != null) {
+            Log.d("notification_aaaa", String.valueOf(intent.getStringExtra("notification")));
+            Log.d("notification_aaaa", String.valueOf(intent.getStringExtra("body")));
 
         }
-        if(checkerGPS.checkLocationPermission() && !TrackGPSService.isRunning)
+        if (checkerGPS.checkLocationPermission() && !TrackGPSService.isRunning)
             startService(new Intent(this, TrackGPSService.class));//Enable tracking GPS
     }
 
@@ -697,8 +719,9 @@ public class MainActivity extends AppCompatActivity
             imgUser.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.temp));
             progressBar.setVisibility(View.GONE);
         } else {
-            if(!isOnline()) ImageClass.loadImageOffline(url,MainActivity.this,imgUser,progressBar);
-            else ImageClass.loadImageOnline(url,MainActivity.this,imgUser,progressBar);
+            if (!isOnline())
+                ImageClass.loadImageOffline(url, MainActivity.this, imgUser, progressBar);
+            else ImageClass.loadImageOnline(url, MainActivity.this, imgUser, progressBar);
         }
     }
 
@@ -721,8 +744,8 @@ public class MainActivity extends AppCompatActivity
         LatLng desLocation = new LatLng(requestFromGraber.getDestinationLocation().getLatidude(), requestFromGraber.getDestinationLocation().getLongtitude());
 
         makeCustomMarkerMyself(curLocation, desLocation);
-        DrawRoute drawRoute=new DrawRoute(this);
-        drawRoute.drawroadBetween2Location(curLocation,desLocation,0);
+        DrawRoute drawRoute = new DrawRoute(this);
+        drawRoute.drawroadBetween2Location(curLocation, desLocation, 0);
         //drawroadBetween2Location(curLocation, desLocation);
         hideButtonFindVehicleAndPeople();
         checkOnScreen = 2;
@@ -731,6 +754,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * when request is added firebase success. get all Graber near this User
+     *
      * @param requestFromNeeder
      */
     @Override
@@ -741,8 +765,8 @@ public class MainActivity extends AppCompatActivity
        /* makecustomMarkerAvatar(sourceLocation, requestFromNeeder.getUserId(), String.valueOf(mUser.getPhotoUrl()), "You're here");
         makeMaker(desLocation, "Destination");*/
         makeCustomMarkerMyself(sourceLocation, desLocation);
-        DrawRoute draw=new DrawRoute(this);
-        draw.drawroadBetween2Location(sourceLocation,desLocation,0);
+        DrawRoute draw = new DrawRoute(this);
+        draw.drawroadBetween2Location(sourceLocation, desLocation, 0);
         //drawroadBetween2Location(sourceLocation, desLocation);
         hideButtonFindVehicleAndPeople();
         checkOnScreen = 1;
@@ -762,8 +786,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-    private void visibleButtonFindVehicleAndPeople()
-    {
+
+    private void visibleButtonFindVehicleAndPeople() {
         if (btnFindVehicles.getVisibility() == View.GONE && btnFindPeople.getVisibility() == View.GONE) {
             btnFindPeople.setVisibility(View.VISIBLE);
             btnFindVehicles.setVisibility(View.VISIBLE);

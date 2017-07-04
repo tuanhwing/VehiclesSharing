@@ -32,12 +32,14 @@ public class DrawRoute implements RoutingListener {
      * Draw road between 2 location in google map
      */
     private Context mContext;
-    private Polyline polyline;
+    public static Polyline polylineNotCurUser;
     private GoogleMap googleMap;
     private int mSubject=0;
+
+
     public DrawRoute(Context mContext) {
         this.mContext = mContext;
-        this.polyline=null;
+        polylineNotCurUser=null;
         googleMap= MainActivity.mGoogleMap;
     }
 
@@ -89,6 +91,10 @@ public class DrawRoute implements RoutingListener {
                 polyOptions.width(10 + i * 3);
                 polyOptions.addAll(arrayList.get(i).getPoints());
                 polyline = googleMap.addPolyline(polyOptions);
+                if(mSubject!=0)
+                {
+                    polylineNotCurUser=polyline;
+                }
                 // Toast.makeText(getApplicationContext(), "Route " + (i + 1) + ": distance - " + arrayList.get(i).getDistanceValue() + ": duration - " + arrayList.get(i).getDurationValue(), Toast.LENGTH_SHORT).show();
             }
 
