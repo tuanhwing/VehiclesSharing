@@ -1,10 +1,13 @@
 package project.com.vehiclessharing.application;
 
 import android.app.Application;
+import android.app.Notification;
 import android.content.SharedPreferences;
 
 import com.facebook.stetho.Stetho;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
+
+import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -19,6 +22,7 @@ public class ApplicationController extends Application {
      */
     public static SharedPreferences sharedPreferences;
     private static ApplicationController sInstance;//A singleton instance of the application class for easy access in other places
+    public static ArrayList<Notification> listNotification = new ArrayList<>();//Storage notification when
 
     @Override
     public void onCreate() {

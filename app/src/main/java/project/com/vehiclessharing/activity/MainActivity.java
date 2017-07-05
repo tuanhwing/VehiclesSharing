@@ -2,6 +2,7 @@ package project.com.vehiclessharing.activity;
 
 import android.Manifest;
 import android.app.DialogFragment;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -64,6 +65,7 @@ import java.util.HashMap;
 
 import project.com.vehiclessharing.R;
 import project.com.vehiclessharing.application.ApplicationController;
+import project.com.vehiclessharing.asynctask.CustomMarkerAsync;
 import project.com.vehiclessharing.constant.Utils;
 import project.com.vehiclessharing.database.RealmDatabase;
 import project.com.vehiclessharing.fragment.AddRequestFromGraber_Fragment;
@@ -79,6 +81,7 @@ import project.com.vehiclessharing.model.RequestFromGraber;
 import project.com.vehiclessharing.model.RequestFromNeeder;
 import project.com.vehiclessharing.model.User;
 import project.com.vehiclessharing.model.UserOnDevice;
+import project.com.vehiclessharing.parseobject.ParseObject;
 import project.com.vehiclessharing.service.TrackGPSService;
 import project.com.vehiclessharing.utils.DrawRoute;
 import project.com.vehiclessharing.utils.ImageClass;
@@ -123,6 +126,10 @@ public class MainActivity extends AppCompatActivity
     private int checkOnScreen;
     private InfoWindowTouchListener infoButtonListener;
 
+    private static RequestFromGraber requestFromGraber;
+    private static RequestFromNeeder requestFromNeeder;
+    private static User infoUser;
+
     //    private static FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,9 +140,12 @@ public class MainActivity extends AppCompatActivity
 //            return;
 //        }
         Log.d("FCM ServiceAAAAA","onCreate");
+        int who =ApplicationController.sharedPreferences.getInt("who",0);
+
+        ApplicationController.sharedPreferences.edit().putInt("who",Utils.IS_GRABER).commit();//temp demo
+        Log.d("FCM_bugAAAAMain",String.valueOf(ApplicationController.sharedPreferences.getInt("who",0)));
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//DO NOT ROTATE the screen even if the user is shaking his phone like mad
-
 
         Log.d("device_id", ApplicationController.sharedPreferences.getString(DEVICE_TOKEN,null));
         //  fragmentManager = getSupportFragmentManager();
@@ -174,6 +184,7 @@ public class MainActivity extends AppCompatActivity
 
         addControls();
         addEvents();
+        updateUIHeader(loginWith);//Update information user into header layout
 //        startService(new Intent(this,TrackGPSService.class));//Enable tracking GPS
 
     }
@@ -332,6 +343,9 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Logout
+     */
     private void logout() {
         FirebaseAuth.getInstance().signOut();
         if (loginWith == 1)
@@ -594,50 +608,148 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //Check GPS + Internet is enable everytime
+    //Check GPS + Internet is enable everytime and
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-            if ((lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                    lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) &&
-                    isOnline()) {
-                //Do your stuff on GPS status change
-                //Toast.makeText(MainActivity.this, "GPS + Internet enable!", Toast.LENGTH_LONG).show();
-            } else {
-                if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                        lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    if (checkLocationPermission()) {
-                        mGoogleMap.setMyLocationEnabled(true);
-                        Toast.makeText(MainActivity.this, "GPS enable!", Toast.LENGTH_LONG).show();
-                    } else {
-                        mGoogleMap.setMyLocationEnabled(false);
-                        Toast.makeText(MainActivity.this, "GPS disable!", Toast.LENGTH_LONG).show();
+            String action = intent.getAction();
+            if(Utils.ACCEPT_ACTION.equals(action)){//Action accept notification(request) from other user
+                UpdateUIAcceptRequest(intent.getStringExtra("infouser"),intent.getStringExtra("inforequest"));//Update UI when user accept request from Graber or Needer
+//                Toast.makeText(MainActivity.this, intent.getStringExtra("infouser"), Toast.LENGTH_SHORT).show();
+            }
+            if(Utils.CANCEL_ACTION.equals(action)){
+                if(ApplicationController.listNotification.size() > 0){
+                    Log.e("error_temp","main1");
+                    try{
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        notificationManager.notify(1/* ID of notification */,
+                                ApplicationController.listNotification.get(0));
+                        ApplicationController.listNotification.remove(0);
+                        Log.e("error_temp","main2");
+                    } catch (Exception e){
+                        Log.e("error_notification_main",String.valueOf(e.getMessage()));
                     }
-                    if (isOnline())
-                        Toast.makeText(MainActivity.this, "Internet enable!", Toast.LENGTH_LONG).show();
-                    else
-                        Toast.makeText(MainActivity.this, "Internet disable!", Toast.LENGTH_LONG).show();
-                }
 
+                }
+            }
+            else {//action about network / location
+                LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+                if ((lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                        lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) &&
+                        isOnline()) {
+                    //Do your stuff on GPS status change
+                    //Toast.makeText(MainActivity.this, "GPS + Internet enable!", Toast.LENGTH_LONG).show();
+                } else {
+                    if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                            lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                        if (checkLocationPermission()) {
+                            mGoogleMap.setMyLocationEnabled(true);
+                            Toast.makeText(MainActivity.this, "GPS enable!", Toast.LENGTH_LONG).show();
+                        } else {
+                            mGoogleMap.setMyLocationEnabled(false);
+                            Toast.makeText(MainActivity.this, "GPS disable!", Toast.LENGTH_LONG).show();
+                        }
+                        if (isOnline())
+                            Toast.makeText(MainActivity.this, "Internet enable!", Toast.LENGTH_LONG).show();
+                        else
+                            Toast.makeText(MainActivity.this, "Internet disable!", Toast.LENGTH_LONG).show();
+                    }
+
+                }
             }
         }
+
     };
 
+    /**
+     * Update ui when user accept request from graber/ needer
+     * @param userJson json data information about user
+     * @param requestJson json data information about request's user
+     */
+    private void UpdateUIAcceptRequest(String userJson, String requestJson){
+        User infoUser = ParseObject.jsonToUser(userJson);
+        Log.e("error_temp",userJson);
+        Log.e("error_temp",String.valueOf(infoUser.getEmail()));
+        Log.e("error_temp",String.valueOf(infoUser.getFullName()));
+        DrawRoute drawRoute=new DrawRoute(this);
+        switch (ApplicationController.sharedPreferences.getInt("who",0)){
+
+            case 0:
+                Log.e("error_temp","case 0");
+                break;
+            case 1: {//I am a graber
+                Log.e("error_temp","case 1");
+                Log.e("error_temp",requestJson);
+                RequestFromNeeder inforequest = ParseObject.jsonToRequestNeeder(requestJson);
+                try {
+                    CustomMarkerAsync customMarker = new CustomMarkerAsync(inforequest.getUserId(), MainActivity.this);
+                    customMarker.setNeeder(inforequest);
+                    customMarker.execute(infoUser);
+
+                    drawRoute.drawroadBetween2Location(
+                            new LatLng(inforequest.getSourceLocation().getLatidude(),
+                                    inforequest.getSourceLocation().getLongtitude())
+                            ,new LatLng(inforequest.getDestinationLocation().getLatidude(),
+                                    inforequest.getDestinationLocation().getLongtitude())
+                            ,1);
+//                    mGoogleMap.addMarker(new MarkerOptions()
+//                            .position(new LatLng(10.8162006, 106.6321737))
+//                            .title("lol")
+//                    );
+//                    mGoogleMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(inforequest.getSourceLocation().getLatidude(),
+//                                inforequest.getSourceLocation().getLongtitude()))
+//                            .title(infoUser.getFullName())
+//                    );
+//                    mGoogleMap.addMarker(new MarkerOptions()
+//                            .position(new LatLng(inforequest.getDestinationLocation().getLatidude(),
+//                                    inforequest.getDestinationLocation().getLongtitude()))
+//                            .title(infoUser.getFullName())
+//                    );
+                } catch(Exception e){
+                    Log.e("error_temp",String.valueOf(e.getMessage()));
+                }
+                break;
+            }
+            case 2: {//I am a helper
+                Log.e("error_temp","case 2");
+                RequestFromGraber inforequest = ParseObject.jsonToRequestGraber(requestJson);
+                try {
+                    CustomMarkerAsync customMarker = new CustomMarkerAsync(inforequest.getUserId(), MainActivity.this);
+                    customMarker.setGraber(inforequest);
+                    customMarker.execute(infoUser);
+                    drawRoute.drawroadBetween2Location(
+                            new LatLng(inforequest.getSourceLocation().getLatidude(),
+                                    inforequest.getSourceLocation().getLongtitude())
+                            ,new LatLng(inforequest.getDestinationLocation().getLatidude(),
+                                    inforequest.getDestinationLocation().getLongtitude())
+                            ,1);
+                } catch(Exception e){
+                    Log.e("error_temp",String.valueOf(e.getMessage()));
+                }
+            }
+
+        }
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("FCM ServiceAAAAA","onStart");
-        updateUIHeader(loginWith);//Update information user into header layout
-        if (getIntent().getExtras() != null) {
-            for (String key : getIntent().getExtras().keySet()) {
-                String value = getIntent().getExtras().getString(key);
-                Log.d("notification_aaaaa", "Key: " + key + " Value: " + value);
-            }
-        }
         if(checkerGPS.checkLocationPermission() && !TrackGPSService.isRunning)
             startService(new Intent(this, TrackGPSService.class));//Enable tracking GPS
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("wtf_AAAA","onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("wtf_AAAA","onStop");
     }
 
     @Override
@@ -656,6 +768,8 @@ public class MainActivity extends AppCompatActivity
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         filter.addAction("android.location.PROVIDERS_CHANGED");
+        filter.addAction(Utils.ACCEPT_ACTION);//Accept request from a needer/graber
+        filter.addAction(Utils.CANCEL_ACTION);//Accept request from a needer/graber
         registerReceiver(mReceiver, filter);
     }
 

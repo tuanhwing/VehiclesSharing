@@ -23,6 +23,7 @@ const THUMB_PREFIX_50 = 'thumb50_';
 
 const admin = require('firebase-admin');
 const distance = require('./distance');
+const info_user = require('./info_user');
 // const thumbnailimage = require('./thumbnailimage');
 // const express = require('express');
 // const app = express();
@@ -59,42 +60,108 @@ exports.addMessage = functions.https.onRequest((req, res) => {
   });
 });
 
+//Send notification with data (information request and user) to device id.
+//who = 1 == Graber || = 2 == Needer
+ exports.sendNotification = functions.https.onRequest((req, res) => {
 
-exports.sendNotification = functions.https.onRequest((req, res) => {
-const tokenId = req.query.deviceId;
-var lat = 10.423551;
-var long = 105.4221214;
+  const who = req.query.who;
+  const userId = req.query.userId;
 
-    const payload = {
-                data: {
-                  name: "LOL",
-                  image: "sssssssss",
-                  sourceLocationLat: lat.toString(),
-                  sourceLocationLong: long.toString(),
-                  destinationLocationLat: lat.toString(),
-                  destinationLocationLong: long.toString()
-                }
-            };
+  var requestRef = null;
+  var userRef = null;
+  if(who == 1) requestRef = admin.database().ref('requestfromgraber/' + userId);
+  if(who == 2) requestRef = admin.database().ref('requestfromneeder/' + userId);
+  if(requestRef != null){
+    userRef = admin.database().ref('users/' + userId);
+    requestRef.once('value', function(snapshot){
+      userRef.once('value', function(userSnapshot){
+        // var sourcelattemp = snapshot.val().sourceLocation.latidude;
+        // var sourcelongtemp = snapshot.val().sourceLocation.longtitude;
+        console.log("logNoti1",snapshot.val().sourceLocation.longtitude);
+        console.log("logNoti2",snapshot.val().destinationLocation.longtitude);
+        console.log("logNoti3",snapshot.val());
+        // console.log("logNoti4",sourcelattemp);
+        // console.log("logNoti5",snapshot.val().deviceId);
+        var sourceLat = snapshot.val().sourceLocation.latidude;
+        var sourceLong = snapshot.val().sourceLocation.longtitude;
+        var destinationLat = snapshot.val().destinationLocation.latidude;
+        var destinationLong = snapshot.val().destinationLocation.longtitude;
 
-             admin.messaging().sendToDevice(tokenId, payload)
+        var infoUser = userSnapshot.val();
+        var infoRequest = snapshot.val();
+
+        console.log("logNoti4",sourceLat);
+        console.log("logNoti5", sourceLong);
+        console.log("logNoti6",destinationLat);
+        console.log("logNoti7",destinationLong);
+        // console.log("vale_snapshot",sourceLat + " | " sourceLong + " | " + destinationLat + " | " + destinationLong);
+        
+
+        const payload = {
+          data: {
+            infouser: JSON.stringify(infoUser),
+            inforequest: JSON.stringify(infoRequest)
+             // userId: snapshot.val().userId,
+             // fullName: userSnapshot.val().fullName,
+             // image: userSnapshot.val().image,
+             // deviceId: snapshot.val().deviceId,
+             // sourcelat: sourceLat.toString(),
+             // sourcelong: sourceLong.toString(),
+             // destinationlat: destinationLat.toString(),
+             // destinationlong: destinationLong.toString()
+
+           }
+        };
+        admin.messaging().sendToDevice(snapshot.val().deviceId, payload)
                 .then(function (response) {
-                    console.log("Successfully sent message1:", response);
+                    console.log("Successfully sent message:", response);
                     res.status(200).json({error: false, message: "OK"});
                 })
                 .catch(function (error) {
-                    console.log("Error sending message1:", error);
+                    console.log("Error sending message:", error);
                     res.status(400).json({error: true, message: "ERROR"});
                 });
+      });
+       // res.status(200).json({error: false, content:{
+       //    inforequest: snapshot.val(), infouser: userSnapshot.val()}});
+       //  });
+    
+// const tokenId = req.query.deviceId;
+// var lat = 10.423551;
+// var long = 105.4221214;
+
+//     const payload = {
+//                 data: {
+//                   name: "LOL",
+//                   image: "sssssssss",
+//                   sourceLocationLat: lat.toString(),
+//                   sourceLocationLong: long.toString(),
+//                   destinationLocationLat: lat.toString(),
+//                   destinationLocationLong: long.toString()
+//                 }
+//             };
+
+//              admin.messaging().sendToDevice(tokenId, payload)
+//                 .then(function (response) {
+//                     console.log("Successfully sent message:", response);
+//                     res.status(200).json({error: false, message: "OK"});
+//                 })
+//                 .catch(function (error) {
+//                     console.log("Error sending message:", error);
+//                     res.status(400).json({error: true, message: "ERROR"});
+//                 });
+    });
+  }
 });
 
-exports.getinfo_user = functions.https.onRequest((req,res) => {
-	if(req.method != 'GET') res.status(400);
-	var userId = req.query.userId;
-	var userRef = admin.database().ref('users/' + userId);
-	userRef.once('value', function(snapshot){
-		res.status(200).send(snapshot.val());
-	});
-});
+// exports.getinfo_user = functions.https.onRequest((req,res) => {
+// 	if(req.method != 'GET') res.status(400);
+// 	var userId = req.query.userId;
+// 	var userRef = admin.database().ref('users/' + userId);
+// 	userRef.once('value', function(snapshot){
+// 		res.status(200).send(snapshot.val());
+// 	});
+// });
 
 exports.getinfo_requestgraber = functions.https.onRequest((req,res) => {
 	var info = req.query.requestId;

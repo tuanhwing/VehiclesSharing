@@ -59,8 +59,18 @@ public class Utils {
     public static final String TAG_ERROR_ROUTING = "error_routing";
     public static final String TAG_ERROR_SELECT_IMAGE = "error_select_iamge";
     public static final String TAG_ERROR_LOCATION = "error_location";
+    public static final String TAG_ERROR_WHO = "error_who_0";
 
     //ACTION NOTIFICATION
     public static final String ACCEPT_ACTION = "ACCEPT_ACTION";
     public static final String CANCEL_ACTION = "CANCEL_ACTION";
+
+    //Is Graber or Needer?
+    public static final int IS_GRABER = 1;
+    public static final int IS_NEEDER = 2;
+
+    //Message notification
+    public static final String MESSAGE_FROM_NEEDER = "Can you grab me?";
+    public static final String MESSAGE_FROM_GRABER =  "Do you want to carpool?";
+
 }
